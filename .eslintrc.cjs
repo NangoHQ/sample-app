@@ -115,7 +115,16 @@ module.exports = {
     'react/prop-types': ['off'],
     'import/no-unresolved': 'off', // checked by ts
 
-    'import/extensions': ['error', 'never'],
+    'import/extensions': [
+      'error',
+      'always',
+      {
+        json: 'always',
+        js: 'always',
+        ts: 'never',
+        ignorePackages: true,
+      },
+    ],
     'import/order': ['error'],
     '@typescript-eslint/unbound-method': 'off',
 
