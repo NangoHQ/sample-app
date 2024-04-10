@@ -10,6 +10,7 @@
   "dependencies": {
     "@headlessui/react": "^1.7.17",
     "@heroicons/react": "^2.0.18",
+    "@tailwindcss/aspect-ratio": "^0.4.2",
     "@tremor/react": "^3.10.0",
     "@types/js-cookie": "^3.0.5",
     "@types/node": "20.8.9",
