@@ -56,6 +56,7 @@ export const postWebhooks: RouteHandler = async (req, reply) => {
     // And create / update the others records
     await db.contacts.upsert({
       where: { id: record.id },
+      // @ts-expect-error
       create: { id: record.id },
       update: { id: record.id },
     });

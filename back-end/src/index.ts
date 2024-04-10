@@ -1,6 +1,7 @@
 import Fastify from 'fastify';
 import { postWebhooks } from './routes/postWebhooks.js';
 import { getContacts } from './routes/getContacts.js';
+import { getIntegrations } from './routes/getIntegrations.js';
 
 const fastify = Fastify({
   logger: true,
@@ -9,6 +10,11 @@ const fastify = Fastify({
 fastify.get('/', async function handler(_, reply) {
   await reply.status(200).send({ root: true });
 });
+
+/**
+ * List available integrations
+ */
+fastify.get('/integrations', getIntegrations);
 
 /**
  * Receive webhooks from Nango every time a records has been added or deleted
