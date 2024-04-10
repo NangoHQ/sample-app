@@ -8,14 +8,14 @@ const website = [
   { name: '/contact', value: 751 },
   { name: '/gallery', value: 471 },
   { name: '/august-discount-offer', value: 280 },
-  { name: '/case-studies', value: 78 }
+  { name: '/case-studies', value: 78 },
 ];
 
 const shop = [
   { name: '/home', value: 453 },
   { name: '/imprint', value: 351 },
   { name: '/shop', value: 271 },
-  { name: '/pricing', value: 191 }
+  { name: '/pricing', value: 191 },
 ];
 
 const app = [
@@ -23,25 +23,25 @@ const app = [
   { name: '/product-features', value: 676 },
   { name: '/about', value: 564 },
   { name: '/login', value: 234 },
-  { name: '/downloads', value: 191 }
+  { name: '/downloads', value: 191 },
 ];
 
 const data = [
   {
     category: 'Website',
     stat: '10,234',
-    data: website
+    data: website,
   },
   {
     category: 'Online Shop',
     stat: '12,543',
-    data: shop
+    data: shop,
   },
   {
     category: 'Mobile App',
     stat: '2,543',
-    data: app
-  }
+    data: app,
+  },
 ];
 
 export default function PlaygroundPage() {

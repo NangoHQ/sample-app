@@ -5,7 +5,7 @@ import {
   TableHeaderCell,
   TableBody,
   TableCell,
-  Text
+  Text,
 } from '@tremor/react';
 
 interface User {

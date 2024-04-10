@@ -11,14 +11,14 @@ interface User {
 }
 
 export default async function IndexPage({
-  searchParams
+  searchParams,
 }: {
   searchParams: { q: string };
 }) {
   const search = searchParams.q ?? '';
   const result = await sql`
-    SELECT id, name, username, email 
-    FROM users 
+    SELECT id, name, username, email
+    FROM users
     WHERE name ILIKE ${'%' + search + '%'};
   `;
   const users = result.rows as User[];
