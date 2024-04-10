@@ -11,7 +11,7 @@
   },
   "type": "module",
   "dependencies": {
-    "@nangohq/node": "0.39.15",
+    "@nangohq/node": "0.39.16",
     "@prisma/client": "5.12.1",
     "fastify": "4.26.2",
     "prisma": "5.12.1",
