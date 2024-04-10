@@ -138,4 +138,12 @@ module.exports = {
       },
     ],
   },
+  overrides: [
+    {
+      files: ['*.tsx'],
+      rules: {
+        'import/extensions': 'off',
+      },
+    },
+  ],
 };

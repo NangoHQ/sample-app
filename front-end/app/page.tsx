@@ -1,33 +1,25 @@
-import { Card, Title, Text } from '@tremor/react';
-import Search from './search';
-import IntegrationTable from './table';
+import IntegrationsGrid from './integrationGrid';
+import type { Integration } from './types';
 
-interface Integration {
-  name: string;
-  description?: string;
-  image: string;
-}
-
-export default async function IndexPage({
-  searchParams
-}: {
-  searchParams: { q: string };
-}) {
+export default function IndexPage() {
   const integrations: Integration[] = [
     {
       name: 'Slack',
-      image: './public/integration-logos/slack.svg'
-    }
+      image: '/integration-logos/slack.svg',
+      integrationId: 'slack',
+      description: 'Connect your Slack account to Wolf CRM.',
+    },
+    {
+      name: 'LinkedIn',
+      image: '/integration-logos/linkedin.svg',
+      integrationId: 'linkedin',
+      description: 'Connect your LinkedIn account to Wolf CRM.',
+    },
   ];
 
   return (
     <main className="p-4 md:p-10 mx-auto max-w-7xl">
-      <Title>Users</Title>
-      <Text>A list of users retrieved from a Postgres database.</Text>
-      <Search />
-      <Card className="mt-6">
-        <IntegrationTable integrations={integrations} />
-      </Card>
+      <IntegrationsGrid integrations={integrations} />
     </main>
   );
 }
