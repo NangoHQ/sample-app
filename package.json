@@ -13,7 +13,8 @@
   "scripts": {
     "lint": "eslint .",
     "start": "npm run start:docker && (npm run -w front-end; npm run -w back-end)",
-    "start:docker": "docker compose up -d"
+    "start:docker": "docker compose up -d",
+    "start:backend": "npm run -w back-end start"
   },
   "devDependencies": {
     "@tsconfig/node18-strictest-esm": "1.0.1",

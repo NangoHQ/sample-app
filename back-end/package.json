@@ -5,7 +5,8 @@
   "main": "dist/index.js",
   "scripts": {
     "dev:watch": "tsc -b -w",
-    "start": "dotenv -e ../.env node ./dist/index.js",
+    "dev:start": "dotenv -e ../.env node ./dist/index.js",
+    "start": "npm run db:migrate && tsc -b && npm run dev:start",
     "db:generate": "dotenv -e ../.env prisma generate",
     "db:migrate": "dotenv -e ../.env prisma db push --skip-generate"
   },
