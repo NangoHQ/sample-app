@@ -1,0 +1,9 @@
+# docker-compose.yml
+version: '3'
+services:
+  db:
+    image: postgres:15.6-alpine
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_PASSWORD=postgres
