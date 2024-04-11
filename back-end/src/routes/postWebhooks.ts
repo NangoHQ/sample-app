@@ -15,10 +15,12 @@ export const postWebhooks: RouteHandler = async (req, reply) => {
   const body = req.body as WebhooksBody;
   const sig = req.headers['x-nango-signature'] as string;
 
+  console.log('Webhook: received');
+
   // Verify the signature to be sure Nango sent us this payload
   if (!nango.verifyWebhookSignature(sig, req.body)) {
-    await reply.status(400).send({ error: 'invalid_signature ' });
     console.error('Failed to validate Webhook signature');
+    await reply.status(400).send({ error: 'invalid_signature' });
     return;
   }
 
@@ -49,7 +51,7 @@ async function handleSyncWebhook(body: NangoSyncWebhookBody) {
     connectionId: body.connectionId,
     model: body.model,
     providerConfigKey: body.providerConfigKey,
-    modifiedAfter: body.modifiedAfter!,
+    modifiedAfter: body.modifiedAfter,
   });
 
   // ... and save the updates in our backend

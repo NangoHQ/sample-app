@@ -6,7 +6,7 @@ import {
 import Nango from '@nangohq/frontend';
 import { useState } from 'react';
 import type { Integration } from '../types';
-import { cn, queryClient } from '../utils';
+import { baseUrl, cn, queryClient } from '../utils';
 import Spinner from './Spinner';
 import InfoModal from './modals/Info';
 const nango = process.env.NEXT_PUBLIC_NANGO_PUBLIC_KEY
@@ -27,12 +27,15 @@ export const IntegrationBloc: React.FC<{
         throw new Error('Nango not initialized');
       }
 
-      // "my-first-user" is your connectionId
-      // This ID allows you to identify an user connection, even across integrations
+      // Create a new connection
+      // "my-first-user" is your connectionId, it shouldn't be random
+      // This ID allows you to identify a user, even across integrations
       await nango.auth(integration.integrationId, 'my-first-user', {
         detectClosedAuthWindow: true,
       });
 
+      // Reload the connections to update the state
+      // Ideally you can setup a Websocket between your frontend and your backend to update everything in realtime
       setTimeout(async () => {
         await queryClient.refetchQueries({ queryKey: ['connections'] });
         setLoading(false);
@@ -46,11 +49,14 @@ export const IntegrationBloc: React.FC<{
     try {
       setLoading(true);
       await fetch(
-        `http://localhost:3003/connections?integration=${integration.integrationId}`,
+        `${baseUrl}/connections?integration=${integration.integrationId}`,
         {
           method: 'DELETE',
         }
       );
+
+      // Reload the connections to update the state
+      // Ideally you can setup a Websocket between your frontend and your backend to update everything in realtime
       setTimeout(async () => {
         await queryClient.refetchQueries({ queryKey: ['connections'] });
         setLoading(false);

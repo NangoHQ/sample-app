@@ -22,10 +22,3 @@ model Contacts {
 
   @@index([integrationId])
 }
-
-// This is your own users
-model Users {
-  id String @id @db.VarChar(64)
-
-  createdAt DateTime? @db.Timestamp(3)
-}

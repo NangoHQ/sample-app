@@ -2,8 +2,8 @@ import type { RouteHandler } from 'fastify';
 import { nango } from '../nango.js';
 
 /**
- * Deleting a connection means destroying a link between an user and an integration.
- * It's useful when you delete an user from your backend or an user choose to disconnect.
+ * Deleting a connection means destroying a link between a user and an integration.
+ * It's useful when you delete a user from your backend or a user choose to disconnect.
  */
 export const deleteConnection: RouteHandler<{
   Querystring: { integration?: string };
@@ -15,7 +15,7 @@ export const deleteConnection: RouteHandler<{
   }
 
   // We unlink a user from an integration
-  await nango.deleteConnection(query.integration, 'user-1');
+  await nango.deleteConnection(query.integration, 'my-first-user');
 
   await reply.status(200).send({ success: true });
 };

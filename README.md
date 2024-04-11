@@ -35,6 +35,7 @@ nango deploy prod
 # Listen to webhooks
 npm run webhooks-proxy
 # Copy the URL in your environment settings https://app.nango.dev/prod/environment-settings
+# <URL>/webhooks-from-nango
 
 # Launch
 npm run start

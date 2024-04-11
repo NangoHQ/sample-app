@@ -107,6 +107,8 @@ module.exports = {
     '@typescript-eslint/no-require-imports': ['off'],
     '@typescript-eslint/no-this-alias': ['off'], // to complicated for the small benefits
     '@typescript-eslint/no-type-alias': ['off'],
+    '@typescript-eslint/no-unsafe-call': ['off'],
+    '@typescript-eslint/no-unsafe-return': ['off'],
 
     // Disabled => Require slow parser. Requires parserOptions.project above to enable them
     '@typescript-eslint/dot-notation': ['off'],
@@ -140,7 +142,7 @@ module.exports = {
   },
   overrides: [
     {
-      files: ['*.tsx'],
+      files: ['*.tsx', '*.ts'],
       rules: {
         'import/extensions': 'off',
       },
