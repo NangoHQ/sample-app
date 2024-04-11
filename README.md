@@ -25,6 +25,13 @@ cp .env.example .env
 # Add your Nango Public Key
 cp front-end/.env.example front-end/.env
 
+# Setup nango
+npm install -g nango
+cd nango-integrations/
+# Add your Nango Secret Key in NANGO_SECRET_KEY_PROD
+cp .env.example .env
+nango deploy prod
+
 # Launch
 npm run start
 ```
