@@ -4,6 +4,8 @@ import cors from '@fastify/cors';
 import { postWebhooks } from './routes/postWebhooks.js';
 import { getContacts } from './routes/getContacts.js';
 import { getIntegrations } from './routes/getIntegrations.js';
+import { getConnections } from './routes/getConnections.js';
+import { deleteConnection } from './routes/deleteConnection.js';
 
 const fastify = Fastify({ logger: false });
 fastify.addHook('onRequest', (req, _res, done) => {
@@ -24,6 +26,16 @@ fastify.get('/', async function handler(_, reply) {
  * List available integrations
  */
 fastify.get('/integrations', getIntegrations);
+
+/**
+ * List available connection for one user
+ */
+fastify.get('/connections', getConnections);
+
+/**
+ * Delete a connection for one user
+ */
+fastify.delete('/connections', deleteConnection);
 
 /**
  * Receive webhooks from Nango every time a records has been added or deleted

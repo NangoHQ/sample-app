@@ -1,12 +1,13 @@
 import { PlusIcon } from '@heroicons/react/20/solid';
 import {
+  BoltSlashIcon,
   CheckCircleIcon,
   ExclamationCircleIcon,
 } from '@heroicons/react/24/outline';
 import Nango from '@nangohq/frontend';
 import { useState } from 'react';
 import type { Integration } from '../types';
-import { cn } from '../utils';
+import { cn, queryClient } from '../utils';
 import Spinner from './Spinner';
 
 const nango = process.env.NEXT_PUBLIC_NANGO_PUBLIC_KEY
@@ -17,7 +18,8 @@ export const IntegrationBloc: React.FC<{
   integration: Integration;
 }> = ({ integration }) => {
   const [loading, setLoading] = useState(false);
-  async function connect(integrationId: string) {
+
+  async function connect() {
     try {
       setLoading(true);
       if (!nango) {
@@ -26,14 +28,34 @@ export const IntegrationBloc: React.FC<{
 
       // "user-1" is your connectionId
       // This ID allows you to identify an user connection, even across integrations
-      const res = await nango.auth(integrationId, 'user-1', {
+      await nango.auth(integration.integrationId, 'user-1', {
         detectClosedAuthWindow: true,
       });
-      console.log(res);
+
+      setTimeout(async () => {
+        await queryClient.refetchQueries({ queryKey: ['connections'] });
+        setLoading(false);
+      }, 10);
     } catch (error) {
       console.error(error);
-    } finally {
-      setLoading(false);
+    }
+  }
+
+  async function disconnect() {
+    try {
+      setLoading(true);
+      await fetch(
+        `http://localhost:3003/connections?integration=${integration.integrationId}`,
+        {
+          method: 'DELETE',
+        }
+      );
+      setTimeout(async () => {
+        await queryClient.refetchQueries({ queryKey: ['connections'] });
+        setLoading(false);
+      }, 10);
+    } catch (error) {
+      console.error(error);
     }
   }
 
@@ -72,29 +94,53 @@ export const IntegrationBloc: React.FC<{
         />
       </div>
       <div className="-mt-px flex divide-x divide-gray-200 ">
-        <button
-          onClick={() => connect(integration.integrationId)}
-          className={cn(
-            'relative -mr-px inline-flex w-0 flex-1 items-center rounded-b-xl justify-center gap-x-3 rounded-bl-lg border border-transparent py-4 text-sm font-semibold ',
-            integration.deployed
-              ? 'bg-gray-200 hover:bg-gray-300 text-gray-800'
-              : 'bg-gray-100 text-gray-300'
-          )}
-          disabled={!integration.deployed || loading}
-        >
-          Connect to {integration.name}
-          {loading ? (
-            <Spinner size={1} className="text-gray-800" />
-          ) : (
-            <PlusIcon
-              className={cn(
-                'h-5 w-5',
-                integration.deployed ? 'text-gray-800' : 'text-gray-400'
-              )}
-              aria-hidden="true"
-            />
-          )}
-        </button>
+        {!integration.connected && (
+          <button
+            onClick={() => connect()}
+            className={cn(
+              'relative -mr-px inline-flex w-0 flex-1 items-center rounded-b-xl justify-center gap-x-3 rounded-bl-lg border border-transparent py-4 text-sm font-semibold ',
+              integration.deployed
+                ? 'bg-gray-200 hover:bg-gray-300 text-gray-800'
+                : 'bg-gray-100 text-gray-300'
+            )}
+            disabled={!integration.deployed || loading}
+          >
+            Connect to {integration.name}
+            {loading ? (
+              <Spinner size={1} className="text-gray-800" />
+            ) : (
+              <PlusIcon
+                className={cn(
+                  'h-5 w-5',
+                  integration.deployed ? 'text-gray-800' : 'text-gray-400'
+                )}
+                aria-hidden="true"
+              />
+            )}
+          </button>
+        )}
+        {integration.connected && (
+          <button
+            onClick={() => disconnect()}
+            className={cn(
+              'relative -mr-px inline-flex w-0 flex-1 items-center rounded-b-xl justify-center gap-x-3 rounded-bl-lg border border-transparent py-4 text-sm font-semibold bg-gray-200 hover:bg-gray-300 text-gray-800'
+            )}
+            disabled={!integration.deployed || loading}
+          >
+            Disconnect from {integration.name}
+            {loading ? (
+              <Spinner size={1} className="text-gray-800" />
+            ) : (
+              <BoltSlashIcon
+                className={cn(
+                  'h-5 w-5',
+                  integration.deployed ? 'text-gray-800' : 'text-gray-400'
+                )}
+                aria-hidden="true"
+              />
+            )}
+          </button>
+        )}
       </div>
     </li>
   );

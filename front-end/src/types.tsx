@@ -4,4 +4,5 @@ export interface Integration {
   description?: string;
   image: string;
   deployed: boolean;
+  connected: boolean;
 }

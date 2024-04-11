@@ -18,6 +18,7 @@ export const postWebhooks: RouteHandler = async (req, reply) => {
   // Verify the signature to be sure Nango sent us this payload
   if (!nango.verifyWebhookSignature(sig, req.body)) {
     await reply.status(400).send({ error: 'invalid_signature ' });
+    console.error('Failed to validate Webhook signature');
     return;
   }
 
@@ -34,12 +35,14 @@ export const postWebhooks: RouteHandler = async (req, reply) => {
 
 function handleNewConnectionWebhook(body: WebhookAuthBody) {
   if (body.operation === AuthOperation.CREATION) {
-    console.log('New connection');
+    console.log('Webhook: New connection');
     // Do something here
   }
 }
 
 async function handleSyncWebhook(body: NangoSyncWebhookBody) {
+  console.log('Webhook: Sync results');
+
   // We have validated the payload Nango sent us
   // Now we need to fetch the actual records that were added/updated/deleted...
   const records = await nango.listRecords<{ id: string }>({
