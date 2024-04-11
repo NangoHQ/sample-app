@@ -2,6 +2,7 @@ import { PlusIcon } from '@heroicons/react/20/solid';
 import {
   InformationCircleIcon,
   BoltSlashIcon,
+  CheckCircleIcon,
 } from '@heroicons/react/24/outline';
 import Nango from '@nangohq/frontend';
 import { useState } from 'react';
@@ -84,7 +85,17 @@ export const IntegrationBloc: React.FC<{
             )}
 
             <div className="py-2">
-              {!integration.deployed && (
+              {integration.deployed ? (
+                <div className="flex items-center gap-1 text-green-500 font-normal text-xs line-clamp-2">
+                  {`${integration.connected ? 'Connected' : 'Integration deployed and ready to connect'}`}
+                  <CheckCircleIcon
+                    onClick={() => {
+                      setInfoModalOpen(true);
+                    }}
+                    className="h-5 w-5 text-green-500"
+                  />
+                </div>
+              ) : (
                 <div className="flex items-center gap-1 text-red-500 font-normal text-xs line-clamp-2">
                   Requires setup{' '}
                   <InformationCircleIcon

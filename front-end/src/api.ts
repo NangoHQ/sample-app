@@ -22,7 +22,7 @@ export async function listConnections(): Promise<GetConnections> {
 }
 
 export async function listContacts(): Promise<GetContacts> {
-  const res = await fetch('http://localhost:3003/contacts');
+  const res = await fetch('http://localhost:3003/contacts?integration=slack');
   if (res.status !== 200) {
     throw new Error();
   }

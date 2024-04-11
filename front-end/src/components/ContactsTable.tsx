@@ -1,12 +1,12 @@
-type Contact = {
-  id: number;
-  fullName: string;
-  deleted: boolean;
-};
+import type { GetContacts } from 'back-end';
 
-export default function ContactsTable({ contacts }: { contacts: Contact[] }) {
-  if (!contacts.length) {
-    return <div className="mt-8 text-center">No contacts found</div>;
+export default function ContactsTable({
+  contacts,
+}: {
+  contacts: GetContacts['contacts'] | undefined;
+}) {
+  if (!contacts) {
+    return null;
   }
 
   return (
@@ -29,28 +29,23 @@ export default function ContactsTable({ contacts }: { contacts: Contact[] }) {
                   >
                     Name
                   </th>
-                  <th
-                    scope="col"
-                    className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                  >
-                    Deleted
-                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white">
-                {contacts.map((contact) => (
-                  <tr key={contact.id}>
-                    <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
-                      {contact.id}
-                    </td>
-                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                      {contact.fullName}
-                    </td>
-                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                      {contact.deleted}
-                    </td>
-                  </tr>
-                ))}
+                {contacts.length ? (
+                  <div className="mt-8 text-center h-20">No contacts found</div>
+                ) : (
+                  contacts.map((contact) => (
+                    <tr key={contact.id}>
+                      <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                        {contact.id}
+                      </td>
+                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                        {contact.fullName}
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
