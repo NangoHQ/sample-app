@@ -7,7 +7,7 @@ integrations:
         type: sync
         endpoint: /wolfcrm/slack/users
         sync_type: full
-        scopes: users.read
+        scopes: users:read
         track_deletes: false
         runs: every half hour
         auto_start: true
