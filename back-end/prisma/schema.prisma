@@ -7,17 +7,25 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// This is the records that Nango is creating
 model Contacts {
   id String @id @db.VarChar(64)
 
-  integration String
-  fullName    String
-  email       String?
+  integrationId String
+  fullName      String
+  email         String?
 
   createdAt DateTime? @db.Timestamp(3)
   updatedAt DateTime  @updatedAt
 
   deletedAt DateTime? @db.Timestamp(3)
 
-  @@index([integration])
+  @@index([integrationId])
+}
+
+// This is your own users
+model Users {
+  id String @id @db.VarChar(64)
+
+  createdAt DateTime? @db.Timestamp(3)
 }

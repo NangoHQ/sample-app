@@ -1,45 +1,70 @@
-import z from 'zod';
+import crypto from 'node:crypto';
 import type { RouteHandler } from 'fastify';
 import { nango } from '../nango.js';
 import { db } from '../db.js';
 
-const validation = z
-  .object({
-    connectionId: z.string(),
-    providerConfigKey: z.string(),
-    syncName: z.string(),
-    model: z.string(),
-    responseResults: z.map(
-      z.string(),
-      z.object({
-        added: z.number(),
-        updated: z.number(),
-        deleted: z.number(),
-      })
-    ),
-    syncType: z.enum(['WEBHOOK']),
-    modifiedAfter: z.string(),
-  })
-  .strict();
+type WebhookNewConnection = {
+  from: 'nango';
+  type: 'auth';
+  operation: 'creation' | 'override';
+  connectionId: string;
+  providerConfigKey: string;
+  authMode: string;
+  provider: string;
+  environment: string;
+  success: boolean;
+};
+type WebhookSync = {
+  connectionId: string;
+  providerConfigKey: string;
+  syncName: string;
+  model: string;
+  responseResults: Record<
+    string,
+    { added: number; updated: number; deleted: number }
+  >;
+  syncType: string;
+  modifiedAfter: string;
+};
+type Webhooks = WebhookNewConnection | WebhookSync;
 
 /**
  * Receive webhooks from Nango every time a records has been added, updated or deleted
  */
 export const postWebhooks: RouteHandler = async (req, reply) => {
-  const res = validation.safeParse(req.body);
-  if (!res.success) {
-    await reply.status(400).send({ error: true, msg: res.error });
-    return;
+  const body = req.body as Webhooks;
+
+  if ('type' in body) {
+    handleNewConnectionWebhook(body);
+    console.log({ body, headers: req.headers });
+    const t = crypto
+      .createHash('sha256')
+      .update(`${process.env['NANGO_SECRET_KEY']}${JSON.stringify(body)}`)
+      .digest('hex');
+
+    console.log('sig', t, 'isEq', t === req.headers['x-nango-signature']);
+  } else {
+    await handleSyncWebhook(body);
   }
 
+  await reply.status(200).send({ ack: true });
+};
+
+function handleNewConnectionWebhook(body: WebhookNewConnection) {
+  if (body.operation === 'creation') {
+    console.log('New connection');
+    // Do something here
+  }
+}
+
+async function handleSyncWebhook(body: WebhookSync) {
   // We have validated the payload Nango sent us
   // Now we need to fetch the actual records that were added/updated/deleted...
-  const webhook = res.data;
   const records = await nango.listRecords<{ id: string }>({
-    connectionId: webhook.connectionId,
-    model: webhook.model,
-    providerConfigKey: webhook.providerConfigKey,
-    modifiedAfter: webhook.modifiedAfter,
+    connectionId: body.connectionId,
+    model: body.model,
+    providerConfigKey: body.providerConfigKey,
+    modifiedAfter: body.modifiedAfter,
   });
 
   // ... and save the updates in our backend
@@ -61,6 +86,4 @@ export const postWebhooks: RouteHandler = async (req, reply) => {
       update: { id: record.id },
     });
   }
-
-  await reply.status(200).send({ ack: true });
-};
+}

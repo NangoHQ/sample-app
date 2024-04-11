@@ -3,8 +3,10 @@ import { postWebhooks } from './routes/postWebhooks.js';
 import { getContacts } from './routes/getContacts.js';
 import { getIntegrations } from './routes/getIntegrations.js';
 
-const fastify = Fastify({
-  logger: true,
+const fastify = Fastify({ logger: false });
+fastify.addHook('onRequest', (req, _res, done) => {
+  console.log(`#${req.id} <- ${req.method} ${req.url}`);
+  done();
 });
 
 fastify.get('/', async function handler(_, reply) {
@@ -27,7 +29,7 @@ fastify.post('/webhooks-from-nango', postWebhooks);
 fastify.get('/contacts', getContacts);
 
 try {
-  await fastify.listen({ port: 3000 });
+  await fastify.listen({ port: 3003 });
 } catch (err) {
   fastify.log.error(err);
   process.exit(1);

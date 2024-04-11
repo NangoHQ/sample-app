@@ -12,7 +12,8 @@
   ],
   "scripts": {
     "lint": "eslint .",
-    "start": "npm run start:docker && (npm run -w front-end; npm run -w back-end)",
+    "dev": "npm run start:docker && concurrently -n front,back \"npm run dev -w front-end\" \"npm run dev -w back-end\"",
+    "start": "npm run start:docker && concurrently -n front,back \"npm run dev -w front-end\" \"npm run start -w back-end\"",
     "start:docker": "docker compose up -d",
     "start:backend": "npm run -w back-end start"
   },
@@ -20,6 +21,7 @@
     "@tsconfig/node18-strictest-esm": "1.0.1",
     "@typescript-eslint/eslint-plugin": "6.12.0",
     "@typescript-eslint/parser": "6.12.0",
+    "concurrently": "8.2.2",
     "dotenv-cli": "7.4.1",
     "eslint": "8.57.0",
     "eslint-config-prettier": "9.1.0",
