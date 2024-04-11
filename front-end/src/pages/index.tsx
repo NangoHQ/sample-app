@@ -46,12 +46,12 @@ export default function IndexPage() {
       return;
     }
 
-    return requestedIntegrations.map((int) => {
+    return requestedIntegrations.map((integration) => {
       return {
-        ...int,
+        ...integration,
         deployed:
           data.integrations.find((available) => {
-            return available.unique_key === int.integrationId;
+            return available.unique_key === integration.integrationId;
           }) !== undefined,
       };
     });
