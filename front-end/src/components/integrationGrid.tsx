@@ -3,7 +3,7 @@
 import { PlusIcon } from '@heroicons/react/20/solid';
 import Nango from '@nangohq/frontend';
 import { nanoid } from 'nanoid';
-import type { Integration } from './types';
+import type { Integration } from '../types';
 
 const nango = process.env.NEXT_PUBLIC_NANGO_PUBLIC_KEY
   ? new Nango({ publicKey: process.env.NEXT_PUBLIC_NANGO_PUBLIC_KEY })

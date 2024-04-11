@@ -1,5 +1,4 @@
-'use client';
-
+import type React from 'react';
 import { Fragment } from 'react';
 import { Disclosure, Menu, Transition } from '@headlessui/react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
@@ -16,7 +15,7 @@ function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ');
 }
 
-export default function Example() {
+export const Navbar: React.FC = () => {
   return (
     <Disclosure as="nav" className="border-b border-gray-200 bg-white">
       {({ open }) => (
@@ -132,4 +131,4 @@ export default function Example() {
       )}
     </Disclosure>
   );
-}
+};
