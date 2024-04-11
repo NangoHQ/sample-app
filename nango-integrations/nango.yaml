@@ -3,7 +3,7 @@ integrations:
     syncs:
       slack-users:
         description: |
-          Fetches the users of your Slack workspaces
+          Fetches the users of your Slack workspaces and converts them into Contacts.
         type: sync
         endpoint: /wolfcrm/slack/users
         sync_type: full
@@ -11,10 +11,10 @@ integrations:
         track_deletes: false
         runs: every 5 minutes
         auto_start: true
-        output: SlackUser
+        output: Contact
 
 models:
-  SlackUser:
+  Contact:
     id: integer
     fullName: string
     deleted: boolean

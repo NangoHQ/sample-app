@@ -1,12 +1,17 @@
 import type { RouteHandler } from 'fastify';
-import z from 'zod';
 import { db } from '../db.js';
 
+<<<<<<< HEAD
 const validation = z
   .object({
     integration: z.enum(['slack']),
   })
   .strict();
+=======
+export type GetContacts = {
+  contacts: Contact[];
+};
+>>>>>>> eb30b75 (merge)
 
 export const getContacts: RouteHandler = async (req, reply) => {
   const res = validation.safeParse(req.query);

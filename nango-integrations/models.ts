@@ -1,6 +1,7 @@
-export interface SlackUser {
+export interface Contact {
   id: number;
   fullName: string;
+  deleted: boolean;
 }
 type ParamEncoder = (value: any, defaultEncoder: (value: any) => any) => any;
 interface GenericFormData {
@@ -266,7 +267,7 @@ export const NangoFlows = [
         "type": "sync",
         "models": [
           {
-            "name": "SlackUser",
+            "name": "Contact",
             "fields": [
               {
                 "name": "id",
@@ -275,12 +276,16 @@ export const NangoFlows = [
               {
                 "name": "fullName",
                 "type": "string"
+              },
+              {
+                "name": "deleted",
+                "type": "boolean"
               }
             ]
           }
         ],
         "sync_type": "FULL",
-        "runs": "every half hour",
+        "runs": "every 5 minutes",
         "track_deletes": false,
         "auto_start": true,
         "last_deployed": null,
@@ -290,11 +295,11 @@ export const NangoFlows = [
         "attributes": {},
         "input": {},
         "returns": [
-          "SlackUser"
+          "Contact"
         ],
-        "description": "Fetches the users of your Slack workspaces\n",
+        "description": "Fetches the users of your Slack workspaces and converts them into Contacts.\n",
         "scopes": [
-          "public_repo"
+          "users:read"
         ],
         "endpoints": [
           {
@@ -308,4 +313,4 @@ export const NangoFlows = [
     "actions": [],
     "postConnectionScripts": []
   }
-] as const;
+] as const; 

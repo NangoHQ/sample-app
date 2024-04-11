@@ -104,31 +104,7 @@ export const IntegrationBloc: React.FC<{
           />
         </div>
         <div className="-mt-px  divide-x divide-gray-200 flex ">
-          <button
-            onClick={() => connect()}
-            className={cn(
-              'relative -mr-px inline-flex w-0 flex-1 items-center rounded-b-xl justify-center gap-x-3 rounded-bl-lg border border-transparent py-4 text-sm font-semibold ',
-              integration.deployed
-                ? 'bg-gray-200 hover:bg-gray-300 text-gray-800'
-                : 'bg-gray-100 text-gray-300'
-            )}
-            disabled={!integration.deployed || loading}
-          >
-            Connect to {integration.name}
-            {loading ? (
-              <Spinner size={1} className="text-gray-800" />
-            ) : (
-              <PlusIcon
-                className={cn(
-                  'h-5 w-5',
-                  integration.deployed ? 'text-gray-800' : 'text-gray-400'
-                )}
-                aria-hidden="true"
-              />
-            )}
-          </button>
-
-          {integration.connected && (
+          {integration.connected ? (
             <button
               onClick={() => disconnect()}
               className={cn(
@@ -141,6 +117,30 @@ export const IntegrationBloc: React.FC<{
                 <Spinner size={1} className="text-gray-800" />
               ) : (
                 <BoltSlashIcon
+                  className={cn(
+                    'h-5 w-5',
+                    integration.deployed ? 'text-gray-800' : 'text-gray-400'
+                  )}
+                  aria-hidden="true"
+                />
+              )}
+            </button>
+          ) : (
+            <button
+              onClick={() => connect()}
+              className={cn(
+                'relative -mr-px inline-flex w-0 flex-1 items-center rounded-b-xl justify-center gap-x-3 rounded-bl-lg border border-transparent py-4 text-sm font-semibold ',
+                integration.deployed
+                  ? 'bg-gray-200 hover:bg-gray-300 text-gray-800'
+                  : 'bg-gray-100 text-gray-300'
+              )}
+              disabled={!integration.deployed || loading}
+            >
+              Connect to {integration.name}
+              {loading ? (
+                <Spinner size={1} className="text-gray-800" />
+              ) : (
+                <PlusIcon
                   className={cn(
                     'h-5 w-5',
                     integration.deployed ? 'text-gray-800' : 'text-gray-400'
