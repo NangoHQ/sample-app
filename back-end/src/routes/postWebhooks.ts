@@ -1,62 +1,52 @@
 import type { RouteHandler } from 'fastify';
+import { AuthOperation } from '@nangohq/node';
+import type {
+  NangoSyncWebhookBody,
+  WebhookAuthBody,
+  WebhooksBody,
+} from '@nangohq/node';
 import { nango } from '../nango.js';
 import { db } from '../db.js';
-
-type WebhookNewConnection = {
-  from: 'nango';
-  type: 'auth';
-  operation: 'creation' | 'override';
-  connectionId: string;
-  providerConfigKey: string;
-  authMode: string;
-  provider: string;
-  environment: string;
-  success: boolean;
-};
-type WebhookSync = {
-  connectionId: string;
-  providerConfigKey: string;
-  syncName: string;
-  model: string;
-  responseResults: Record<
-    string,
-    { added: number; updated: number; deleted: number }
-  >;
-  syncType: string;
-  modifiedAfter: string;
-};
-type Webhooks = WebhookNewConnection | WebhookSync;
 
 /**
  * Receive webhooks from Nango every time a records has been added, updated or deleted
  */
 export const postWebhooks: RouteHandler = async (req, reply) => {
-  const body = req.body as Webhooks;
+  const body = req.body as WebhooksBody;
+  const sig = req.headers['x-nango-signature'] as string;
 
+  // Verify the signature to be sure Nango sent us this payload
+  if (!nango.verifyWebhookSignature(sig, req.body)) {
+    await reply.status(400).send({ error: 'invalid_signature ' });
+    return;
+  }
+
+  // Handle each webhook
   if ('type' in body) {
     handleNewConnectionWebhook(body);
   } else {
     await handleSyncWebhook(body);
   }
 
+  // Always return 200 to avoid re-delivery
   await reply.status(200).send({ ack: true });
 };
 
-function handleNewConnectionWebhook(body: WebhookNewConnection) {
-  if (body.operation === 'creation') {
+function handleNewConnectionWebhook(body: WebhookAuthBody) {
+  if (body.operation === AuthOperation.CREATION) {
     console.log('New connection');
     // Do something here
   }
 }
 
-async function handleSyncWebhook(body: WebhookSync) {
+async function handleSyncWebhook(body: NangoSyncWebhookBody) {
   // We have validated the payload Nango sent us
   // Now we need to fetch the actual records that were added/updated/deleted...
   const records = await nango.listRecords<{ id: string }>({
     connectionId: body.connectionId,
     model: body.model,
     providerConfigKey: body.providerConfigKey,
-    modifiedAfter: body.modifiedAfter,
+    modifiedAfter: body.modifiedAfter!,
   });
 
   // ... and save the updates in our backend

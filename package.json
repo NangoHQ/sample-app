@@ -15,7 +15,8 @@
     "dev": "npm run start:docker && concurrently -n front,back \"npm run dev -w front-end\" \"npm run dev -w back-end\"",
     "start": "npm run start:docker && concurrently -n front,back \"npm run dev -w front-end\" \"npm run start -w back-end\"",
     "start:docker": "docker compose up -d",
-    "start:backend": "npm run -w back-end start"
+    "start:backend": "npm run -w back-end start",
+    "webhook-proxy": "lt --port 3003"
   },
   "devDependencies": {
     "@tsconfig/node18-strictest-esm": "1.0.1",
@@ -29,6 +30,7 @@
     "eslint-plugin-prettier": "5.1.3",
     "eslint-plugin-react": "7.33.2",
     "eslint-plugin-react-hooks": "4.6.0",
+    "localtunnel": "2.0.2",
     "prettier": "3.2.5"
   },
   "dependencies": {

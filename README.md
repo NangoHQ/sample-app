@@ -25,12 +25,16 @@ cp .env.example .env
 # Add your Nango Public Key
 cp front-end/.env.example front-end/.env
 
-# Setup nango
+# ---- Setup nango
 npm install -g nango
 cd nango-integrations/
 # Add your Nango Secret Key in NANGO_SECRET_KEY_PROD
 cp .env.example .env
 nango deploy prod
+
+# Listen to webhooks
+npm run webhooks-proxy
+# Copy the URL in your environment settings https://app.nango.dev/prod/environment-settings
 
 # Launch
 npm run start
