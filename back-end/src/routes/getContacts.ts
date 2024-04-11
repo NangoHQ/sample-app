@@ -13,7 +13,7 @@ export const getContacts: RouteHandler<{
   // Get the contacts we saved in our own database
   const contacts = await db.contacts.findMany({
     where: { integrationId: req.query.integration },
-    orderBy: { updatedAt: 'desc' },
+    orderBy: { fullName: 'asc' },
     take: 100,
   });
 

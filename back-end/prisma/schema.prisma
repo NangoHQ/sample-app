@@ -12,6 +12,7 @@ model Contacts {
   id String @id @db.VarChar(64)
 
   integrationId String
+  connectionId  String
   fullName      String
 
   createdAt DateTime? @db.Timestamp(3)

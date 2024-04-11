@@ -75,6 +75,7 @@ async function handleSyncWebhook(body: NangoSyncWebhookBody) {
         id: record.id,
         fullName: record.fullName,
         integrationId: body.providerConfigKey,
+        connectionId: body.connectionId,
         createdAt: new Date(),
       },
       update: { fullName: record.fullName, updatedAt: new Date() },

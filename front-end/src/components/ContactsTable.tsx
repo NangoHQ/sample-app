@@ -32,7 +32,7 @@ export default function ContactsTable({
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white">
-                {contacts.length ? (
+                {!contacts.length ? (
                   <div className="mt-8 text-center h-20">No contacts found</div>
                 ) : (
                   contacts.map((contact) => (

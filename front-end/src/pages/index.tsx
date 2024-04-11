@@ -1,10 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { IntegrationsGrid } from '../components/integrationGrid';
 import type { Integration } from '../types';
 import Spinner from '../components/Spinner';
 import { listConnections, listIntegrations, listContacts } from '../api';
-import { requestedIntegrations } from '../utils';
+import { queryClient, requestedIntegrations } from '../utils';
 import ContactsTable from '../components/ContactsTable';
 
 export default function IndexPage() {
@@ -40,6 +40,23 @@ export default function IndexPage() {
       };
     });
   }, [resIntegrations, resConnections]);
+
+  useEffect(() => {
+    if (!integrations) {
+      return;
+    }
+
+    const interval = setInterval(() => {
+      void queryClient.refetchQueries({ queryKey: ['contacts'] });
+    }, 2000);
+
+    return () => {
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
+  }, [integrations]);
 
   if (!integrations) {
     return (

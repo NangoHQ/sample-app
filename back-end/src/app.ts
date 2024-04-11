@@ -24,6 +24,7 @@ fastify.get('/', async function handler(_, reply) {
 
 /**
  * List available integrations
+ * The one you deployed in nango-integrations/
  */
 fastify.get('/integrations', getIntegrations);
 
@@ -38,12 +39,13 @@ fastify.get('/connections', getConnections);
 fastify.delete('/connections', deleteConnection);
 
 /**
- * Receive webhooks from Nango every time a records has been added or deleted
+ * Receive webhooks from Nango every time a records has been added, updated or deleted
  */
 fastify.post('/webhooks-from-nango', postWebhooks);
 
 /**
  * List contacts to display in the UI
+ * Contacts are the records Nango fetched from the different integrations
  */
 fastify.get('/contacts', getContacts);
 
