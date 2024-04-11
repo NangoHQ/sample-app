@@ -1,5 +1,5 @@
 import type { RouteHandler } from 'fastify';
-import { AuthOperation } from '@nangohq/node';
+import { AuthOperation, WebhookType } from '@nangohq/node';
 import type {
   NangoSyncWebhookBody,
   WebhookAuthBody,
@@ -25,9 +25,9 @@ export const postWebhooks: RouteHandler = async (req, reply) => {
   }
 
   // Handle each webhook
-  if ('type' in body) {
+  if (body.type === WebhookType.AUTH) {
     handleNewConnectionWebhook(body);
-  } else {
+  } else if (body.type === WebhookType.SYNC) {
     await handleSyncWebhook(body);
   }
 
@@ -47,12 +47,15 @@ async function handleSyncWebhook(body: NangoSyncWebhookBody) {
 
   // We have validated the payload Nango sent us
   // Now we need to fetch the actual records that were added/updated/deleted...
-  const records = await nango.listRecords<{ id: string }>({
+  const records = await nango.listRecords<{ id: string; fullName: string }>({
     connectionId: body.connectionId,
     model: body.model,
     providerConfigKey: body.providerConfigKey,
     modifiedAfter: body.modifiedAfter,
+    limit: 1000,
   });
+
+  console.log('Records', records.records.length);
 
   // ... and save the updates in our backend
   for (const record of records.records) {
@@ -68,9 +71,15 @@ async function handleSyncWebhook(body: NangoSyncWebhookBody) {
     // And create / update the others records
     await db.contacts.upsert({
       where: { id: record.id },
-      // @ts-expect-error
-      create: { id: record.id },
-      update: { id: record.id },
+      create: {
+        id: record.id,
+        fullName: record.fullName,
+        integrationId: body.providerConfigKey,
+        createdAt: new Date(),
+      },
+      update: { fullName: record.fullName, updatedAt: new Date() },
     });
   }
+
+  console.log('Results processed');
 }

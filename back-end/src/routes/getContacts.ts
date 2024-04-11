@@ -4,7 +4,7 @@ import { db } from '../db.js';
 
 const validation = z
   .object({
-    integration: z.enum(['linkedin', 'hubspot', 'slack']),
+    integration: z.enum(['slack']),
   })
   .strict();
 
@@ -17,6 +17,7 @@ export const getContacts: RouteHandler = async (req, reply) => {
 
   // Get the contacts we saved in our own database
   const contacts = await db.contacts.findMany({
+    where: { integrationId: res.data.integration },
     orderBy: { updatedAt: 'desc' },
     take: 100,
   });

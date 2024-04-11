@@ -13,7 +13,6 @@ model Contacts {
 
   integrationId String
   fullName      String
-  email         String?
 
   createdAt DateTime? @db.Timestamp(3)
   updatedAt DateTime  @updatedAt
