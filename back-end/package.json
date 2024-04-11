@@ -8,7 +8,7 @@
     "dev:watch": "tsc -b -w --preserveWatchOutput",
     "dev:start": "nodemon",
     "start": "npm run db:migrate && tsc -b && npm run local:start",
-    "local:start": "dotenv -e ../.env node ./dist/index.js",
+    "local:start": "dotenv -e ../.env node ./dist/app.js",
     "db:generate": "dotenv -e ../.env prisma generate",
     "db:migrate": "dotenv -e ../.env prisma db push --skip-generate"
   },
@@ -26,7 +26,7 @@
       "dist/"
     ],
     "delay": 500,
-    "exec": "dotenv -e ../.env node ./dist/index.js"
+    "exec": "dotenv -e ../.env node ./dist/app.js"
   },
   "devDependencies": {
     "nodemon": "3.1.0"

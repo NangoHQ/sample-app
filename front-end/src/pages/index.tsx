@@ -1,8 +1,12 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 import { useQuery } from '@tanstack/react-query';
 import type { GetIntegrations } from 'back-end';
-import IntegrationsGrid from '../components/integrationGrid';
+import { useMemo } from 'react';
+import { IntegrationsGrid } from '../components/integrationGrid';
 import type { Integration } from '../types';
+import Spinner from '../components/Spinner';
 
 async function listIntegrations(): Promise<GetIntegrations> {
   const res = await fetch('http://localhost:3003/integrations');
@@ -14,28 +18,52 @@ async function listIntegrations(): Promise<GetIntegrations> {
   return json;
 }
 
+const requestedIntegrations: Integration[] = [
+  {
+    name: 'Slack',
+    image: '/integration-logos/slack.svg',
+    integrationId: 'slack',
+    description: 'Connect your Slack account to Wolf CRM.',
+    deployed: false,
+  },
+  {
+    name: 'Discord',
+    image: '/integration-logos/discord.svg',
+    integrationId: 'discord',
+    description: 'Connect your Discord account to Wolf CRM.',
+    deployed: false,
+  },
+];
+
 export default function IndexPage() {
-  const list = useQuery({
+  const { data } = useQuery({
     queryKey: ['integrations'],
     queryFn: listIntegrations,
   });
 
-  console.log(list);
+  const integrations = useMemo<Integration[] | undefined>(() => {
+    if (!data) {
+      return;
+    }
 
-  const integrations: Integration[] = [
-    {
-      name: 'Slack',
-      image: '/integration-logos/slack.svg',
-      integrationId: 'slack',
-      description: 'Connect your Slack account to Wolf CRM.',
-    },
-    {
-      name: 'LinkedIn',
-      image: '/integration-logos/linkedin.svg',
-      integrationId: 'linkedin',
-      description: 'Connect your LinkedIn account to Wolf CRM.',
-    },
-  ];
+    return requestedIntegrations.map((int) => {
+      return {
+        ...int,
+        deployed:
+          data.integrations.find((available) => {
+            return available.unique_key === int.integrationId;
+          }) !== undefined,
+      };
+    });
+  }, [data]);
+
+  if (!integrations) {
+    return (
+      <main className="p-4 md:p-10 mx-auto max-w-7xl">
+        <Spinner size={2} />
+      </main>
+    );
+  }
 
   return (
     <main className="p-4 md:p-10 mx-auto max-w-7xl">

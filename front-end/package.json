@@ -17,7 +17,6 @@
     "@types/react": "18.2.33",
     "@types/react-dom": "18.2.14",
     "autoprefixer": "^10.4.16",
-    "nanoid": "^5.0.7",
     "next": "14.0.0",
     "postcss": "^8.4.31",
     "prop-types": "^15.8.1",
@@ -28,7 +27,10 @@
     "typescript": "5.2.2"
   },
   "devDependencies": {
+    "@nangohq/frontend": "0.39.16",
+    "@tanstack/react-query": "5.29.0",
     "back-end": "file:../back-end",
-    "@tanstack/react-query": "5.29.0"
+    "clsx": "2.1.0",
+    "tailwind-merge": "2.2.2"
   }
 }

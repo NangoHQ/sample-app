@@ -1,4 +1,3 @@
-import crypto from 'node:crypto';
 import type { RouteHandler } from 'fastify';
 import { nango } from '../nango.js';
 import { db } from '../db.js';
@@ -36,13 +35,6 @@ export const postWebhooks: RouteHandler = async (req, reply) => {
 
   if ('type' in body) {
     handleNewConnectionWebhook(body);
-    console.log({ body, headers: req.headers });
-    const t = crypto
-      .createHash('sha256')
-      .update(`${process.env['NANGO_SECRET_KEY']}${JSON.stringify(body)}`)
-      .digest('hex');
-
-    console.log('sig', t, 'isEq', t === req.headers['x-nango-signature']);
   } else {
     await handleSyncWebhook(body);
   }

@@ -3,4 +3,5 @@ export interface Integration {
   integrationId: string;
   description?: string;
   image: string;
+  deployed: boolean;
 }

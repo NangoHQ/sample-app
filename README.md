@@ -22,6 +22,9 @@ npm i
 # Add your Nango Secret Key
 cp .env.example .env
 
+# Add your Nango Public Key
+cp front-end/.env.example front-end/.env
+
 # Launch
 npm run start
 ```

@@ -1,0 +1,20 @@
+integrations:
+  slack:
+    syncs:
+      slack-users:
+        description: |
+          Fetches the users of your Slack workspaces
+        type: sync
+        endpoint: /wolfcrm/slack/users
+        sync_type: full
+        scopes: users.read
+        track_deletes: false
+        runs: every half hour
+        auto_start: true
+        output: SlackUser
+
+models:
+  SlackUser:
+    id: integer
+    fullName: string
+    deleted: boolean
