@@ -9,7 +9,7 @@ integrations:
         sync_type: full
         scopes: users:read
         track_deletes: false
-        runs: every half hour
+        runs: every 5 minutes
         auto_start: true
         output: SlackUser
 

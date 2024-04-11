@@ -61,16 +61,16 @@ export default function IndexPage() {
       return;
     }
 
-    return requestedIntegrations.map((int) => {
+    return requestedIntegrations.map((integration) => {
       return {
-        ...int,
+        ...integration,
         deployed:
           resIntegrations.integrations.find((available) => {
-            return available.unique_key === int.integrationId;
+            return available.unique_key === integration.integrationId;
           }) !== undefined,
         connected:
           resConnections.connections.find((connection) => {
-            return connection.provider_config_key === int.integrationId;
+            return connection.provider_config_key === integration.integrationId;
           }) !== undefined,
       };
     });
