@@ -18,31 +18,23 @@ export const IntegrationBloc: React.FC<{
 }> = ({ integration }) => {
   const [loading, setLoading] = useState(false);
   async function connect(integrationId: string) {
-    nango
-      .auth(integrationId, 'user-1')
-      .then(() => {
-        console.log(1);
-      })
-      .catch((er) => {
-        console.log(2, er);
+    try {
+      setLoading(true);
+      if (!nango) {
+        throw new Error('Nango not initialized');
+      }
+
+      // "user-1" is your connectionId
+      // This ID allows you to identify an user connection, even across integrations
+      const res = await nango.auth(integrationId, 'user-1', {
+        detectClosedAuthWindow: true,
       });
-    // try {
-    //   setLoading(true);
-    //   if (!nango) {
-    //     throw new Error('Nango not initialized');
-    //   }
-    //   // user-1 is your connectionId
-    //   // This ID allows you to identify an user connection
-    //   const res = await nango.auth(integrationId, 'user-1');
-    //   console.log(res);
-    //   console.log('1');
-    // } catch (error) {
-    //   console.log('2');
-    //   console.error(error);
-    // } finally {
-    //   console.log('3');
-    //   setLoading(false);
-    // }
+      console.log(res);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
