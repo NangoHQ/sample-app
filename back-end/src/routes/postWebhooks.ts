@@ -17,7 +17,7 @@ export const postWebhooks: RouteHandler = async (req, reply) => {
 
   console.log('Webhook: received');
 
-  // Verify the signature to be sure Nango sent us this payload
+  // Verify the signature to be sure it's Nango that sent us this payload
   if (!nango.verifyWebhookSignature(sig, req.body)) {
     console.error('Failed to validate Webhook signature');
     await reply.status(400).send({ error: 'invalid_signature' });
@@ -25,28 +25,42 @@ export const postWebhooks: RouteHandler = async (req, reply) => {
   }
 
   // Handle each webhook
-  if (body.type === WebhookType.AUTH) {
-    handleNewConnectionWebhook(body);
-  } else if (body.type === WebhookType.SYNC) {
-    await handleSyncWebhook(body);
+  switch (body.type) {
+    case WebhookType.AUTH:
+      await handleNewConnectionWebhook(body);
+      break;
+    case WebhookType.SYNC:
+      await handleSyncWebhook(body);
+      break;
+    default:
+      console.warn('unsupported webhook', body);
+      break;
   }
 
   // Always return 200 to avoid re-delivery
   await reply.status(200).send({ ack: true });
 };
 
-function handleNewConnectionWebhook(body: WebhookAuthBody) {
+// ------------------------
+
+/**
+ * Handle webhook when a new connection is created
+ */
+async function handleNewConnectionWebhook(body: WebhookAuthBody) {
   if (body.operation === AuthOperation.CREATION) {
     console.log('Webhook: New connection');
     // Do something here
   }
 }
 
+/**
+ * Handle webhook when a sync has finished fetching data
+ */
 async function handleSyncWebhook(body: NangoSyncWebhookBody) {
   console.log('Webhook: Sync results');
 
-  // We have validated the payload Nango sent us
-  // Now we need to fetch the actual records that were added/updated/deleted...
+  // Now we need to fetch the actual records that were added/updated/deleted
+  // The payload does not contains the records but a cursor "modifiedAfter"
   const records = await nango.listRecords<{ id: string; fullName: string }>({
     connectionId: body.connectionId,
     model: body.model,
@@ -57,18 +71,18 @@ async function handleSyncWebhook(body: NangoSyncWebhookBody) {
 
   console.log('Records', records.records.length);
 
-  // ... and save the updates in our backend
+  // Save the updates in our backend
   for (const record of records.records) {
-    // When a record is deleted in the integration you can replicate this in your own system
     if (record._nango_metadata.deleted_at) {
+      // When a record is deleted in the integration you can replicate this in your own system
       await db.contacts.update({
         where: { id: record.id },
         data: { deletedAt: new Date() },
       });
-      return;
+      continue;
     }
 
-    // And create / update the others records
+    // Create or Update the others records
     await db.contacts.upsert({
       where: { id: record.id },
       create: {

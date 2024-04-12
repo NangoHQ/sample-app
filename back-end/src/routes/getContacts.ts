@@ -6,6 +6,9 @@ export type GetContacts = {
   contacts: Prisma.ContactsMaxAggregateOutputType[];
 };
 
+/**
+ * Get contacts that were replicated from the integrations to your database
+ */
 export const getContacts: RouteHandler<{
   Querystring: { integration: 'slack' };
   Reply: GetContacts;
