@@ -4,7 +4,7 @@ This is an example of how you can fully implement Nango inside your own codebase
 
 ## Highlights
 
-- [nango-integrations/](/nango-integrations/) folder contains the scripts responsible to fetch each user data
+- [nango-integrations](/nango-integrations/) folder contains the scripts responsible to fetch each user data
 - [front-end](/front-end/src/components/integrationGrid.tsx#L24) contains the code to oAuth your users
 - [back-end](/back-end/src/app.ts) contains the necessary endpoints to handle webhooks and access Nango's data
 
@@ -37,9 +37,9 @@ cp .env.example .env
 cp front-end/.env.example front-end/.env
 
 # ---- Setup nango
+# Add your Nango Secret Key in NANGO_SECRET_KEY_PROD
 npm install -g nango
 cd nango-integrations/
-# Add your Nango Secret Key in NANGO_SECRET_KEY_PROD
 cp .env.example .env
 nango deploy prod
 
