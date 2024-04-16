@@ -27,11 +27,15 @@ export const postWebhooks: RouteHandler = async (req, reply) => {
   // Handle each webhook
   switch (body.type) {
     case WebhookType.AUTH:
+      // New connection
       await handleNewConnectionWebhook(body);
       break;
+
     case WebhookType.SYNC:
+      // After a sync is finished
       await handleSyncWebhook(body);
       break;
+
     default:
       console.warn('unsupported webhook', body);
       break;

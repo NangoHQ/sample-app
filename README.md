@@ -1,12 +1,14 @@
 # Nango Sample App
 
-This is an example of how you can fully implement Nango inside your own codebase. It contains some Syncs scripts, a backend API that handles Nango's webhooks and a frontend that allows your users to connect and fetch their data.
+This repository provides a practical demonstration of integrating Nango into your codebase. It includes Syncs scripts, a backend API for managing Nango's webhooks, and a straightforward frontend for user interaction and data retrieval.
+
+![Example App](example.png)
 
 ## Highlights
 
 - [nango-integrations](/nango-integrations/) folder contains the scripts responsible to fetch each user data
-- [front-end](/front-end/src/components/integrationGrid.tsx#L24) contains the code to oAuth your users
-- [back-end](/back-end/src/app.ts) contains the necessary endpoints to handle webhooks and access Nango's data
+- [front-end](/front-end/src/components/integrationGrid.tsx#L24) folder contains the code to OAuth your users
+- [back-end](/back-end/src/app.ts) folder contains the necessary endpoints to handle webhooks and access Nango's data
 
 ---
 
@@ -17,7 +19,7 @@ To use this demo you will need:
 - An account on [nango.dev](https://app.nango.dev?source=sample-app)
 - NodeJS
 - Docker
-- Slack oAuth app with `users:read`
+- Slack OAuth app with bot permissions `users:read`
 
 ```sh
 git clone https://github.com/NangoHQ/sample-app.git
