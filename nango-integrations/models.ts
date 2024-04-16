@@ -303,7 +303,7 @@ export const NangoFlows = [
         ],
         "endpoints": [
           {
-            "GET": "/wolfcrm/slack/users"
+            "GET": "/sample-app/slack/users"
           }
         ],
         "nango_yaml_version": "v2",
@@ -313,4 +313,4 @@ export const NangoFlows = [
     "actions": [],
     "postConnectionScripts": []
   }
-] as const; 
+] as const;

@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useMemo } from 'react';
-import { IntegrationsGrid } from '../components/integrationGrid';
+import { IntegrationsGrid } from '../components/IntegrationGrid';
 import type { Integration } from '../types';
 import Spinner from '../components/Spinner';
 import { listConnections, listIntegrations, listContacts } from '../api';

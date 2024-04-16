@@ -20,6 +20,7 @@ export const IntegrationBloc: React.FC<{
   const [infoModalOpen, setInfoModalOpen] = useState(false);
 
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function connect() {
     try {
@@ -35,14 +36,19 @@ export const IntegrationBloc: React.FC<{
         detectClosedAuthWindow: true,
       });
 
+      setError(null);
       // Reload the connections to update the state
       // Ideally you can setup a Websocket between your frontend and your backend to update everything in realtime
       setTimeout(async () => {
         await queryClient.refetchQueries({ queryKey: ['connections'] });
         setLoading(false);
       }, 10);
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      console.error(err);
+      setError(
+        err instanceof Error ? err.message : 'An error happened during oauth'
+      );
+      setLoading(false);
     }
   }
 
@@ -62,8 +68,8 @@ export const IntegrationBloc: React.FC<{
         await queryClient.refetchQueries({ queryKey: ['connections'] });
         setLoading(false);
       }, 10);
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      console.error(err);
     }
   }
 
@@ -114,6 +120,10 @@ export const IntegrationBloc: React.FC<{
             alt={integration.description}
           />
         </div>
+
+        {error && (
+          <div className="text-xs text-red-400 space-x-6 p-6">{error}</div>
+        )}
         <div className="-mt-px  divide-x divide-gray-200 flex ">
           {integration.connected ? (
             <button

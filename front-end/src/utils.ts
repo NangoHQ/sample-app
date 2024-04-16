@@ -19,12 +19,12 @@ export const requestedIntegrations: Integration[] = [
     deployed: false,
     connected: false,
   },
-  {
-    name: 'Discord',
-    image: '/integration-logos/discord.svg',
-    integrationId: 'discord',
-    description: 'Connect your Discord account to Wolf CRM.',
-    deployed: false,
-    connected: false,
-  },
+  // {
+  //   name: 'Discord',
+  //   image: '/integration-logos/discord.svg',
+  //   integrationId: 'discord',
+  //   description: 'Connect your Discord account to Wolf CRM.',
+  //   deployed: false,
+  //   connected: false,
+  // },
 ];

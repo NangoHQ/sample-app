@@ -11,7 +11,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
   return (
     <Layout>
       <Head>
-        <title key="title">WolfCRM</title>
+        <title key="title">Nango Sample App</title>
       </Head>
       <QueryClientProvider client={queryClient}>
         <Component {...pageProps} />
