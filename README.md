@@ -6,13 +6,15 @@ This repository provides a practical demonstration of integrating Nango into you
 
 ## Highlights
 
-- [nango-integrations](/nango-integrations/) folder contains the scripts responsible to fetch each user data
-- [front-end](/front-end/src/components/integrationGrid.tsx#L24) folder contains the code to OAuth your users
-- [back-end](/back-end/src/app.ts) folder contains the necessary endpoints to handle webhooks and access Nango's data
+- Folder [nango-integrations](/nango-integrations/) To use Nango you need some integrations, this folder (setup with our CLI) contains the scripts that will fetch your users’ data.
+
+- Folder [back-end](/back-end/src/app.ts) To ingegrate with Nango you need a backend that will listen to Nango’s webhooks and interact with our API.
+
+- Folder [front-end](/front-end/src/components/integrationGrid.tsx#L24) Finally to let your user connect to your integration you need a frontend and call to our auth library.
 
 ---
 
-## Launching locally
+### Launching locally
 
 To use this demo you will need:
 
