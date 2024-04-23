@@ -50,9 +50,9 @@ fastify.post('/webhooks-from-nango', postWebhooks);
 fastify.get('/contacts', getContacts);
 
 try {
-  await fastify.listen({
-    port: process.env['PORT'] ? parseInt(process.env['PORT'], 10) : 3003,
-  });
+  const port = process.env['PORT'] ? parseInt(process.env['PORT'], 10) : 3003;
+  await fastify.listen({ host: '0.0.0.0', port });
+  console.log(`Listening on http://0.0.0.0:${port}`);
 } catch (err) {
   fastify.log.error(err);
   process.exit(1);
