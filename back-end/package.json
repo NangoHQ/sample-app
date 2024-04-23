@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "dev": "concurrently -n ts,api \"npm run dev:watch\" \"npm run dev:start\"",
-    "build": "tsc -b",
+    "build": "npm run db:generate && tsc -b",
     "dev:watch": "tsc -b -w --preserveWatchOutput",
     "dev:start": "nodemon",
     "start": "npm run db:migrate && tsc -b && npm run local:start",
