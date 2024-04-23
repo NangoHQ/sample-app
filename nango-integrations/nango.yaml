@@ -11,10 +11,10 @@ integrations:
         track_deletes: false
         runs: every 5 minutes
         auto_start: true
-        output: Contact
+        output: SlackUser
 
 models:
-  Contact:
+  SlackUser:
     id: integer
     fullName: string
     deleted: boolean

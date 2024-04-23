@@ -1,4 +1,4 @@
-export interface Contact {
+export interface SlackUser {
   id: number;
   fullName: string;
   deleted: boolean;
@@ -267,7 +267,7 @@ export const NangoFlows = [
         "type": "sync",
         "models": [
           {
-            "name": "Contact",
+            "name": "SlackUser",
             "fields": [
               {
                 "name": "id",
@@ -295,7 +295,7 @@ export const NangoFlows = [
         "attributes": {},
         "input": {},
         "returns": [
-          "Contact"
+          "SlackUser"
         ],
         "description": "Fetches the users of your Slack workspaces and converts them into Contacts.\n",
         "scopes": [
