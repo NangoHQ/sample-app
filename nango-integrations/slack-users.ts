@@ -1,38 +1,45 @@
 import type { SlackUser, NangoSync } from './models';
 
+interface SlackResponse {
+  ok: boolean;
+  members: Array<{
+    id: number;
+    is_bot: boolean;
+    profile: { real_name: string };
+    deleted: boolean;
+  }>;
+  response_metadata: { next_cursor?: string };
+}
+
 export default async function fetchData(nango: NangoSync) {
-    // Fetch all users (paginated)
-    let nextCursor = '';
-    let responses: any[] = [];
+  let nextCursor = '';
+  const users: SlackUser[] = [];
 
-    do {
-        const response = await nango.get({
-            endpoint: 'users.list',
-            retries: 10,
-            params: {
-                limit: '200',
-                cursor: nextCursor !== 'x' ? nextCursor : ''
-            }
-        });
-
-        if (!response.data.ok) {
-            await nango.log(`Received a Slack API error: ${JSON.stringify(response.data, null, 2)}`, { level: 'error'});
-            break;
-        }
-
-        const { members, response_metadata } = response.data;
-        responses = responses.concat(members);
-        nextCursor = response_metadata.next_cursor;
-    } while (nextCursor !== '')
-
-    // Transform users into our data model
-    const users: SlackUser[] = responses.map((record: any) => {
-        return {
-            id: record.id,
-            fullName: record.profile.real_name ? record.profile.real_name : null,
-            deleted: record.deleted,
-        };
+  do {
+    const response = await nango.get<SlackResponse>({
+      endpoint: 'users.list',
+      retries: 10,
+      params: { limit: '200', cursor: nextCursor },
     });
 
-    await nango.batchSave(users, 'SlackUser');
+    if (!response.data.ok) {
+      break;
+    }
+
+    for (const member of response.data.members) {
+      if (member.deleted || member.is_bot) {
+        continue;
+      }
+
+      users.push({
+        id: member.id,
+        fullName: member.profile.real_name,
+        deleted: member.deleted,
+      });
+    }
+
+    nextCursor = response.data.response_metadata.next_cursor || '';
+  } while (nextCursor);
+
+  await nango.batchSave(users, 'SlackUser');
 }

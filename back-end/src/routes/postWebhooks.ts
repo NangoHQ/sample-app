@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/require-await */
 import type { RouteHandler } from 'fastify';
 import { AuthOperation, WebhookType } from '@nangohq/node';
 import type {
@@ -54,6 +55,8 @@ async function handleNewConnectionWebhook(body: WebhookAuthBody) {
   if (body.operation === AuthOperation.CREATION) {
     console.log('Webhook: New connection');
     // Do something here
+  } else {
+    console.log('Webhook: connection', body.operation);
   }
 }
 

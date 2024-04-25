@@ -21,7 +21,7 @@ To use this demo you will need:
 - An account on [nango.dev](https://app.nango.dev?source=sample-app)
 - NodeJS
 - Docker
-- Slack OAuth app with bot permissions `users:read`
+- Slack OAuth app with Bot Token Scopes `users:read`, `chat:write`
 
 ```sh
 git clone https://github.com/NangoHQ/sample-app.git
@@ -41,10 +41,12 @@ cp .env.example .env
 cp front-end/.env.example front-end/.env
 
 # ---- Setup nango
-# Add your Nango Secret Key in NANGO_SECRET_KEY_PROD
 npm install -g nango
 cd nango-integrations/
-cp .env.example .env
+nango init
+
+# Add your Nango Secret Key in NANGO_SECRET_KEY_PROD
+code .env
 nango deploy prod
 
 # Proxy the webhooks

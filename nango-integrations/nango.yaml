@@ -12,9 +12,17 @@ integrations:
         runs: every 5 minutes
         auto_start: true
         output: SlackUser
-
+    actions:
+      slack-send-message:
+        description: |
+          Sends a Slack message to a specific user.
+        input: SlackSendMessageInput
+        endpoint: /sample-app/slack/send-message
+        scopes: chat:write
 models:
   SlackUser:
     id: integer
     fullName: string
     deleted: boolean
+  SlackSendMessageInput:
+    userSlackId: string

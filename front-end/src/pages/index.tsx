@@ -5,7 +5,7 @@ import type { Integration } from '../types';
 import Spinner from '../components/Spinner';
 import { listConnections, listIntegrations, listContacts } from '../api';
 import { queryClient, requestedIntegrations } from '../utils';
-import ContactsTable from '../components/ContactsTable';
+import { ContactsTable } from '../components/ContactsTable';
 
 export default function IndexPage() {
   const { data: resIntegrations } = useQuery({

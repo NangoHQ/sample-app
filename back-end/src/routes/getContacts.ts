@@ -3,7 +3,7 @@ import type { Prisma } from '@prisma/client';
 import { db } from '../db.js';
 
 export type GetContacts = {
-  contacts: Prisma.ContactsMaxAggregateOutputType[];
+  contacts: Array<Prisma.$ContactsPayload['scalars']>;
 };
 
 /**
