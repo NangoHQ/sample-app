@@ -13,7 +13,8 @@ const Row: React.FC<{ contact: GetContacts['contacts'][0] }> = ({
   async function sendMessage(slackUserId: string) {
     setLoading(true);
     setPosted(false);
-    setError(false);
+    setError(null);
+
     try {
       await fetch(`${baseUrl}/send-slack-message`, {
         method: 'POST',
