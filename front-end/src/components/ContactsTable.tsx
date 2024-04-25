@@ -1,4 +1,5 @@
 import type { GetContacts } from 'back-end';
+import { baseUrl } from '../utils';
 
 export default function ContactsTable({
   contacts,
@@ -7,6 +8,30 @@ export default function ContactsTable({
 }) {
   if (!contacts) {
     return null;
+  }
+
+  async function sendMessage(slackUserId: string | null) {
+    if (!slackUserId) {
+      return;
+    }
+    
+    try {
+      await fetch(
+        `${baseUrl}/send-slack-message`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            integration: 'slack',
+            slackUserId: slackUserId
+          })
+        }
+      );
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   return (
@@ -29,6 +54,12 @@ export default function ContactsTable({
                   >
                     Name
                   </th>
+                  <th
+                    scope="col"
+                    className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                  >
+                    Send Slack Message
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white">
@@ -42,6 +73,14 @@ export default function ContactsTable({
                       </td>
                       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                         {contact.fullName}
+                      </td>
+                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                        <button
+                          onClick={() => sendMessage(contact.id)}
+                          className={"rounded gap-x-3 border border-transparent py-2 px-3 text-sm font-semibold bg-gray-200 hover:bg-gray-300 text-gray-800"}
+                        >
+                          Send
+                        </button>
                       </td>
                     </tr>
                   ))

@@ -3,6 +3,10 @@ export interface SlackUser {
   fullName: string;
   deleted: boolean;
 }
+
+export interface SlackSendMessageInput {
+  userSlackId: string;
+}
 type ParamEncoder = (value: any, defaultEncoder: (value: any) => any) => any;
 interface GenericFormData {
     append(name: string, value: any, options?: any): any;
@@ -310,7 +314,38 @@ export const NangoFlows = [
         "webhookSubscriptions": []
       }
     ],
-    "actions": [],
+    "actions": [
+      {
+        "name": "slack-send-message",
+        "type": "action",
+        "models": [],
+        "runs": "",
+        "is_public": false,
+        "pre_built": false,
+        "version": null,
+        "last_deployed": null,
+        "attributes": {},
+        "description": "Sends a Slack message to a specific user.\n",
+        "scopes": [
+          "chat:write"
+        ],
+        "input": {
+          "name": "SlackSendMessageInput",
+          "fields": [
+            {
+              "name": "userSlackId",
+              "type": "string"
+            }
+          ]
+        },
+        "endpoints": [
+          {
+            "POST": "/sample-app/slack/send-message"
+          }
+        ],
+        "nango_yaml_version": "v2"
+      }
+    ],
     "postConnectionScripts": []
   }
-] as const;
+] as const; 

@@ -6,6 +6,7 @@ import { getContacts } from './routes/getContacts.js';
 import { getIntegrations } from './routes/getIntegrations.js';
 import { getConnections } from './routes/getConnections.js';
 import { deleteConnection } from './routes/deleteConnection.js';
+import { sendSlackMessage } from './routes/sendSlackMessage.js';
 
 const fastify = Fastify({ logger: false });
 fastify.addHook('onRequest', (req, _res, done) => {
@@ -48,6 +49,11 @@ fastify.post('/webhooks-from-nango', postWebhooks);
  * Contacts are the records Nango fetched from the different integrations
  */
 fastify.get('/contacts', getContacts);
+
+/**
+ * Send a Slack message to a given Slack user.
+ */
+fastify.post('/send-slack-message', sendSlackMessage);
 
 try {
   const port = process.env['PORT'] ? parseInt(process.env['PORT'], 10) : 3003;
