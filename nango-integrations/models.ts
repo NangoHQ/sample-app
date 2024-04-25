@@ -9,403 +9,343 @@ export interface SlackSendMessageInput {
 }
 type ParamEncoder = (value: any, defaultEncoder: (value: any) => any) => any;
 interface GenericFormData {
-  append(name: string, value: any, options?: any): any;
+    append(name: string, value: any, options?: any): any;
 }
-type SerializerVisitor = (
-  this: GenericFormData,
-  value: any,
-  key: string | number,
-  path: null | Array<string | number>,
-  helpers: FormDataVisitorHelpers
-) => boolean;
-type CustomParamsSerializer = (
-  params: Record<string, any>,
-  options?: ParamsSerializerOptions
-) => string;
+type SerializerVisitor = (this: GenericFormData, value: any, key: string | number, path: null | (string | number)[], helpers: FormDataVisitorHelpers) => boolean;
+type CustomParamsSerializer = (params: Record<string, any>, options?: ParamsSerializerOptions) => string;
 interface FormDataVisitorHelpers {
-  defaultVisitor: SerializerVisitor;
-  convertValue: (value: any) => any;
-  isVisitable: (value: any) => boolean;
+    defaultVisitor: SerializerVisitor;
+    convertValue: (value: any) => any;
+    isVisitable: (value: any) => boolean;
 }
 interface SerializerOptions {
-  visitor?: SerializerVisitor;
-  dots?: boolean;
-  metaTokens?: boolean;
-  indexes?: boolean | null;
+    visitor?: SerializerVisitor;
+    dots?: boolean;
+    metaTokens?: boolean;
+    indexes?: boolean | null;
 }
 interface ParamsSerializerOptions extends SerializerOptions {
-  encode?: ParamEncoder;
-  serialize?: CustomParamsSerializer;
+    encode?: ParamEncoder;
+    serialize?: CustomParamsSerializer;
 }
 export interface AxiosResponse<T = any, D = any> {
-  data: T;
-  status: number;
-  statusText: string;
-  headers: any;
-  config: D;
-  request?: any;
+    data: T;
+    status: number;
+    statusText: string;
+    headers: any;
+    config: D;
+    request?: any;
 }
 interface Pagination {
-  type: string;
-  limit?: number;
-  response_path?: string;
-  limit_name_in_request: string;
+    type: string;
+    limit?: number;
+    response_path?: string;
+    limit_name_in_request: string;
 }
 interface CursorPagination extends Pagination {
-  cursor_path_in_response: string;
-  cursor_name_in_request: string;
+    cursor_path_in_response: string;
+    cursor_name_in_request: string;
 }
 interface LinkPagination extends Pagination {
-  link_rel_in_response_header?: string;
-  link_path_in_response_body?: string;
+    link_rel_in_response_header?: string;
+    link_path_in_response_body?: string;
 }
 interface OffsetPagination extends Pagination {
-  offset_name_in_request: string;
+    offset_name_in_request: string;
 }
 interface RetryHeaderConfig {
-  at?: string;
-  after?: string;
+    at?: string;
+    after?: string;
 }
 export interface ProxyConfiguration {
-  endpoint: string;
-  providerConfigKey?: string;
-  connectionId?: string;
-  method?:
-    | 'GET'
-    | 'POST'
-    | 'PATCH'
-    | 'PUT'
-    | 'DELETE'
-    | 'get'
-    | 'post'
-    | 'patch'
-    | 'put'
-    | 'delete';
-  headers?: Record<string, string>;
-  params?: string | Record<string, string | number>;
-  paramsSerializer?: ParamsSerializerOptions;
-  data?: unknown;
-  retries?: number;
-  baseUrlOverride?: string;
-  paginate?:
-    | Partial<CursorPagination>
-    | Partial<LinkPagination>
-    | Partial<OffsetPagination>;
-  retryHeader?: RetryHeaderConfig;
-  responseType?:
-    | 'arraybuffer'
-    | 'blob'
-    | 'document'
-    | 'json'
-    | 'text'
-    | 'stream';
-  retryOn?: number[] | null;
+    endpoint: string;
+    providerConfigKey?: string;
+    connectionId?: string;
+    method?: 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE' | 'get' | 'post' | 'patch' | 'put' | 'delete';
+    headers?: Record<string, string>;
+    params?: string | Record<string, string | number>;
+    paramsSerializer?: ParamsSerializerOptions;
+    data?: unknown;
+    retries?: number;
+    baseUrlOverride?: string;
+    paginate?: Partial<CursorPagination> | Partial<LinkPagination> | Partial<OffsetPagination>;
+    retryHeader?: RetryHeaderConfig;
+    responseType?: 'arraybuffer' | 'blob' | 'document' | 'json' | 'text' | 'stream';
+    retryOn?: number[] | null;
 }
 declare enum AuthModes {
-  OAuth1 = 'OAUTH1',
-  OAuth2 = 'OAUTH2',
-  OAuth2CC = 'OAUTH2_CC',
-  Basic = 'BASIC',
-  ApiKey = 'API_KEY',
-  AppStore = 'APP_STORE',
-  App = 'APP',
-  Custom = 'CUSTOM',
-  None = 'NONE',
+    OAuth1 = "OAUTH1",
+    OAuth2 = "OAUTH2",
+    OAuth2CC = "OAUTH2_CC",
+    Basic = "BASIC",
+    ApiKey = "API_KEY",
+    AppStore = "APP_STORE",
+    App = "APP",
+    Custom = "CUSTOM",
+    None = "NONE"
 }
 interface OAuth1Token {
-  oAuthToken: string;
-  oAuthTokenSecret: string;
+    oAuthToken: string;
+    oAuthTokenSecret: string;
 }
 interface AppCredentials {
-  type: AuthModes.App;
-  access_token: string;
-  expires_at?: Date | undefined;
-  raw: Record<string, any>;
+    type: AuthModes.App;
+    access_token: string;
+    expires_at?: Date | undefined;
+    raw: Record<string, any>;
 }
 interface AppStoreCredentials {
-  type?: AuthModes.AppStore;
-  access_token: string;
-  expires_at?: Date | undefined;
-  raw: Record<string, any>;
-  private_key: string;
+    type?: AuthModes.AppStore;
+    access_token: string;
+    expires_at?: Date | undefined;
+    raw: Record<string, any>;
+    private_key: string;
 }
 interface BasicApiCredentials {
-  type: AuthModes.Basic;
-  username: string;
-  password: string;
+    type: AuthModes.Basic;
+    username: string;
+    password: string;
 }
 interface ApiKeyCredentials {
-  type: AuthModes.ApiKey;
-  apiKey: string;
+    type: AuthModes.ApiKey;
+    apiKey: string;
 }
 interface CredentialsCommon<T = Record<string, any>> {
-  type: AuthModes;
-  raw: T;
+    type: AuthModes;
+    raw: T;
 }
 interface OAuth2Credentials extends CredentialsCommon {
-  type: AuthModes.OAuth2;
-  access_token: string;
-  refresh_token?: string;
-  expires_at?: Date | undefined;
+    type: AuthModes.OAuth2;
+    access_token: string;
+    refresh_token?: string;
+    expires_at?: Date | undefined;
 }
 interface OAuth1Credentials extends CredentialsCommon {
-  type: AuthModes.OAuth1;
-  oauth_token: string;
-  oauth_token_secret: string;
+    type: AuthModes.OAuth1;
+    oauth_token: string;
+    oauth_token_secret: string;
 }
 type UnauthCredentials = Record<string, never>;
-type AuthCredentials =
-  | OAuth2Credentials
-  | OAuth1Credentials
-  | BasicApiCredentials
-  | ApiKeyCredentials
-  | AppCredentials
-  | AppStoreCredentials
-  | UnauthCredentials;
+type AuthCredentials = OAuth2Credentials | OAuth1Credentials | BasicApiCredentials | ApiKeyCredentials | AppCredentials | AppStoreCredentials | UnauthCredentials;
 type Metadata = Record<string, string | Record<string, any>>;
 interface Connection {
-  id?: number;
-  created_at?: Date;
-  updated_at?: Date;
-  provider_config_key: string;
-  connection_id: string;
-  connection_config: Record<string, string>;
-  environment_id: number;
-  metadata?: Metadata | null;
-  credentials_iv?: string | null;
-  credentials_tag?: string | null;
-  credentials: AuthCredentials;
+    id?: number;
+    created_at?: Date;
+    updated_at?: Date;
+    provider_config_key: string;
+    connection_id: string;
+    connection_config: Record<string, string>;
+    environment_id: number;
+    metadata?: Metadata | null;
+    credentials_iv?: string | null;
+    credentials_tag?: string | null;
+    credentials: AuthCredentials;
 }
 export declare class ActionError<T = Record<string, unknown>> extends Error {
-  type: string;
-  payload?: Record<string, unknown>;
-  constructor(payload?: T);
+    type: string;
+    payload?: Record<string, unknown>;
+    constructor(payload?: T);
 }
 export interface NangoProps {
-  host?: string;
-  secretKey: string;
-  accountId?: number;
-  connectionId: string;
-  environmentId?: number;
-  activityLogId?: number;
-  providerConfigKey: string;
-  provider?: string;
-  lastSyncDate?: Date;
-  syncId?: string | undefined;
-  nangoConnectionId?: number;
-  syncJobId?: number | undefined;
-  dryRun?: boolean;
-  track_deletes?: boolean;
-  attributes?: object | undefined;
-  logMessages?:
-    | {
+    host?: string;
+    secretKey: string;
+    accountId?: number;
+    connectionId: string;
+    environmentId?: number;
+    activityLogId?: number;
+    providerConfigKey: string;
+    provider?: string;
+    lastSyncDate?: Date;
+    syncId?: string | undefined;
+    nangoConnectionId?: number;
+    syncJobId?: number | undefined;
+    dryRun?: boolean;
+    track_deletes?: boolean;
+    attributes?: object | undefined;
+    logMessages?: {
         counts: {
-          updated: number;
-          added: number;
-          deleted: number;
+            updated: number;
+            added: number;
+            deleted: number;
         };
         messages: unknown[];
-      }
-    | undefined;
-  stubbedMetadata?: Metadata | undefined;
-  abortSignal?: AbortSignal;
+    } | undefined;
+    stubbedMetadata?: Metadata | undefined;
+    abortSignal?: AbortSignal;
 }
 interface EnvironmentVariable {
-  name: string;
-  value: string;
+    name: string;
+    value: string;
 }
 export declare class NangoAction {
-  private nango;
-  private attributes;
-  activityLogId?: number;
-  syncId?: string;
-  nangoConnectionId?: number;
-  environmentId?: number;
-  syncJobId?: number;
-  dryRun?: boolean;
-  abortSignal?: AbortSignal;
-  connectionId: string;
-  providerConfigKey: string;
-  provider?: string;
-  ActionError: typeof ActionError;
-  private memoizedConnections;
-  constructor(config: NangoProps);
-  protected stringify(): string;
-  private proxyConfig;
-  protected exitSyncIfAborted(): void;
-  proxy<T = any>(config: ProxyConfiguration): Promise<AxiosResponse<T>>;
-  get<T = any>(config: ProxyConfiguration): Promise<AxiosResponse<T>>;
-  post<T = any>(config: ProxyConfiguration): Promise<AxiosResponse<T>>;
-  put<T = any>(config: ProxyConfiguration): Promise<AxiosResponse<T>>;
-  patch<T = any>(config: ProxyConfiguration): Promise<AxiosResponse<T>>;
-  delete<T = any>(config: ProxyConfiguration): Promise<AxiosResponse<T>>;
-  getToken(): Promise<
-    | string
-    | OAuth1Token
-    | BasicApiCredentials
-    | ApiKeyCredentials
-    | AppCredentials
-    | AppStoreCredentials
-  >;
-  getConnection(
-    providerConfigKeyOverride?: string,
-    connectionIdOverride?: string
-  ): Promise<Connection>;
-  setMetadata(metadata: Record<string, any>): Promise<AxiosResponse<void>>;
-  updateMetadata(metadata: Record<string, any>): Promise<AxiosResponse<void>>;
-  setFieldMapping(
-    fieldMapping: Record<string, string>
-  ): Promise<AxiosResponse<void>>;
-  getMetadata<T = Metadata>(): Promise<T>;
-  getWebhookURL(): Promise<string | undefined>;
-  getFieldMapping(): Promise<Metadata>;
-  /**
-   * Log
-   * @desc Log a message to the activity log which shows up in the Nango Dashboard
-   * note that the last argument can be an object with a level property to specify the log level
-   * example: await nango.log('This is a log message', { level: 'error' })
-   * error = red
-   * warn = orange
-   * info = white
-   * debug = grey
-   * http = green
-   * silly = light green
-   */
-  log(...args: any[]): Promise<void>;
-  getEnvironmentVariables(): Promise<EnvironmentVariable[] | null>;
-  getFlowAttributes<A = object>(): A | null;
-  paginate<T = any>(
-    config: ProxyConfiguration
-  ): AsyncGenerator<T[], undefined, void>;
-  triggerAction<T = object>(
-    providerConfigKey: string,
-    connectionId: string,
-    actionName: string,
-    input?: unknown
-  ): Promise<T>;
-  triggerSync(
-    providerConfigKey: string,
-    connectionId: string,
-    syncName: string,
-    fullResync?: boolean
-  ): Promise<void>;
+    private nango;
+    private attributes;
+    activityLogId?: number;
+    syncId?: string;
+    nangoConnectionId?: number;
+    environmentId?: number;
+    syncJobId?: number;
+    dryRun?: boolean;
+    abortSignal?: AbortSignal;
+    connectionId: string;
+    providerConfigKey: string;
+    provider?: string;
+    ActionError: typeof ActionError;
+    private memoizedConnections;
+    constructor(config: NangoProps);
+    protected stringify(): string;
+    private proxyConfig;
+    protected exitSyncIfAborted(): void;
+    proxy<T = any>(config: ProxyConfiguration): Promise<AxiosResponse<T>>;
+    get<T = any>(config: ProxyConfiguration): Promise<AxiosResponse<T>>;
+    post<T = any>(config: ProxyConfiguration): Promise<AxiosResponse<T>>;
+    put<T = any>(config: ProxyConfiguration): Promise<AxiosResponse<T>>;
+    patch<T = any>(config: ProxyConfiguration): Promise<AxiosResponse<T>>;
+    delete<T = any>(config: ProxyConfiguration): Promise<AxiosResponse<T>>;
+    getToken(): Promise<string | OAuth1Token | BasicApiCredentials | ApiKeyCredentials | AppCredentials | AppStoreCredentials>;
+    getConnection(providerConfigKeyOverride?: string, connectionIdOverride?: string): Promise<Connection>;
+    setMetadata(metadata: Record<string, any>): Promise<AxiosResponse<void>>;
+    updateMetadata(metadata: Record<string, any>): Promise<AxiosResponse<void>>;
+    setFieldMapping(fieldMapping: Record<string, string>): Promise<AxiosResponse<void>>;
+    getMetadata<T = Metadata>(): Promise<T>;
+    getWebhookURL(): Promise<string | undefined>;
+    getFieldMapping(): Promise<Metadata>;
+    /**
+     * Log
+     * @desc Log a message to the activity log which shows up in the Nango Dashboard
+     * note that the last argument can be an object with a level property to specify the log level
+     * example: await nango.log('This is a log message', { level: 'error' })
+     * error = red
+     * warn = orange
+     * info = white
+     * debug = grey
+     * http = green
+     * silly = light green
+     */
+    log(...args: any[]): Promise<void>;
+    getEnvironmentVariables(): Promise<EnvironmentVariable[] | null>;
+    getFlowAttributes<A = object>(): A | null;
+    paginate<T = any>(config: ProxyConfiguration): AsyncGenerator<T[], undefined, void>;
+    triggerAction<T = object>(providerConfigKey: string, connectionId: string, actionName: string, input?: unknown): Promise<T>;
+    triggerSync(providerConfigKey: string, connectionId: string, syncName: string, fullResync?: boolean): Promise<void>;
 }
 export declare class NangoSync extends NangoAction {
-  lastSyncDate?: Date;
-  track_deletes: boolean;
-  logMessages?:
-    | {
+    lastSyncDate?: Date;
+    track_deletes: boolean;
+    logMessages?: {
         counts: {
-          updated: number;
-          added: number;
-          deleted: number;
+            updated: number;
+            added: number;
+            deleted: number;
         };
         messages: unknown[];
-      }
-    | undefined;
-  stubbedMetadata?: Metadata | undefined;
-  private batchSize;
-  constructor(config: NangoProps);
-  /**
-   * Deprecated, reach out to support
-   */
-  setLastSyncDate(): Promise<void>;
-  /**
-   * Deprecated, please use batchSave
-   */
-  batchSend<T = any>(results: T[], model: string): Promise<boolean | null>;
-  batchSave<T = any>(results: T[], model: string): Promise<boolean | null>;
-  batchDelete<T = any>(results: T[], model: string): Promise<boolean | null>;
-  batchUpdate<T = any>(results: T[], model: string): Promise<boolean | null>;
-  getMetadata<T = Metadata>(): Promise<T>;
+    } | undefined;
+    stubbedMetadata?: Metadata | undefined;
+    private batchSize;
+    constructor(config: NangoProps);
+    /**
+     * Deprecated, reach out to support
+     */
+    setLastSyncDate(): Promise<void>;
+    /**
+     * Deprecated, please use batchSave
+     */
+    batchSend<T = any>(results: T[], model: string): Promise<boolean | null>;
+    batchSave<T = any>(results: T[], model: string): Promise<boolean | null>;
+    batchDelete<T = any>(results: T[], model: string): Promise<boolean | null>;
+    batchUpdate<T = any>(results: T[], model: string): Promise<boolean | null>;
+    getMetadata<T = Metadata>(): Promise<T>;
 }
 /**
  * This function will enable tracing on the SDK
  * It has been split from the actual code to avoid making the code too dirty and to easily enable/disable tracing if there is an issue with it
  */
-export declare function instrumentSDK(
-  rawNango: NangoAction | NangoSync
-): NangoAction | NangoSync;
+export declare function instrumentSDK(rawNango: NangoAction | NangoSync): NangoAction | NangoSync;
 export {};
 export const NangoFlows = [
   {
-    providerConfigKey: 'slack',
-    syncs: [
+    "providerConfigKey": "slack",
+    "syncs": [
       {
-        name: 'slack-users',
-        type: 'sync',
-        models: [
+        "name": "slack-users",
+        "type": "sync",
+        "models": [
           {
-            name: 'SlackUser',
-            fields: [
+            "name": "SlackUser",
+            "fields": [
               {
-                name: 'id',
-                type: 'integer',
+                "name": "id",
+                "type": "integer"
               },
               {
-                name: 'fullName',
-                type: 'string',
+                "name": "fullName",
+                "type": "string"
               },
               {
-                name: 'deleted',
-                type: 'boolean',
-              },
-            ],
-          },
+                "name": "deleted",
+                "type": "boolean"
+              }
+            ]
+          }
         ],
-        sync_type: 'FULL',
-        runs: 'every 5 minutes',
-        track_deletes: false,
-        auto_start: true,
-        last_deployed: null,
-        is_public: false,
-        pre_built: false,
-        version: null,
-        attributes: {},
-        input: {},
-        returns: ['SlackUser'],
-        description:
-          'Fetches the users of your Slack workspaces and converts them into Contacts.\n',
-        scopes: ['users:read'],
-        endpoints: [
+        "sync_type": "FULL",
+        "runs": "every 5 minutes",
+        "track_deletes": false,
+        "auto_start": true,
+        "last_deployed": null,
+        "is_public": false,
+        "pre_built": false,
+        "version": null,
+        "attributes": {},
+        "input": {},
+        "returns": [
+          "SlackUser"
+        ],
+        "description": "Fetches the users of your Slack workspaces and converts them into Contacts.\n",
+        "scopes": [
+          "users:read"
+        ],
+        "endpoints": [
           {
-            GET: '/sample-app/slack/users',
-          },
+            "GET": "/sample-app/slack/users"
+          }
         ],
-        nango_yaml_version: 'v2',
-        webhookSubscriptions: [],
-      },
+        "nango_yaml_version": "v2",
+        "webhookSubscriptions": []
+      }
     ],
-    actions: [
+    "actions": [
       {
-        name: 'slack-send-message',
-        type: 'action',
-        models: [],
-        runs: '',
-        is_public: false,
-        pre_built: false,
-        version: null,
-        last_deployed: null,
-        attributes: {},
-        description: 'Sends a Slack message to a specific user.\n',
-        scopes: ['chat:write'],
-        input: {
-          name: 'SlackSendMessageInput',
-          fields: [
+        "name": "slack-send-message",
+        "type": "action",
+        "models": [],
+        "runs": "",
+        "is_public": false,
+        "pre_built": false,
+        "version": null,
+        "last_deployed": null,
+        "attributes": {},
+        "description": "Sends a Slack message to a specific user.\n",
+        "scopes": [
+          "chat:write"
+        ],
+        "input": {
+          "name": "SlackSendMessageInput",
+          "fields": [
             {
-              name: 'userSlackId',
-              type: 'string',
-            },
-          ],
+              "name": "userSlackId",
+              "type": "string"
+            }
+          ]
         },
-        endpoints: [
+        "endpoints": [
           {
-            POST: '/sample-app/slack/send-message',
-          },
+            "POST": "/sample-app/slack/send-message"
+          }
         ],
-        nango_yaml_version: 'v2',
-      },
+        "nango_yaml_version": "v2"
+      }
     ],
-    postConnectionScripts: [],
-  },
-] as const;
+    "postConnectionScripts": []
+  }
+] as const; 
