@@ -1,37 +1,74 @@
 import type { GetContacts } from 'back-end';
+import { useState } from 'react';
 import { baseUrl } from '../utils';
+import Spinner from './Spinner';
 
-export default function ContactsTable({
-  contacts,
-}: {
-  contacts: GetContacts['contacts'] | undefined;
-}) {
-  if (!contacts) {
-    return null;
-  }
+const Row: React.FC<{ contact: GetContacts['contacts'][0] }> = ({
+  contact,
+}) => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [posted, setPosted] = useState<boolean>(false);
 
-  async function sendMessage(slackUserId: string | null) {
-    if (!slackUserId) {
-      return;
-    }
-    
+  async function sendMessage(slackUserId: string) {
+    setLoading(true);
+    setPosted(false);
+    setError(false);
     try {
-      await fetch(
-        `${baseUrl}/send-slack-message`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            integration: 'slack',
-            slackUserId: slackUserId
-          })
-        }
-      );
+      await fetch(`${baseUrl}/send-slack-message`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          integration: 'slack',
+          slackUserId: slackUserId,
+        }),
+      });
+      setPosted(true);
     } catch (err) {
       console.error(err);
+      setError('An error occurred');
+    } finally {
+      setLoading(false);
     }
+  }
+
+  return (
+    <tr key={contact.id}>
+      <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+        {contact.id}
+      </td>
+      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+        {contact.fullName}
+      </td>
+      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+        <div className="flex gap-4 items-center">
+          <button
+            onClick={() => sendMessage(contact.id)}
+            className={
+              'flex items-center rounded gap-x-3 border border-transparent py-2 px-3 text-sm font-semibold bg-gray-200 hover:bg-gray-300 text-gray-800'
+            }
+            disabled={loading}
+          >
+            Send
+            {loading && <Spinner size={1} className="text-gray-800" />}
+          </button>
+          {error && <div className="text-xs text-red-400">{error}</div>}
+          {posted && (
+            <div className="text-xs text-green-400">Sent to Slack</div>
+          )}
+        </div>
+      </td>
+    </tr>
+  );
+};
+
+export const ContactsTable: React.FC<{
+  contacts: GetContacts['contacts'] | undefined;
+}> = ({ contacts }) => {
+  if (!contacts) {
+    return null;
   }
 
   return (
@@ -67,22 +104,7 @@ export default function ContactsTable({
                   <div className="mt-8 text-center h-20">No contacts found</div>
                 ) : (
                   contacts.map((contact) => (
-                    <tr key={contact.id}>
-                      <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
-                        {contact.id}
-                      </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                        {contact.fullName}
-                      </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                        <button
-                          onClick={() => sendMessage(contact.id)}
-                          className={"rounded gap-x-3 border border-transparent py-2 px-3 text-sm font-semibold bg-gray-200 hover:bg-gray-300 text-gray-800"}
-                        >
-                          Send
-                        </button>
-                      </td>
-                    </tr>
+                    <Row key={contact.id} contact={contact} />
                   ))
                 )}
               </tbody>
@@ -92,4 +114,4 @@ export default function ContactsTable({
       </div>
     </div>
   );
-}
+};

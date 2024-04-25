@@ -60,6 +60,6 @@ try {
   await fastify.listen({ host: '0.0.0.0', port });
   console.log(`Listening on http://0.0.0.0:${port}`);
 } catch (err) {
-  fastify.log.error(err);
+  console.error(err);
   process.exit(1);
 }
