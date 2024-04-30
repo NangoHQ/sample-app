@@ -1,7 +1,7 @@
 integrations:
   slack:
     syncs:
-      slack-users:
+      users:
         description: |
           Fetches the users of your Slack workspaces and converts them into Contacts.
         type: sync
@@ -13,7 +13,7 @@ integrations:
         auto_start: true
         output: SlackUser
     actions:
-      slack-send-message:
+      send-message:
         description: |
           Sends a Slack message to a specific user.
         input: SlackSendMessageInput
