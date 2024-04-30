@@ -267,7 +267,7 @@ export const NangoFlows = [
     "providerConfigKey": "slack",
     "syncs": [
       {
-        "name": "slack-users",
+        "name": "users",
         "type": "sync",
         "models": [
           {
@@ -316,7 +316,7 @@ export const NangoFlows = [
     ],
     "actions": [
       {
-        "name": "slack-send-message",
+        "name": "send-message",
         "type": "action",
         "models": [],
         "runs": "",
