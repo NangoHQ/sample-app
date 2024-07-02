@@ -11,12 +11,9 @@ export const sendSlackMessage: RouteHandler<{
 
   // Trigger the action to send a Slack message.
   try {
-    await nango.triggerAction(
-      integration,
-      'my-first-user',
-      'send-message',
-      { userSlackId: slackUserId }
-    );
+    await nango.triggerAction(integration, 'my-first-user', 'send-message', {
+      userSlackId: slackUserId,
+    });
   } catch (err) {
     console.error(JSON.stringify(err, ['error', 'message', 'code']));
     await reply.status(500).send({ success: true });
