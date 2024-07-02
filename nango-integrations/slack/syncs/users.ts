@@ -1,4 +1,4 @@
-import type { SlackUser, NangoSync } from './models';
+import type { SlackUser, NangoSync } from '../../models';
 
 interface SlackResponse {
   ok: boolean;

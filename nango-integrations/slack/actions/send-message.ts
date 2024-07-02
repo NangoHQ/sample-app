@@ -1,4 +1,4 @@
-import type { NangoAction, SlackSendMessageInput } from './models';
+import type { NangoAction, SlackSendMessageInput } from '../../models';
 
 type SlackResponse =
   | {

@@ -4,7 +4,6 @@ integrations:
       users:
         description: |
           Fetches the users of your Slack workspaces and converts them into Contacts.
-        type: sync
         endpoint: /sample-app/slack/users
         sync_type: full
         scopes: users:read
