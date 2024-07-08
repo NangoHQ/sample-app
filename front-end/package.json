@@ -27,7 +27,7 @@
     "typescript": "5.2.2"
   },
   "devDependencies": {
-    "@nangohq/frontend": "0.40.8",
+    "@nangohq/frontend": "0.41.0",
     "@tanstack/react-query": "5.29.0",
     "back-end": "file:../back-end",
     "clsx": "2.1.0",

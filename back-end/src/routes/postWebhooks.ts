@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/require-await */
 import type { RouteHandler } from 'fastify';
-import { AuthOperation, WebhookType } from '@nangohq/node';
+
 import type {
+  NangoAuthWebhookBody,
   NangoSyncWebhookBody,
-  WebhookAuthBody,
-  WebhooksBody,
-} from '@nangohq/node';
+  NangoWebhookBody,
+} from '../../../../nango/packages/node-client';
 import { nango } from '../nango.js';
 import { db } from '../db.js';
 
@@ -13,7 +13,7 @@ import { db } from '../db.js';
  * Receive webhooks from Nango every time a records has been added, updated or deleted
  */
 export const postWebhooks: RouteHandler = async (req, reply) => {
-  const body = req.body as WebhooksBody;
+  const body = req.body as NangoWebhookBody;
   const sig = req.headers['x-nango-signature'] as string;
 
   console.log('Webhook: received');
@@ -27,12 +27,12 @@ export const postWebhooks: RouteHandler = async (req, reply) => {
 
   // Handle each webhook
   switch (body.type) {
-    case WebhookType.AUTH:
+    case 'auth':
       // New connection
       await handleNewConnectionWebhook(body);
       break;
 
-    case WebhookType.SYNC:
+    case 'sync':
       // After a sync is finished
       await handleSyncWebhook(body);
       break;
@@ -51,8 +51,13 @@ export const postWebhooks: RouteHandler = async (req, reply) => {
 /**
  * Handle webhook when a new connection is created
  */
-async function handleNewConnectionWebhook(body: WebhookAuthBody) {
-  if (body.operation === AuthOperation.CREATION) {
+async function handleNewConnectionWebhook(body: NangoAuthWebhookBody) {
+  if (!body.success) {
+    console.error('Failed to auth', body);
+    return;
+  }
+
+  if (body.operation === 'creation') {
     console.log('Webhook: New connection');
     // Do something here
   } else {
@@ -64,6 +69,11 @@ async function handleNewConnectionWebhook(body: WebhookAuthBody) {
  * Handle webhook when a sync has finished fetching data
  */
 async function handleSyncWebhook(body: NangoSyncWebhookBody) {
+  if (!body.success) {
+    console.error('Sync failed', body);
+    return;
+  }
+
   console.log('Webhook: Sync results');
 
   // Now we need to fetch the actual records that were added/updated/deleted
