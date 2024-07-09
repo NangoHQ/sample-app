@@ -5,7 +5,7 @@ import type {
   NangoAuthWebhookBody,
   NangoSyncWebhookBody,
   NangoWebhookBody,
-} from '../../../../nango/packages/node-client';
+} from '@nangohq/node';
 import { nango } from '../nango.js';
 import { db } from '../db.js';
 
