@@ -69,7 +69,11 @@ export const ContactsTable: React.FC<{
   contacts: GetContacts['contacts'] | undefined;
 }> = ({ contacts }) => {
   if (!contacts) {
-    return null;
+    return (
+      <div className="mt-8 italic text-gray-500">
+        No contacts, activate your webhooks and connect Slack...
+      </div>
+    );
   }
 
   return (
