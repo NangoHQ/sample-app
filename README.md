@@ -42,7 +42,7 @@ cp front-end/.env.example front-end/.env
 
 # ---- Setup nango
 npm install -g nango
-cd nango-integrations/
+cd nango-integrations/slack/syncs
 nango init
 
 # Add your Nango Secret Key in NANGO_SECRET_KEY_PROD
