@@ -20,7 +20,7 @@ integrations:
         scopes: chat:write
 models:
   SlackUser:
-    id: integer
+    id: string
     fullName: string
     deleted: boolean
   SlackSendMessageInput:

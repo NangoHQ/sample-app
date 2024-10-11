@@ -1,9 +1,9 @@
-import type { GetContacts } from 'back-end';
+import type { GetContactsSuccess } from 'back-end';
 import { useState } from 'react';
 import { baseUrl } from '../utils';
 import Spinner from './Spinner';
 
-const Row: React.FC<{ contact: GetContacts['contacts'][0] }> = ({
+const Row: React.FC<{ contact: GetContactsSuccess['contacts'][0] }> = ({
   contact,
 }) => {
   const [loading, setLoading] = useState(false);
@@ -66,7 +66,7 @@ const Row: React.FC<{ contact: GetContacts['contacts'][0] }> = ({
 };
 
 export const ContactsTable: React.FC<{
-  contacts: GetContacts['contacts'] | undefined;
+  contacts: GetContactsSuccess['contacts'] | undefined;
 }> = ({ contacts }) => {
   if (!contacts) {
     return (
@@ -92,7 +92,7 @@ export const ContactsTable: React.FC<{
                   </th>
                   <th
                     scope="col"
-                    className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                    className="px-3 py-3.5 w-[50%] text-left text-sm font-semibold text-gray-900"
                   >
                     Name
                   </th>

@@ -1,10 +1,12 @@
 import type { RouteHandler } from 'fastify';
 import type { ConnectionList } from '@nangohq/node';
 import { nango } from '../nango.js';
+import { getUserFromDatabase } from '../db.js';
 
-export type GetConnections = {
+export type GetConnectionsSuccess = {
   connections: ConnectionList[];
 };
+export type GetConnections = GetConnectionsSuccess | { error: string };
 
 /**
  * List available connection for one user.
@@ -14,8 +16,18 @@ export const getConnections: RouteHandler<{ Reply: GetConnections }> = async (
   _,
   reply
 ) => {
-  // We list all the connections for our user #1
-  const list = await nango.listConnections('my-first-user');
+  const user = await getUserFromDatabase();
+  if (!user) {
+    await reply.status(400).send({ error: 'invalid_user' });
+    return;
+  }
+  if (!user.connectionId) {
+    await reply.status(200).send({ connections: [] });
+    return;
+  }
+
+  // We list all the connections for our user
+  const list = await nango.listConnections(user.connectionId);
 
   await reply.status(200).send({ connections: list.connections });
 };

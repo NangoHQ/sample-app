@@ -13,7 +13,7 @@ export default async function runAction(
   const response = await nango.post<SlackResponse>({
     endpoint: `/chat.postMessage`,
     headers: { 'Content-Type': 'application/json; charset=utf-8' },
-    data: { channel: input.userSlackId, text: 'Hello Hacker News!' },
+    data: { channel: input.userSlackId, text: 'Hello World!' },
   });
 
   if (!('ok' in response.data)) {

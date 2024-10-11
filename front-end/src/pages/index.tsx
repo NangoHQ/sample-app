@@ -48,7 +48,7 @@ export default function IndexPage() {
 
     const interval = setInterval(() => {
       void queryClient.refetchQueries({ queryKey: ['contacts'] });
-    }, 2000);
+    }, 10000);
 
     return () => {
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition

@@ -1,10 +1,11 @@
 import type { RouteHandler } from 'fastify';
 import type { Prisma } from '@prisma/client';
-import { db } from '../db.js';
+import { db, getUserFromDatabase } from '../db.js';
 
-export type GetContacts = {
+export type GetContactsSuccess = {
   contacts: Array<Prisma.$ContactsPayload['scalars']>;
 };
+export type GetContacts = GetContactsSuccess | { error: string };
 
 /**
  * Get contacts that were replicated from the integrations to your database
@@ -13,9 +14,22 @@ export const getContacts: RouteHandler<{
   Querystring: { integration: 'slack' };
   Reply: GetContacts;
 }> = async (req, reply) => {
+  const user = await getUserFromDatabase();
+  if (!user) {
+    await reply.status(400).send({ error: 'invalid_user' });
+    return;
+  }
+  if (!user.connectionId) {
+    await reply.status(200).send({ contacts: [] });
+    return;
+  }
+
   // Get the contacts we saved in our own database
   const contacts = await db.contacts.findMany({
-    where: { integrationId: req.query.integration },
+    where: {
+      integrationId: req.query.integration,
+      connectionId: user.connectionId,
+    },
     orderBy: { fullName: 'asc' },
     take: 100,
   });

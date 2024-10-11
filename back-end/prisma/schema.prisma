@@ -7,6 +7,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Table for your own users
+model Users {
+  id String @id @default(uuid()) @db.Uuid
+
+  email       String
+  displayName String
+
+  connectionId String?
+
+  @@unique([email])
+}
+
 // This is the records that Nango is creating
 model Contacts {
   id String @id @db.VarChar(64)
