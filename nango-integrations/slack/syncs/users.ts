@@ -32,7 +32,7 @@ export default async function fetchData(nango: NangoSync) {
       }
 
       users.push({
-        id: member.id,
+        id: String(member.id),
         fullName: member.profile.real_name,
         deleted: member.deleted,
       });

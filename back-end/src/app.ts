@@ -7,6 +7,9 @@ import { getIntegrations } from './routes/getIntegrations.js';
 import { getConnections } from './routes/getConnections.js';
 import { deleteConnection } from './routes/deleteConnection.js';
 import { sendSlackMessage } from './routes/sendSlackMessage.js';
+import { postConnectSession } from './routes/postConnectSession.js';
+import { seedUser } from './db.js';
+import { postSaveConnectionId } from './routes/postSaveConnectIonId.js';
 
 const fastify = Fastify({ logger: false });
 fastify.addHook('onRequest', (req, _res, done) => {
@@ -22,6 +25,16 @@ await fastify.register(cors, {
 fastify.get('/', async function handler(_, reply) {
   await reply.status(200).send({ root: true });
 });
+
+/**
+ * Create a connect session
+ */
+fastify.post('/connect-session', postConnectSession);
+
+/**
+ * Link your own user to a connection
+ */
+fastify.post('/save-connection-id', postSaveConnectionId);
 
 /**
  * List available integrations
@@ -56,6 +69,8 @@ fastify.get('/contacts', getContacts);
 fastify.post('/send-slack-message', sendSlackMessage);
 
 try {
+  await seedUser();
+
   const port = process.env['PORT'] ? parseInt(process.env['PORT'], 10) : 3003;
   await fastify.listen({ host: '0.0.0.0', port });
   console.log(`Listening on http://0.0.0.0:${port}`);

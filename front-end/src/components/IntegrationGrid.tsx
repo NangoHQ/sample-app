@@ -4,15 +4,19 @@ import {
   BoltSlashIcon,
   CheckCircleIcon,
 } from '@heroicons/react/24/outline';
+import type { ConnectUI } from '@nangohq/frontend';
 import Nango from '@nangohq/frontend';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import type { Integration } from '../types';
 import { baseUrl, cn, queryClient } from '../utils';
+import { postConnectSession, postSaveConnectionId } from '../api';
 import Spinner from './Spinner';
 import InfoModal from './modals/Info';
+import { Logo } from './logo';
+const apiURL = process.env.NEXT_PUBLIC_NANGO_HOST ?? 'https://api.nango.dev';
 const nango = process.env.NEXT_PUBLIC_NANGO_PUBLIC_KEY
   ? new Nango({
-      host: process.env.NEXT_PUBLIC_NANGO_HOST ?? 'https://api.nango.dev',
+      host: apiURL,
       publicKey: process.env.NEXT_PUBLIC_NANGO_PUBLIC_KEY,
     })
   : null;
@@ -20,39 +24,38 @@ const nango = process.env.NEXT_PUBLIC_NANGO_PUBLIC_KEY
 export const IntegrationBloc: React.FC<{
   integration: Integration;
 }> = ({ integration }) => {
+  const connectUI = useRef<ConnectUI>();
   const [infoModalOpen, setInfoModalOpen] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function connect() {
-    try {
-      setLoading(true);
-      if (!nango) {
-        throw new Error('Nango not initialized');
-      }
-
-      // Create a new connection
-      // "my-first-user" is your connectionId, it shouldn't be random
-      // This ID allows you to identify a user, even across integrations
-      await nango.auth(integration.integrationId, 'my-first-user', {
-        detectClosedAuthWindow: true,
-      });
-
-      setError(null);
-      // Reload the connections to update the state
-      // Ideally you can setup a Websocket between your frontend and your backend to update everything in realtime
-      setTimeout(async () => {
-        await queryClient.refetchQueries({ queryKey: ['connections'] });
-        setLoading(false);
-      }, 10);
-    } catch (err) {
-      console.error(err);
-      setError(
-        err instanceof Error ? err.message : 'An error happened during oauth'
-      );
-      setLoading(false);
+  function connect() {
+    setLoading(true);
+    if (!nango) {
+      throw new Error('Nango not initialized');
     }
+
+    connectUI.current = nango.openConnectUI({
+      baseURL: 'https://connect.nango.dev',
+      onEvent: (event) => {
+        if (event.type === 'close') {
+          // we refresh on close so user can see the diff
+          void queryClient.refetchQueries({ queryKey: ['connections'] });
+          setLoading(false);
+        } else if (event.type === 'connect') {
+          void postSaveConnectionId(event.payload.connectionId);
+        }
+      },
+    });
+
+    // We defer the token creation so the iframe can open and display a loading screen
+    setTimeout(async () => {
+      const res = await postConnectSession();
+      connectUI.current!.setSessionToken(res.connectSession);
+    }, 10);
+
+    setError(null);
   }
 
   async function disconnect() {
@@ -60,15 +63,14 @@ export const IntegrationBloc: React.FC<{
       setLoading(true);
       await fetch(
         `${baseUrl}/connections?integration=${integration.integrationId}`,
-        {
-          method: 'DELETE',
-        }
+        { method: 'DELETE' }
       );
 
       // Reload the connections to update the state
       // Ideally you can setup a Websocket between your frontend and your backend to update everything in realtime
       setTimeout(async () => {
         await queryClient.refetchQueries({ queryKey: ['connections'] });
+        await queryClient.refetchQueries({ queryKey: ['contacts'] });
         setLoading(false);
       }, 10);
     } catch (err) {
@@ -97,12 +99,7 @@ export const IntegrationBloc: React.FC<{
               {integration.deployed ? (
                 <div className="flex items-center gap-1 text-green-500 font-normal text-xs line-clamp-2">
                   {`${integration.connected ? 'Connected' : 'Integration deployed and ready to connect'}`}
-                  <CheckCircleIcon
-                    onClick={() => {
-                      setInfoModalOpen(true);
-                    }}
-                    className="h-5 w-5 text-green-500"
-                  />
+                  <CheckCircleIcon className="h-5 w-5 text-green-500" />
                 </div>
               ) : (
                 <div className="flex items-center gap-1 text-red-500 font-normal text-xs line-clamp-2">
@@ -132,7 +129,7 @@ export const IntegrationBloc: React.FC<{
             <button
               onClick={() => disconnect()}
               className={cn(
-                'relative -mr-px inline-flex w-0 flex-1 items-center rounded-b-xl justify-center gap-x-3 rounded-bl-lg border border-transparent py-4 text-sm font-semibold bg-gray-200 hover:bg-gray-300 text-gray-800'
+                'relative transition-colors -mr-px inline-flex w-0 flex-1 items-center rounded-b-xl justify-center gap-x-3 rounded-bl-lg border border-transparent py-4 text-sm font-semibold bg-gray-200 hover:bg-gray-300 text-gray-800'
               )}
               disabled={!integration.deployed || loading}
             >
@@ -151,9 +148,11 @@ export const IntegrationBloc: React.FC<{
             </button>
           ) : (
             <button
-              onClick={() => connect()}
+              onClick={() => {
+                connect();
+              }}
               className={cn(
-                'relative -mr-px inline-flex w-0 flex-1 items-center rounded-b-xl justify-center gap-x-3 rounded-bl-lg border border-transparent py-4 text-sm font-semibold ',
+                'relative transition-colors -mr-px inline-flex w-0 flex-1 items-center rounded-b-xl justify-center gap-x-3 rounded-bl-lg border border-transparent py-4 text-sm font-semibold ',
                 integration.deployed
                   ? 'bg-gray-200 hover:bg-gray-300 text-gray-800'
                   : 'bg-gray-100 text-gray-300'
@@ -191,6 +190,24 @@ export const IntegrationsGrid: React.FC<{
       {integrations.map((integration: Integration) => (
         <IntegrationBloc key={integration.name} integration={integration} />
       ))}
+      <li className="col-span-1 divide-y divide-gray-200 rounded-xl bg-white shadow">
+        <div className="h-full flex flex-col gap-5 justify-end py-6 px-4 text-xs">
+          <div className="text-right">
+            Connect to +250 integrations in one click with Nango
+          </div>
+          <a
+            href="https://nango.dev?rel=sample-app"
+            className="text-right flex gap-2 items-center justify-end"
+          >
+            <div>
+              <Logo />
+            </div>{' '}
+            <button className="transition-colors bg-slate-600 text-white rounded-md py-2 px-6 text-xs hover:bg-slate-900">
+              Visit Nango
+            </button>
+          </a>
+        </div>
+      </li>
     </ul>
   );
 };
