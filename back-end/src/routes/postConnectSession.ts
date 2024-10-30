@@ -21,7 +21,6 @@ export const postConnectSession: RouteHandler<{
     return;
   }
 
-  // Trigger the action to send a Slack message.
   const res = await nango.createConnectSession({
     end_user: {
       id: user.id,

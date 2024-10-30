@@ -37,9 +37,6 @@ const Row: React.FC<{ contact: GetContactsSuccess['contacts'][0] }> = ({
 
   return (
     <tr key={contact.id}>
-      <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
-        {contact.id}
-      </td>
       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
         {contact.fullName}
       </td>
@@ -52,13 +49,11 @@ const Row: React.FC<{ contact: GetContactsSuccess['contacts'][0] }> = ({
             }
             disabled={loading}
           >
-            Send
+            Invite
             {loading && <Spinner size={1} className="text-gray-800" />}
           </button>
           {error && <div className="text-xs text-red-400">{error}</div>}
-          {posted && (
-            <div className="text-xs text-green-400">Sent to Slack</div>
-          )}
+          {posted && <div className="text-xs text-green-400">Invited</div>}
         </div>
       </td>
     </tr>
@@ -68,16 +63,12 @@ const Row: React.FC<{ contact: GetContactsSuccess['contacts'][0] }> = ({
 export const ContactsTable: React.FC<{
   contacts: GetContactsSuccess['contacts'] | undefined;
 }> = ({ contacts }) => {
-  if (!contacts) {
-    return (
-      <div className="mt-8 italic text-gray-500">
-        No contacts, activate your webhooks and connect Slack...
-      </div>
-    );
+  if (!contacts || contacts.length <= 0) {
+    return null;
   }
 
   return (
-    <div className="mt-8 flow-root">
+    <div className="mt-8 flow-root max-w-[50%] m-auto">
       <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
         <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
           <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
@@ -86,21 +77,15 @@ export const ContactsTable: React.FC<{
                 <tr>
                   <th
                     scope="col"
-                    className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
-                  >
-                    ID
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-3 py-3.5 w-[50%] text-left text-sm font-semibold text-gray-900"
+                    className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 w-3/4"
                   >
                     Name
                   </th>
                   <th
                     scope="col"
-                    className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                    className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 w-1/4"
                   >
-                    Send Slack Message
+                    Invite
                   </th>
                 </tr>
               </thead>

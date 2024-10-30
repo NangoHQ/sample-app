@@ -46,9 +46,15 @@ export default function IndexPage() {
       return;
     }
 
-    const interval = setInterval(() => {
-      void queryClient.refetchQueries({ queryKey: ['contacts'] });
-    }, 10000);
+    const interval = setInterval(
+      () => {
+        void queryClient.refetchQueries({ queryKey: ['contacts'] });
+      },
+      (resContacts !== undefined && resContacts.contacts.length > 0) ||
+        !integrations.find((i) => i.connected)
+        ? 10000
+        : 1000
+    );
 
     return () => {
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
@@ -56,7 +62,7 @@ export default function IndexPage() {
         clearInterval(interval);
       }
     };
-  }, [integrations]);
+  }, [integrations, resContacts]);
 
   if (!integrations) {
     return (
@@ -68,6 +74,9 @@ export default function IndexPage() {
 
   return (
     <main className="p-4 md:p-10 mx-auto max-w-7xl">
+      <h2 className="text-center text-xl mb-10">
+        Onboarding: Invite team members
+      </h2>
       <IntegrationsGrid integrations={integrations} />
       <ContactsTable contacts={resContacts?.contacts} />
     </main>

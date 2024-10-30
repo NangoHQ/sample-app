@@ -81,55 +81,16 @@ export const IntegrationBloc: React.FC<{
   return (
     <>
       <InfoModal open={infoModalOpen} setOpen={setInfoModalOpen} />
-      <li className="col-span-1 divide-y divide-gray-200 rounded-xl bg-white shadow">
-        <div className="flex w-full items-center justify-between space-x-6 p-6">
-          <div>
-            <div className="flex items-center space-x-3">
-              <h3 className="truncate text-lg font-medium text-gray-900">
-                {integration.name}
-              </h3>
-            </div>
-            {integration.description && (
-              <p className="text-gray-500 font-normal text-xs line-clamp-2">
-                {integration.description}
-              </p>
-            )}
-
-            <div className="py-2">
-              {integration.deployed ? (
-                <div className="flex items-center gap-1 text-green-500 font-normal text-xs line-clamp-2">
-                  {`${integration.connected ? 'Connected' : 'Integration deployed and ready to connect'}`}
-                  <CheckCircleIcon className="h-5 w-5 text-green-500" />
-                </div>
-              ) : (
-                <div className="flex items-center gap-1 text-red-500 font-normal text-xs line-clamp-2">
-                  Requires setup{' '}
-                  <InformationCircleIcon
-                    onClick={() => {
-                      setInfoModalOpen(true);
-                    }}
-                    className="h-5 w-5 text-red-500 hover:text-red-300 cursor-pointer"
-                  />
-                </div>
-              )}
-            </div>
-          </div>
-          <img
-            className="h-10 w-10 flex-shrink-0"
-            src={integration.image}
-            alt={integration.description}
-          />
-        </div>
-
+      <li className="col-span-1  bg-white ">
         {error && (
           <div className="text-xs text-red-400 space-x-6 p-6">{error}</div>
         )}
-        <div className="-mt-px  divide-x divide-gray-200 flex ">
+        <div className="flex ">
           {integration.connected ? (
             <button
               onClick={() => disconnect()}
               className={cn(
-                'relative transition-colors -mr-px inline-flex w-0 flex-1 items-center rounded-b-xl justify-center gap-x-3 rounded-bl-lg border border-transparent py-4 text-sm font-semibold bg-gray-200 hover:bg-gray-300 text-gray-800'
+                'relative transition-colors -mr-px inline-flex w-0 flex-1 items-center justify-center gap-x-3 py-4 text-sm font-semibold bg-gray-200 hover:bg-gray-300 text-gray-800'
               )}
               disabled={!integration.deployed || loading}
             >
@@ -152,14 +113,14 @@ export const IntegrationBloc: React.FC<{
                 connect();
               }}
               className={cn(
-                'relative transition-colors -mr-px inline-flex w-0 flex-1 items-center rounded-b-xl justify-center gap-x-3 rounded-bl-lg border border-transparent py-4 text-sm font-semibold ',
+                'relative transition-colors inline-flex w-0 flex-1 items-center justify-center gap-x-3 py-4 text-sm font-semibold rounded-md',
                 integration.deployed
                   ? 'bg-gray-200 hover:bg-gray-300 text-gray-800'
                   : 'bg-gray-100 text-gray-300'
               )}
               disabled={!integration.deployed || loading}
             >
-              Connect to {integration.name}
+              Invite from {integration.name}
               {loading ? (
                 <Spinner size={1} className="text-gray-800" />
               ) : (
@@ -185,29 +146,11 @@ export const IntegrationsGrid: React.FC<{
   return (
     <ul
       role="list"
-      className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+      className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-2 m-auto align-middle justify-center max-w-[50%] m-auto"
     >
       {integrations.map((integration: Integration) => (
         <IntegrationBloc key={integration.name} integration={integration} />
       ))}
-      <li className="col-span-1 divide-y divide-gray-200 rounded-xl bg-white shadow">
-        <div className="h-full flex flex-col gap-5 justify-end py-6 px-4 text-xs">
-          <div className="text-right">
-            Connect to +250 integrations in one click with Nango
-          </div>
-          <a
-            href="https://nango.dev?rel=sample-app"
-            className="text-right flex gap-2 items-center justify-end"
-          >
-            <div>
-              <Logo />
-            </div>{' '}
-            <button className="transition-colors bg-slate-600 text-white rounded-md py-2 px-6 text-xs hover:bg-slate-900">
-              Visit Nango
-            </button>
-          </a>
-        </div>
-      </li>
     </ul>
   );
 };

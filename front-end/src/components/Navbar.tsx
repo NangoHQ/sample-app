@@ -1,6 +1,5 @@
 import type React from 'react';
 import { Disclosure, Menu } from '@headlessui/react';
-import { Logo } from './logo';
 
 const user = {
   name: 'Tom Cook',
@@ -17,8 +16,8 @@ export const Navbar: React.FC = () => {
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="flex h-16 justify-between">
               <div className="flex">
-                <div className="flex flex-shrink-0 items-center">
-                  <Logo />
+                <div className="flex flex-shrink-0 items-center font-semibold">
+                  My SaaS
                 </div>
               </div>
               <div className="hidden sm:ml-6 sm:flex sm:items-center">
