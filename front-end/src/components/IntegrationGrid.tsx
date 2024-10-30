@@ -90,7 +90,8 @@ export const IntegrationBloc: React.FC<{
             <button
               onClick={() => disconnect()}
               className={cn(
-                'relative transition-colors -mr-px inline-flex w-0 flex-1 items-center justify-center gap-x-3 py-4 text-sm font-semibold bg-gray-200 hover:bg-gray-300 text-gray-800'
+                'relative transition-colors inline-flex w-0 flex-1 items-center justify-center gap-x-3 py-4 text-sm font-semibold rounded-md',
+                'bg-gray-200 hover:bg-gray-300 text-gray-800'
               )}
               disabled={!integration.deployed || loading}
             >
