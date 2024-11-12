@@ -1,11 +1,5 @@
 import { Button } from '@headlessui/react';
-import {
-  IconArrowsUpDown,
-  IconHome,
-  IconPackage,
-  IconReportAnalytics,
-  IconSettings,
-} from '@tabler/icons-react';
+
 import Link from 'next/link';
 
 export const Menu: React.FC = () => {

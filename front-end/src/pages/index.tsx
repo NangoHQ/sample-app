@@ -25,8 +25,6 @@ export default function IndexPage() {
     return resIntegrations.integrations.map((integration) => {
       return {
         ...integration,
-        // @ts-expect-error
-        logo: integration['logo'],
         connected:
           resConnections.connections.find((connection) => {
             return connection.provider_config_key === integration.unique_key;

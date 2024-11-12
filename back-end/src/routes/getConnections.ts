@@ -3,12 +3,17 @@ import type { GetPublicConnections } from '@nangohq/types';
 import { nango } from '../nango.js';
 import { getUserFromDatabase } from '../db.js';
 
+export type GetConnectionsSuccess = {
+  connections: GetPublicConnections['Success']['connections'];
+};
+export type GetConnections = GetConnectionsSuccess | { error: string };
+
 /**
  * List available connection for one user.
  * A connection is a link between an integration and a user (e.g: oauth token)
  */
 export const getConnections: RouteHandler<{
-  Reply: GetPublicConnections['Success'] | { error: string };
+  Reply: GetConnections;
 }> = async (_, reply) => {
   const user = await getUserFromDatabase();
   if (!user) {
