@@ -5,7 +5,7 @@ interface SlackResponse {
   members: Array<{
     id: number;
     is_bot: boolean;
-    profile: { real_name: string };
+    profile: { real_name: string; image_48: string };
     deleted: boolean;
   }>;
   response_metadata: { next_cursor?: string };
@@ -35,6 +35,7 @@ export default async function fetchData(nango: NangoSync) {
         id: String(member.id),
         fullName: member.profile.real_name,
         deleted: member.deleted,
+        avatar: member.profile.image_48,
       });
     }
 

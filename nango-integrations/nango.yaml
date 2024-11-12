@@ -23,5 +23,6 @@ models:
     id: string
     fullName: string
     deleted: boolean
+    avatar: string
   SlackSendMessageInput:
     userSlackId: string

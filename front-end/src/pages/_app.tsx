@@ -1,21 +1,28 @@
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import { QueryClientProvider } from '@tanstack/react-query';
-
-import Layout from '../components/Layout';
+import { Inter } from 'next/font/google';
 
 import '../globals.css';
 import { queryClient } from '../utils';
+import { Menu } from '../components/Menu';
+
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <Layout>
+    <div className={`${inter.variable} font-sans h-screen w-screen`}>
       <Head>
         <title key="title">Nango Sample App</title>
       </Head>
       <QueryClientProvider client={queryClient}>
-        <Component {...pageProps} />
+        <div className="flex h-screen w-screen">
+          <div className="w-[230px] h-full">
+            <Menu />
+          </div>
+          <Component {...pageProps} />
+        </div>
       </QueryClientProvider>
-    </Layout>
+    </div>
   );
 }

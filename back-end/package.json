@@ -16,8 +16,8 @@
   "type": "module",
   "dependencies": {
     "@fastify/cors": "9.0.1",
-    "@nangohq/node": "0.42.15",
-    "@nangohq/types": "0.42.15",
+    "@nangohq/node": "0.42.22",
+    "@nangohq/types": "0.42.22",
     "@prisma/client": "5.20.0",
     "fastify": "4.26.2",
     "prisma": "5.20.0",

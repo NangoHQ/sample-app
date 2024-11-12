@@ -1,9 +1,9 @@
 import type { RouteHandler } from 'fastify';
-import type { Integration } from '@nangohq/node';
+import type { GetPublicListIntegrationsLegacy } from '@nangohq/node';
 import { nango } from '../nango.js';
 
 export type GetIntegrations = {
-  integrations: Array<Pick<Integration, 'unique_key' | 'provider'>>;
+  integrations: GetPublicListIntegrationsLegacy['Success']['configs'];
 };
 
 /**

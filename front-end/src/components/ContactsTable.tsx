@@ -1,6 +1,10 @@
 import type { GetContactsSuccess } from 'back-end';
-import { useState } from 'react';
-import { baseUrl } from '../utils';
+import { useEffect, useState } from 'react';
+import { Button } from '@headlessui/react';
+import { IconCheck } from '@tabler/icons-react';
+import { useQuery } from '@tanstack/react-query';
+import { baseUrl, cn, queryClient } from '../utils';
+import { listContacts } from '../api';
 import Spinner from './Spinner';
 
 const Row: React.FC<{ contact: GetContactsSuccess['contacts'][0] }> = ({
@@ -36,87 +40,72 @@ const Row: React.FC<{ contact: GetContactsSuccess['contacts'][0] }> = ({
   }
 
   return (
-    <tr key={contact.id}>
-      <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
-        {contact.id}
-      </td>
-      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+    <div className="transition-colors flex gap-2 justify-between items-center px-5 py-5 text-sm border-b hover:bg-gray-50">
+      <div className="whitespace-nowrap text-[#292d32] flex gap-4 items-center">
+        <img src={contact.avatar} alt="" className="rounded-full w-7" />
         {contact.fullName}
-      </td>
-      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+      </div>
+      <div className="whitespace-nowrap text-gray-500">
         <div className="flex gap-4 items-center">
-          <button
+          <Button
             onClick={() => sendMessage(contact.id)}
-            className={
-              'flex items-center rounded gap-x-3 border border-transparent py-2 px-3 text-sm font-semibold bg-gray-200 hover:bg-gray-300 text-gray-800'
-            }
+            className={cn(
+              'transition-all flex gap-2 items-center rounded py-1.5 px-3 text-xs font-medium bg-[#635cff] hover:bg-opacity-80 text-white',
+              posted && 'text-[#0e6245] bg-[#cbf4c9]'
+            )}
             disabled={loading}
           >
-            Send
+            {posted ? 'Invited' : 'Invite'}
             {loading && <Spinner size={1} className="text-gray-800" />}
-          </button>
+            {posted && <IconCheck className="text-[#0e6245]" size={16} />}
+          </Button>
           {error && <div className="text-xs text-red-400">{error}</div>}
-          {posted && (
-            <div className="text-xs text-green-400">Sent to Slack</div>
-          )}
         </div>
-      </td>
-    </tr>
+      </div>
+    </div>
   );
 };
 
-export const ContactsTable: React.FC<{
-  contacts: GetContactsSuccess['contacts'] | undefined;
-}> = ({ contacts }) => {
-  if (!contacts) {
+export const ContactsTable: React.FC = () => {
+  const { data: resContacts, isLoading } = useQuery({
+    queryKey: ['contacts'],
+    queryFn: listContacts,
+  });
+  useEffect(() => {
+    const interval = setInterval(
+      () => {
+        void queryClient.refetchQueries({ queryKey: ['contacts'] });
+      },
+      resContacts !== undefined && resContacts.contacts.length > 0
+        ? 10000
+        : 1000
+    );
+
+    return () => {
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
+  }, [resContacts]);
+
+  if (isLoading || !resContacts?.contacts) {
     return (
-      <div className="mt-8 italic text-gray-500">
-        No contacts, activate your webhooks and connect Slack...
+      <div className="w-full flex justify-center">
+        <Spinner size={1} />
       </div>
     );
   }
 
   return (
-    <div className="mt-8 flow-root">
-      <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-        <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-          <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
-            <table className="min-w-full divide-y divide-gray-300">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th
-                    scope="col"
-                    className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
-                  >
-                    ID
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-3 py-3.5 w-[50%] text-left text-sm font-semibold text-gray-900"
-                  >
-                    Name
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                  >
-                    Send Slack Message
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200 bg-white">
-                {!contacts.length ? (
-                  <div className="mt-8 text-center h-20">No contacts found</div>
-                ) : (
-                  contacts.map((contact) => (
-                    <Row key={contact.id} contact={contact} />
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
+    <div className="w-full">
+      {!resContacts.contacts.length ? (
+        <div className="mt-8 text-center h-20">No contacts found</div>
+      ) : (
+        resContacts.contacts.map((contact) => (
+          <Row key={contact.id} contact={contact} />
+        ))
+      )}
     </div>
   );
 };

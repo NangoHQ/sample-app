@@ -1,11 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { IntegrationsGrid } from '../components/IntegrationGrid';
-import type { Integration } from '../types';
 import Spinner from '../components/Spinner';
-import { listConnections, listIntegrations, listContacts } from '../api';
-import { queryClient, requestedIntegrations } from '../utils';
+import { listConnections, listIntegrations } from '../api';
 import { ContactsTable } from '../components/ContactsTable';
+import type { Integration } from '../types';
+import { cn } from '../utils';
 
 export default function IndexPage() {
   const { data: resIntegrations } = useQuery({
@@ -16,46 +16,25 @@ export default function IndexPage() {
     queryKey: ['connections'],
     queryFn: listConnections,
   });
-  const { data: resContacts } = useQuery({
-    queryKey: ['contacts'],
-    queryFn: listContacts,
-  });
 
   const integrations = useMemo<Integration[] | undefined>(() => {
     if (!resIntegrations || !resConnections) {
       return;
     }
 
-    return requestedIntegrations.map((integration) => {
+    return resIntegrations.integrations.map((integration) => {
       return {
         ...integration,
-        deployed:
-          resIntegrations.integrations.find((available) => {
-            return available.unique_key === integration.integrationId;
-          }) !== undefined,
         connected:
           resConnections.connections.find((connection) => {
-            return connection.provider_config_key === integration.integrationId;
+            return connection.provider_config_key === integration.unique_key;
           }) !== undefined,
       };
     });
   }, [resIntegrations, resConnections]);
 
-  useEffect(() => {
-    if (!integrations) {
-      return;
-    }
-
-    const interval = setInterval(() => {
-      void queryClient.refetchQueries({ queryKey: ['contacts'] });
-    }, 10000);
-
-    return () => {
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-      if (interval) {
-        clearInterval(interval);
-      }
-    };
+  const connectedTo = useMemo(() => {
+    return integrations?.find((value) => value.connected);
   }, [integrations]);
 
   if (!integrations) {
@@ -67,9 +46,29 @@ export default function IndexPage() {
   }
 
   return (
-    <main className="p-4 md:p-10 mx-auto max-w-7xl">
-      <IntegrationsGrid integrations={integrations} />
-      <ContactsTable contacts={resContacts?.contacts} />
-    </main>
+    <div className="w-full h-screen grid grid-rows-[auto_1fr]">
+      <header className="px-10 py-5 border-b">
+        <h1 className="text-2xl font-bold">Team Settings</h1>
+      </header>
+      <div className="overflow-y-scroll px-10 py-10">
+        <div
+          className={cn(
+            'flex justify-center',
+            !connectedTo && 'items-center h-full'
+          )}
+        >
+          <div className="flex flex-col gap-16">
+            <div className="w-[540px] rounded shadow-2xl px-16 py-10 pb-16 h-auto">
+              <h2 className="text-center text-2xl mb-10 font-semibold">
+                Invite team members
+              </h2>
+              {connectedTo && <ContactsTable />}
+              {!connectedTo && <IntegrationsGrid integrations={integrations} />}
+            </div>
+            {connectedTo && <IntegrationsGrid integrations={[connectedTo]} />}
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
