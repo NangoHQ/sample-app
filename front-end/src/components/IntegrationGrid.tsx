@@ -1,9 +1,3 @@
-import { PlusIcon } from '@heroicons/react/20/solid';
-import {
-  InformationCircleIcon,
-  BoltSlashIcon,
-  CheckCircleIcon,
-} from '@heroicons/react/24/outline';
 import type { ConnectUI } from '@nangohq/frontend';
 import Nango from '@nangohq/frontend';
 import { useRef, useState } from 'react';
@@ -12,7 +6,6 @@ import { baseUrl, cn, queryClient } from '../utils';
 import { postConnectSession, postSaveConnectionId } from '../api';
 import Spinner from './Spinner';
 import InfoModal from './modals/Info';
-import { Logo } from './logo';
 const apiURL = process.env.NEXT_PUBLIC_NANGO_HOST ?? 'https://api.nango.dev';
 const nango = process.env.NEXT_PUBLIC_NANGO_PUBLIC_KEY
   ? new Nango({
@@ -62,7 +55,7 @@ export const IntegrationBloc: React.FC<{
     try {
       setLoading(true);
       await fetch(
-        `${baseUrl}/connections?integration=${integration.integrationId}`,
+        `${baseUrl}/connections?integration=${integration.unique_key}`,
         { method: 'DELETE' }
       );
 
@@ -79,65 +72,48 @@ export const IntegrationBloc: React.FC<{
   }
 
   return (
-    <>
+    <li className="w-full">
       <InfoModal open={infoModalOpen} setOpen={setInfoModalOpen} />
-      <li className="col-span-1  bg-white ">
-        {error && (
-          <div className="text-xs text-red-400 space-x-6 p-6">{error}</div>
+      {error && (
+        <div className="text-xs text-red-400 space-x-6 p-6">{error}</div>
+      )}
+      <div className="flex">
+        {integration.connected ? (
+          <button
+            onClick={() => disconnect()}
+            className={cn(
+              'relative transition-colors inline-flex w-0 flex-1 items-center justify-center gap-x-3 py-3 text-sm font-semibold rounded-md text-white',
+              'bg-black hover:bg-gray-800'
+            )}
+            disabled={loading}
+          >
+            {loading ? (
+              <Spinner size={1} className="text-gray-800" />
+            ) : (
+              <img src={integration.logo} alt="" className="w-5" />
+            )}
+            Disconnect from {integration.provider}
+          </button>
+        ) : (
+          <button
+            onClick={() => {
+              connect();
+            }}
+            className={cn(
+              'relative transition-colors inline-flex w-0 flex-1 items-center justify-center gap-x-3 py-3 text-sm font-semibold rounded-md bg-black text-white hover:bg-gray-900'
+            )}
+            disabled={loading}
+          >
+            {loading ? (
+              <Spinner size={1} className="text-gray-800" />
+            ) : (
+              <img src={integration.logo} alt="" className="w-5" />
+            )}
+            Import from {integration.provider}
+          </button>
         )}
-        <div className="flex ">
-          {integration.connected ? (
-            <button
-              onClick={() => disconnect()}
-              className={cn(
-                'relative transition-colors inline-flex w-0 flex-1 items-center justify-center gap-x-3 py-4 text-sm font-semibold rounded-md',
-                'bg-gray-200 hover:bg-gray-300 text-gray-800'
-              )}
-              disabled={!integration.deployed || loading}
-            >
-              Disconnect from {integration.name}
-              {loading ? (
-                <Spinner size={1} className="text-gray-800" />
-              ) : (
-                <BoltSlashIcon
-                  className={cn(
-                    'h-5 w-5',
-                    integration.deployed ? 'text-gray-800' : 'text-gray-400'
-                  )}
-                  aria-hidden="true"
-                />
-              )}
-            </button>
-          ) : (
-            <button
-              onClick={() => {
-                connect();
-              }}
-              className={cn(
-                'relative transition-colors inline-flex w-0 flex-1 items-center justify-center gap-x-3 py-4 text-sm font-semibold rounded-md',
-                integration.deployed
-                  ? 'bg-gray-200 hover:bg-gray-300 text-gray-800'
-                  : 'bg-gray-100 text-gray-300'
-              )}
-              disabled={!integration.deployed || loading}
-            >
-              Invite from {integration.name}
-              {loading ? (
-                <Spinner size={1} className="text-gray-800" />
-              ) : (
-                <PlusIcon
-                  className={cn(
-                    'h-5 w-5',
-                    integration.deployed ? 'text-gray-800' : 'text-gray-400'
-                  )}
-                  aria-hidden="true"
-                />
-              )}
-            </button>
-          )}
-        </div>
-      </li>
-    </>
+      </div>
+    </li>
   );
 };
 
@@ -145,12 +121,12 @@ export const IntegrationsGrid: React.FC<{
   integrations: Integration[];
 }> = ({ integrations }) => {
   return (
-    <ul
-      role="list"
-      className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-2 m-auto align-middle justify-center max-w-[50%] m-auto"
-    >
-      {integrations.map((integration: Integration) => (
-        <IntegrationBloc key={integration.name} integration={integration} />
+    <ul role="list" className="flex flex-col gap-2">
+      {integrations.map((integration) => (
+        <IntegrationBloc
+          key={integration.unique_key}
+          integration={integration}
+        />
       ))}
     </ul>
   );

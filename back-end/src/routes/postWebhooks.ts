@@ -8,6 +8,7 @@ import type {
 } from '@nangohq/node';
 import { nango } from '../nango.js';
 import { db } from '../db.js';
+import type { SlackUser } from '../schema.ts';
 
 /**
  * Receive webhooks from Nango every time a records has been added, updated or deleted
@@ -78,7 +79,7 @@ async function handleSyncWebhook(body: NangoSyncWebhookBody) {
 
   // Now we need to fetch the actual records that were added/updated/deleted
   // The payload does not contains the records but a cursor "modifiedAfter"
-  const records = await nango.listRecords<{ id: string; fullName: string }>({
+  const records = await nango.listRecords<SlackUser>({
     connectionId: body.connectionId,
     model: body.model,
     providerConfigKey: body.providerConfigKey,
@@ -105,6 +106,7 @@ async function handleSyncWebhook(body: NangoSyncWebhookBody) {
       create: {
         id: record.id,
         fullName: record.fullName,
+        avatar: record.avatar,
         integrationId: body.providerConfigKey,
         connectionId: body.connectionId,
         createdAt: new Date(),

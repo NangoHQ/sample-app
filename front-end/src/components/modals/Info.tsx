@@ -1,6 +1,6 @@
 import { Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
-import { InformationCircleIcon } from '@heroicons/react/24/outline';
+import { IconInfoCircle } from '@tabler/icons-react';
 
 export default function InfoModal({
   open,
@@ -38,7 +38,7 @@ export default function InfoModal({
               <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm sm:p-6">
                 <div>
                   <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-red-100">
-                    <InformationCircleIcon
+                    <IconInfoCircle
                       className="h-12 w-12 text-red-600"
                       aria-hidden="true"
                     />

@@ -1,21 +1,15 @@
 import type { RouteHandler } from 'fastify';
-import type { ConnectionList } from '@nangohq/node';
+import type { GetPublicConnections } from '@nangohq/types';
 import { nango } from '../nango.js';
 import { getUserFromDatabase } from '../db.js';
-
-export type GetConnectionsSuccess = {
-  connections: ConnectionList[];
-};
-export type GetConnections = GetConnectionsSuccess | { error: string };
 
 /**
  * List available connection for one user.
  * A connection is a link between an integration and a user (e.g: oauth token)
  */
-export const getConnections: RouteHandler<{ Reply: GetConnections }> = async (
-  _,
-  reply
-) => {
+export const getConnections: RouteHandler<{
+  Reply: GetPublicConnections['Success'] | { error: string };
+}> = async (_, reply) => {
   const user = await getUserFromDatabase();
   if (!user) {
     await reply.status(400).send({ error: 'invalid_user' });

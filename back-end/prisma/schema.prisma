@@ -26,6 +26,7 @@ model Contacts {
   integrationId String
   connectionId  String
   fullName      String
+  avatar        String
 
   createdAt DateTime? @db.Timestamp(3)
   updatedAt DateTime  @updatedAt
