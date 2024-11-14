@@ -6,11 +6,14 @@ This repository provides a practical demonstration of integrating Nango into you
 
 ## Highlights
 
-- Folder [back-end](/back-end/src/app.ts) To integrate with Nango you need a backend that will listen to Nango’s webhooks and interact with our API.
+- Folder [back-end](/back-end/src/app.ts)
+  To integrate with Nango you need a backend that will listen to Nango’s webhooks and interact with our API.
 
-- Folder [front-end](/front-end/src/components/integrationGrid.tsx#L24) Finally to let your user connect to your integration you need a frontend and call to our auth library.
+- Folder [front-end](/front-end/src/components/integrationGrid.tsx#L24) 
+  Finally to let your user connect to your integration you need a frontend and call to our auth library.
 
-- Folder [nango-integrations](/nango-integrations/) **Optional** To use Nango you need some integrations, we provide templates for most provider but you can also use custom scripts. This folder (setup with our CLI) contains the scripts that will fetch your users’ data.
+- Folder [nango-integrations](/nango-integrations/) 
+  **Optional** To use Nango you need some scripts to manipulate the data. We provide templates for most providers but you can also use custom scripts. This folder, setup with our CLI, contains the scripts that will fetch your users’ data.
 
 ---
 
@@ -21,7 +24,7 @@ To use this demo you will need:
 ## Step 1: Create an account
 
 - Go to [nango.dev](https://app.nango.dev?source=sample-app)
-- Create an account, it's free
+- Create an account, it's free!
 
 ## Step 2: Create a Slack integration
 
@@ -38,10 +41,7 @@ To use this demo you will need:
 
 ## Step 3: Prepare your env
 
-Install
-
-- NodeJS
-- Docker
+Install: `NodeJS`, `Docker`
 
 ```sh
 git clone https://github.com/NangoHQ/sample-app.git
@@ -49,22 +49,15 @@ git clone https://github.com/NangoHQ/sample-app.git
 cd sample-app
 
 nvm use
-
 npm i
 ```
 
 ## Step 4: Copy secrets
 
-- Copy backend .env
-
-```sh
-cp .env.example .env
-```
-
 - Add your Nango Secret Key, you can find it in [Environment Settings](https://app.nango.dev/dev/environment-settings?source=sample-app)
 
 ```sh
-NANGO_SECRET_KEY=_SECRET_
+cp .env.example .env
 ```
 
 ## Step 5: Transfer Webhooks locally
@@ -77,11 +70,11 @@ npm run webhooks-proxy
 
 - Copy the URL the command gave you
 - Go to [Environment Settings](https://app.nango.dev/dev/environment-settings?source=sample-app)
-- Edit Webhook URL to
+- Set Webhook URL to
   - `${URL}/webhooks-from-nango`, e.g: `https://tame-socks-warn.loca.lt/webhooks-from-nango`
 
 > [!NOTE]
-> If that doesn't work, you can use grok
+> If that doesn't work, you can use ngrok
 
 ## Step 6: Launch
 
