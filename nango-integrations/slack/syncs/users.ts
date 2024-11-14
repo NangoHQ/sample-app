@@ -1,46 +1,62 @@
-import type { SlackUser, NangoSync } from '../../models';
-
-interface SlackResponse {
-  ok: boolean;
-  members: Array<{
-    id: number;
-    is_bot: boolean;
-    profile: { real_name: string; image_48: string };
-    deleted: boolean;
-  }>;
-  response_metadata: { next_cursor?: string };
-}
+import type { SlackUser, NangoSync, ProxyConfiguration } from '../../models';
+import type { SlackUserResponse } from '../types';
 
 export default async function fetchData(nango: NangoSync) {
-  let nextCursor = '';
-  const users: SlackUser[] = [];
+  const config: ProxyConfiguration = {
+    // https://api.slack.com/methods/users.list
+    endpoint: 'users.list',
+    retries: 10,
+    params: {
+      limit: '200',
+    },
+    paginate: {
+      response_path: 'members',
+    },
+  };
 
-  do {
-    const response = await nango.get<SlackResponse>({
-      endpoint: 'users.list',
-      retries: 10,
-      params: { limit: '200', cursor: nextCursor },
-    });
-
-    if (!response.data.ok) {
-      break;
-    }
-
-    for (const member of response.data.members) {
-      if (member.deleted || member.is_bot) {
+  for await (const slackUsers of nango.paginate<SlackUserResponse>(config)) {
+    const users: SlackUser[] = [];
+    for (const record of slackUsers) {
+      if (record.deleted || record.is_bot) {
         continue;
       }
 
       users.push({
-        id: String(member.id),
-        fullName: member.profile.real_name,
-        deleted: member.deleted,
-        avatar: member.profile.image_48,
+        id: record.id,
+        team_id: record.team_id,
+        name: record.name,
+        deleted: record.deleted,
+        tz: record.tz,
+        tz_label: record.tz_label,
+        tz_offset: record.tz_offset,
+        profile: {
+          avatar_hash: record.profile.avatar_hash,
+          real_name: record.profile.real_name ? record.profile.real_name : null,
+          display_name: record.profile.display_name
+            ? record.profile.display_name
+            : null,
+          real_name_normalized: record.profile.real_name_normalized
+            ? record.profile.real_name_normalized
+            : null,
+          display_name_normalized: record.profile.display_name_normalized
+            ? record.profile.display_name_normalized
+            : null,
+          email: record.profile.email ? record.profile.email : null,
+          image_original: record.profile.is_custom_image
+            ? record.profile.image_original
+            : null,
+        },
+        is_admin: record.is_admin,
+        is_owner: record.is_owner,
+        is_primary_owner: record.is_primary_owner,
+        is_restricted: record.is_restricted,
+        is_ultra_restricted: record.is_ultra_restricted,
+        is_bot: record.is_bot,
+        updated: record.updated,
+        is_app_user: record.is_app_user,
+        raw_json: JSON.stringify(record),
       });
     }
-
-    nextCursor = response.data.response_metadata.next_cursor || '';
-  } while (nextCursor);
-
-  await nango.batchSave(users, 'SlackUser');
+    await nango.batchSave(users, 'SlackUser');
+  }
 }

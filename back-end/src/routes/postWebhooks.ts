@@ -8,7 +8,7 @@ import type {
 } from '@nangohq/node';
 import { nango } from '../nango.js';
 import { db } from '../db.js';
-import type { SlackUser } from '../schema.ts';
+import type { SlackUser } from '../schema.js';
 
 /**
  * Receive webhooks from Nango every time a records has been added, updated or deleted
@@ -100,18 +100,23 @@ async function handleSyncWebhook(body: NangoSyncWebhookBody) {
       continue;
     }
 
+    const fullName = record.profile.display_name ?? record.name;
+    const avatar =
+      record.profile.image_original ??
+      'https://placehold.co/32x32/lightgrey/white';
+
     // Create or Update the others records
     await db.contacts.upsert({
       where: { id: record.id },
       create: {
         id: record.id,
-        fullName: record.fullName,
-        avatar: record.avatar,
+        fullName: fullName,
+        avatar,
         integrationId: body.providerConfigKey,
         connectionId: body.connectionId,
         createdAt: new Date(),
       },
-      update: { fullName: record.fullName, updatedAt: new Date() },
+      update: { fullName, avatar, updatedAt: new Date() },
     });
   }
 
