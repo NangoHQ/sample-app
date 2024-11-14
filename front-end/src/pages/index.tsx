@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
+import Link from 'next/link';
 import { IntegrationsGrid } from '../components/IntegrationGrid';
 import Spinner from '../components/Spinner';
 import { listConnections, listIntegrations } from '../api';
@@ -64,6 +65,30 @@ export default function IndexPage() {
               </h2>
               {connectedTo && <ContactsTable />}
               {!connectedTo && <IntegrationsGrid integrations={integrations} />}
+              {integrations.length <= 0 && (
+                <div>
+                  <button
+                    className={cn(
+                      'relative transition-colors inline-flex w-full items-center justify-center gap-x-3 py-3 text-sm font-semibold rounded-md bg-black text-white hover:bg-gray-900',
+                      'bg-opacity-80'
+                    )}
+                  >
+                    <img
+                      src={
+                        'https://app.nango.dev/images/template-logos/slack.svg'
+                      }
+                      alt=""
+                      className="w-5"
+                    />
+                    Import from Slack
+                  </button>
+                  <div className="text-red-500 text-xs text-center mt-1">
+                    <Link href="https://app.nango.dev/dev/integrations">
+                      Activate this provider in your Nango account
+                    </Link>
+                  </div>
+                </div>
+              )}
             </div>
             {connectedTo && <IntegrationsGrid integrations={[connectedTo]} />}
           </div>

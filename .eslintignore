@@ -3,4 +3,6 @@ dist/
 build/
 coverage/
 bin/
-nango-integrations/
+nango-integrations/models.ts
+nango-integrations/.nango
+back-end/src/schema.ts

@@ -6,13 +6,9 @@ import { baseUrl, cn, queryClient } from '../utils';
 import { postConnectSession, postSaveConnectionId } from '../api';
 import Spinner from './Spinner';
 import InfoModal from './modals/Info';
+
 const apiURL = process.env.NEXT_PUBLIC_NANGO_HOST ?? 'https://api.nango.dev';
-const nango = process.env.NEXT_PUBLIC_NANGO_PUBLIC_KEY
-  ? new Nango({
-      host: apiURL,
-      publicKey: process.env.NEXT_PUBLIC_NANGO_PUBLIC_KEY,
-    })
-  : null;
+const nango = new Nango({ host: apiURL, publicKey: 'empty' });
 
 export const IntegrationBloc: React.FC<{
   integration: Integration;
@@ -25,12 +21,8 @@ export const IntegrationBloc: React.FC<{
 
   function connect() {
     setLoading(true);
-    if (!nango) {
-      throw new Error('Nango not initialized');
-    }
 
     connectUI.current = nango.openConnectUI({
-      baseURL: 'https://connect.nango.dev',
       onEvent: (event) => {
         if (event.type === 'close') {
           // we refresh on close so user can see the diff
