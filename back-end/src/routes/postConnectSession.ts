@@ -23,10 +23,13 @@ export const postConnectSession: RouteHandler<{
 
   const res = await nango.createConnectSession({
     end_user: {
+      // We set an end user so when we receive a webhook at connection creation we know how to link it
       id: user.id,
+      // The other information are for display purposes
       email: user.email,
       display_name: user.displayName,
     },
+    // Only allow "slack" integration so we can enforce what the user is expected to do even if we have multiple available integrations
     allowed_integrations: ['slack'],
   });
 

@@ -17,7 +17,7 @@ export const postWebhooks: RouteHandler = async (req, reply) => {
   const body = req.body as NangoWebhookBody;
   const sig = req.headers['x-nango-signature'] as string;
 
-  console.log('Webhook: received');
+  console.log('Webhook: received', body);
 
   // Verify the signature to be sure it's Nango that sent us this payload
   if (!nango.verifyWebhookSignature(sig, req.body)) {
@@ -60,7 +60,15 @@ async function handleNewConnectionWebhook(body: NangoAuthWebhookBody) {
 
   if (body.operation === 'creation') {
     console.log('Webhook: New connection');
-    // Do something here
+    // With the end user id that we set in the Session, we can now link our user to the new connection
+    await db.users.update({
+      data: {
+        connectionId: body.connectionId,
+      },
+      where: {
+        id: body.endUser!.endUserId,
+      },
+    });
   } else {
     console.log('Webhook: connection', body.operation);
   }

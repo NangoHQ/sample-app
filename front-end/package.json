@@ -2,13 +2,13 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --port 3011",
     "build": "next build",
-    "start": "next start",
+    "start": "next start --port 3011",
     "lint": "next lint"
   },
   "dependencies": {
-    "@nangohq/frontend": "0.43.0",
+    "@nangohq/frontend": "0.45.1",
     "@headlessui/react": "2.2.0",
     "@headlessui/tailwindcss": "0.2.1",
     "@tabler/icons-react": "3.21.0",

@@ -3,7 +3,7 @@ import Nango from '@nangohq/frontend';
 import { useRef, useState } from 'react';
 import type { Integration } from '../types';
 import { baseUrl, cn, queryClient } from '../utils';
-import { postConnectSession, postSaveConnectionId } from '../api';
+import { postConnectSession } from '../api';
 import Spinner from './Spinner';
 import InfoModal from './modals/Info';
 
@@ -29,7 +29,8 @@ export const IntegrationBloc: React.FC<{
           void queryClient.refetchQueries({ queryKey: ['connections'] });
           setLoading(false);
         } else if (event.type === 'connect') {
-          void postSaveConnectionId(event.payload.connectionId);
+          // The backend will receive a webhook with the connection info
+          void queryClient.refetchQueries({ queryKey: ['connections'] });
         }
       },
     });

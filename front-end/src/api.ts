@@ -18,19 +18,6 @@ export async function postConnectSession(): Promise<PostConnectSessionSuccess> {
   return json;
 }
 
-export async function postSaveConnectionId(
-  connectionId: string
-): Promise<void> {
-  const res = await fetch(`${baseUrl}/save-connection-id`, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ connectionId }),
-  });
-  if (res.status !== 200) {
-    throw new Error();
-  }
-}
-
 export async function listIntegrations(): Promise<GetIntegrations> {
   const res = await fetch(`${baseUrl}/integrations`);
   if (res.status !== 200) {
@@ -52,7 +39,7 @@ export async function listConnections(): Promise<GetConnectionsSuccess> {
 }
 
 export async function listContacts(): Promise<GetContactsSuccess> {
-  const res = await fetch('http://localhost:3003/contacts?integration=slack');
+  const res = await fetch('http://localhost:3010/contacts?integration=slack');
   if (res.status !== 200) {
     throw new Error();
   }

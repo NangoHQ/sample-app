@@ -16,7 +16,7 @@
     "start": "npm run start:docker && concurrently -n front,back \"npm run dev -w front-end\" \"npm run start -w back-end\"",
     "start:docker": "docker compose up -d",
     "start:backend": "npm run -w back-end start",
-    "webhooks-proxy": "lt --port 3003"
+    "webhooks-proxy": "lt --port 3010"
   },
   "devDependencies": {
     "@tsconfig/node18-strictest-esm": "1.0.1",
