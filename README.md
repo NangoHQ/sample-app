@@ -4,4 +4,4 @@ The sample app is a practical demonstration of integrating Nango in your codebas
 
 ![Example App](example.png)
 
-Details & run instructions in the [documentation](https://docs.nango.dev/sample-app).
+Details & run instructions in the [documentation](https://docs.nango.dev/getting-started/quickstart#sample-app).
