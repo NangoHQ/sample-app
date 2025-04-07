@@ -20,6 +20,47 @@ integrations:
           - chat:write
         output: SendMessageOutput
         endpoint: POST /send-message
+  google-drive:
+    syncs:
+      documents:
+        runs: every day
+        track_deletes: true
+        description: |
+          Sync the metadata of a specified file or folders from Google Drive,
+          handling both individual files and nested folders.
+          Metadata required to filter on a particular folder, or file(s). Metadata
+          fields should be `{"files": ["<some-id>"]}` OR
+          `{"folders": ["<some-id>"]}`. The ID should be able to be provided
+          by using the Google Picker API
+          (https://developers.google.com/drive/picker/guides/overview)
+          and using the ID field provided by the response
+          (https://developers.google.com/drive/picker/reference/results)
+        input: DocumentMetadata
+        auto_start: false
+        version: 3.0.1
+        output: Document
+        sync_type: full
+        endpoint:
+          method: GET
+          path: /documents
+          group: Documents
+        scopes: https://www.googleapis.com/auth/drive.readonly
+    actions:
+      fetch-document:
+        input: IdEntity
+        description: |
+          Fetches the content of a file given its ID, processes the data using
+          a response stream, and encodes it into a base64 string. This base64-encoded
+          string can be used to recreate the file in its original format using an external tool.
+          If this is a native google file type then use the fetch-google-sheet or fetch-google-doc
+          actions.
+        output: string
+        version: 2.0.2
+        endpoint:
+          method: GET
+          path: /fetch-document
+          group: Documents
+        scopes: https://www.googleapis.com/auth/drive.readonly
 models:
   SlackUser:
     id: string
@@ -57,3 +98,31 @@ models:
     warning?: string | undefined
     error?: string | undefined
     raw_json: string
+  DocumentMetadata:
+    files: string[] | undefined
+    folders: string[] | undefined
+  Document:
+    id: string
+    url: string
+    title: string
+    mimeType: string
+    updatedAt: string
+  JSONDocument:
+    documentId: string
+    title: string
+    url: string
+    tabs: object[]
+    revisionId: string
+    suggestionsViewMode: DEFAULT_FOR_CURRENT_ACCESS | SUGGESTIONS_INLINE | PREVIEW_SUGGESTIONS_ACCEPTED	| PREVIEW_WITHOUT_SUGGESTIONS
+    body: object
+    headers: object
+    footers: object
+    footnotes: object
+    documentStyle: object
+    suggestedDocumentStyleChanges: object
+    namedStyles: object
+    suggestedNamedStylesChanges: object
+    lists: object
+    namedRanges: object
+    inlineObjects: object
+    positionedObjects: object
