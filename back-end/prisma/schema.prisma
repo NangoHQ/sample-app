@@ -35,3 +35,26 @@ model Contacts {
 
   @@index([integrationId])
 }
+
+// Table for Google Drive files
+model Files {
+  id String @id @db.VarChar(64)
+
+  name         String
+  mimeType     String
+  webViewLink  String
+  iconLink     String
+  size         Int?
+  modifiedTime DateTime @db.Timestamp(3)
+  createdTime  DateTime @db.Timestamp(3)
+
+  integrationId String
+  connectionId  String
+
+  createdAt DateTime  @default(now()) @db.Timestamp(3)
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime? @db.Timestamp(3)
+
+  @@index([integrationId])
+  @@index([connectionId])
+}

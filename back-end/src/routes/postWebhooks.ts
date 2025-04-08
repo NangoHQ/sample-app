@@ -8,7 +8,7 @@ import type {
 } from '@nangohq/node';
 import { nango } from '../nango.js';
 import { db } from '../db.js';
-import type { SlackUser } from '../schema.js';
+import type { SlackUser, GoogleDriveFile } from '../schema.js';
 
 /**
  * Receive webhooks from Nango every time a records has been added, updated or deleted
@@ -85,6 +85,11 @@ async function handleSyncWebhook(body: NangoSyncWebhookBody) {
 
   console.log('Webhook: Sync results');
 
+  if (body.model === 'documents') {
+    await handleGoogleDriveSync(body);
+    return;
+  }
+
   // Now we need to fetch the actual records that were added/updated/deleted
   // The payload does not contains the records but a cursor "modifiedAfter"
   const records = await nango.listRecords<SlackUser>({
@@ -129,4 +134,59 @@ async function handleSyncWebhook(body: NangoSyncWebhookBody) {
   }
 
   console.log('Results processed');
+}
+
+/**
+ * Handle webhook when Google Drive sync has finished
+ */
+async function handleGoogleDriveSync(body: NangoSyncWebhookBody) {
+  const records = await nango.listRecords<GoogleDriveFile>({
+    connectionId: body.connectionId,
+    model: body.model,
+    providerConfigKey: body.providerConfigKey,
+    modifiedAfter: body.modifiedAfter,
+    limit: 1000,
+  });
+
+  console.log('Google Drive Files:', records.records.length);
+
+  // Save the updates in our backend
+  for (const record of records.records) {
+    if (record._nango_metadata.deleted_at) {
+      await db.files.update({
+        where: { id: record.id },
+        data: { deletedAt: new Date() },
+      });
+      continue;
+    }
+
+    // Create or Update the file records
+    await db.files.upsert({
+      where: { id: record.id },
+      create: {
+        id: record.id,
+        name: record.name,
+        mimeType: record.mimeType,
+        webViewLink: record.webViewLink,
+        iconLink: record.iconLink,
+        size: record.size,
+        modifiedTime: new Date(record.modifiedTime),
+        createdTime: new Date(record.createdTime),
+        integrationId: body.providerConfigKey,
+        connectionId: body.connectionId,
+        createdAt: new Date(),
+      },
+      update: {
+        name: record.name,
+        mimeType: record.mimeType,
+        webViewLink: record.webViewLink,
+        iconLink: record.iconLink,
+        size: record.size,
+        modifiedTime: new Date(record.modifiedTime),
+        updatedAt: new Date(),
+      },
+    });
+  }
+
+  console.log('Google Drive files processed');
 }

@@ -9,6 +9,9 @@ import { deleteConnection } from './routes/deleteConnection.js';
 import { sendSlackMessage } from './routes/sendSlackMessage.js';
 import { postConnectSession } from './routes/postConnectSession.js';
 import { seedUser } from './db.js';
+import { setGoogleDriveMetadata } from './routes/setGoogleDriveMetadata.js';
+import { getFiles } from './routes/getFiles.js';
+import { downloadFile } from './routes/downloadFile.js';
 
 const fastify = Fastify({ logger: false });
 fastify.addHook('onRequest', (req, _res, done) => {
@@ -61,6 +64,11 @@ fastify.get('/contacts', getContacts);
  * Send a Slack message to a given Slack user.
  */
 fastify.post('/send-slack-message', sendSlackMessage);
+
+// Google Drive routes
+fastify.post('/api/google-drive/metadata/:connectionId', setGoogleDriveMetadata);
+fastify.get('/api/google-drive/files/:connectionId', getFiles);
+fastify.get('/api/google-drive/files/:connectionId/:fileId/download', downloadFile);
 
 try {
   await seedUser();

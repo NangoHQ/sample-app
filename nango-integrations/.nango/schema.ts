@@ -43,3 +43,22 @@ export interface SendMessageOutput {
   error?: string | undefined;
   raw_json: string;
 };
+
+export interface GoogleDriveFile {
+  id: string;
+  name: string;
+  mimeType: string;
+  webViewLink: string;
+  iconLink: string;
+  size?: number;
+  modifiedTime: string;
+  createdTime: string;
+  raw_json: string;
+}
+
+export interface GoogleDriveMetadata {
+  selectedFiles: {
+    id: string;
+    name: string;
+  }[];
+}
