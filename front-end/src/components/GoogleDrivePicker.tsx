@@ -1,5 +1,7 @@
-import React, { useEffect } from 'react';
-import { api } from '../api';
+import React, { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { baseUrl } from '../utils';
+import Spinner from './Spinner';
 
 declare global {
   interface Window {
@@ -13,7 +15,26 @@ interface Props {
   onFilesSelected?: () => void;
 }
 
+interface PickerFile {
+  id: string;
+  name: string;
+}
+
 export function GoogleDrivePicker({ connectionId, onFilesSelected }: Props) {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const { data: resConnection } = useQuery({
+    queryKey: ['connection', connectionId],
+    queryFn: async () => {
+      const response = await fetch(`${baseUrl}/connections/${connectionId}`);
+      if (!response.ok) {
+        throw new Error('Failed to get connection');
+      }
+      return response.json();
+    },
+  });
+
   useEffect(() => {
     // Load the Google Drive picker
     const script = document.createElement('script');
@@ -27,24 +48,45 @@ export function GoogleDrivePicker({ connectionId, onFilesSelected }: Props) {
   }, []);
 
   const openPicker = async () => {
-    try {
-      const response = await api.get(`/api/connections/${connectionId}`);
-      const accessToken = response.data.access_token;
+    if (!resConnection?.access_token) {
+      setError('No access token available');
+      return;
+    }
 
+    setLoading(true);
+    setError(null);
+
+    try {
       const picker = new window.google.picker.PickerBuilder()
         .addView(window.google.picker.ViewId.DOCS)
-        .setOAuthToken(accessToken)
+        .setOAuthToken(resConnection.access_token)
         .setCallback(async (data: any) => {
           if (data.action === window.google.picker.Action.PICKED) {
-            const files = data.docs.map((doc: any) => ({
+            const files: PickerFile[] = data.docs.map((doc: any) => ({
               id: doc.id,
               name: doc.name,
             }));
 
-            await api.post(`/api/google-drive/metadata/${connectionId}`, {
-              selectedFiles: files,
-            });
+            // Set the metadata for the connection
+            const metadataResponse = await fetch(
+              `${baseUrl}/google-drive/metadata/${connectionId}`,
+              {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  integration: 'google-drive',
+                  selectedFiles: files,
+                }),
+              }
+            );
 
+            if (!metadataResponse.ok) {
+              throw new Error('Failed to set metadata');
+            }
+
+            // Notify parent component that files were selected
             if (onFilesSelected) {
               onFilesSelected();
             }
@@ -53,17 +95,25 @@ export function GoogleDrivePicker({ connectionId, onFilesSelected }: Props) {
         .build();
 
       picker.setVisible(true);
-    } catch (error) {
-      console.error('Error opening picker:', error);
+    } catch (err) {
+      console.error('Error opening picker:', err);
+      setError('Failed to open picker');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <button
-      onClick={openPicker}
-      className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700"
-    >
-      Select Files from Google Drive
-    </button>
+    <div>
+      <button
+        onClick={openPicker}
+        disabled={loading}
+        className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700 flex items-center space-x-2"
+      >
+        <span>Select Files from Google Drive</span>
+        {loading && <Spinner size={1} className="text-white" />}
+      </button>
+      {error && <div className="mt-2 text-sm text-red-500">{error}</div>}
+    </div>
   );
 } 

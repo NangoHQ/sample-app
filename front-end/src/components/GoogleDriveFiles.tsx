@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { api } from '../api';
+import { useQuery } from '@tanstack/react-query';
+import { baseUrl, queryClient } from '../utils';
+import Spinner from './Spinner';
 
 interface File {
   id: string;
@@ -16,51 +18,57 @@ interface Props {
 }
 
 export function GoogleDriveFiles({ connectionId }: Props) {
-  const [files, setFiles] = useState<File[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data: resFiles, isLoading } = useQuery({
+    queryKey: ['google-drive-files', connectionId],
+    queryFn: async () => {
+      const response = await fetch(`${baseUrl}/google-drive/files/${connectionId}`);
+      if (!response.ok) {
+        throw new Error('Failed to load files');
+      }
+      return response.json();
+    },
+  });
 
   useEffect(() => {
-    const fetchFiles = async () => {
-      try {
-        const response = await api.get(`/google-drive/files/${connectionId}`);
-        setFiles(response.data.files);
-      } catch (err) {
-        setError('Failed to load files');
-        console.error('Error loading files:', err);
-      } finally {
-        setLoading(false);
+    const interval = setInterval(
+      () => {
+        void queryClient.refetchQueries({ queryKey: ['google-drive-files', connectionId] });
+      },
+      resFiles?.files?.length > 0 ? 10000 : 1000
+    );
+
+    return () => {
+      if (interval) {
+        clearInterval(interval);
       }
     };
-
-    fetchFiles();
-  }, [connectionId]);
+  }, [resFiles, connectionId]);
 
   const handleDownload = async (fileId: string) => {
     try {
-      window.location.href = `/api/google-drive/files/${connectionId}/${fileId}/download`;
+      window.location.href = `${baseUrl}/google-drive/files/${connectionId}/${fileId}/download`;
     } catch (err) {
       console.error('Error downloading file:', err);
     }
   };
 
-  if (loading) {
-    return <div>Loading files...</div>;
+  if (isLoading || !resFiles?.files) {
+    return (
+      <div className="w-full flex justify-center">
+        <Spinner size={1} />
+      </div>
+    );
   }
 
-  if (error) {
-    return <div className="text-red-500">{error}</div>;
-  }
-
-  if (files.length === 0) {
-    return <div>No files found. Use the Google Drive picker to select files to sync.</div>;
+  if (resFiles.files.length === 0) {
+    return <div className="mt-8 text-center h-20">No files found. Use the Google Drive picker to select files to sync.</div>;
   }
 
   return (
     <div className="space-y-4">
       <h2 className="text-xl font-semibold">Your Google Drive Files</h2>
       <div className="grid grid-cols-1 gap-4">
-        {files.map((file) => (
+        {resFiles.files.map((file: File) => (
           <div
             key={file.id}
             className="flex items-center justify-between p-4 bg-white rounded-lg shadow"
