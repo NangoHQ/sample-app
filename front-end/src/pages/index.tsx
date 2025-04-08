@@ -55,19 +55,14 @@ export default function IndexPage() {
   }
 
   return (
-    <div className="w-full h-screen grid grid-rows-[auto_1fr]">
+    <div className="min-h-screen flex flex-col">
       <header className="px-10 py-5 border-b">
         <h1 className="text-2xl font-bold">Team Settings</h1>
       </header>
-      <div className="overflow-y-scroll px-10 py-10">
-        <div
-          className={cn(
-            'flex justify-center',
-            !connectedTo && 'items-center h-full'
-          )}
-        >
-          <div className="flex flex-col gap-16">
-            <div className="w-[540px] rounded shadow-2xl px-16 py-10 pb-16 h-auto">
+      <div className="flex-1 px-10 py-10 overflow-auto">
+        <div className="flex justify-center">
+          <div className="flex flex-col gap-16 w-[540px]">
+            <div className="rounded shadow-2xl px-16 py-10 pb-16">
               <h2 className="text-center text-2xl mb-10 font-semibold">
                 Invite team members
               </h2>

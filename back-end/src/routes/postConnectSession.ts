@@ -30,7 +30,7 @@ export const postConnectSession: RouteHandler<{
       display_name: user.displayName,
     },
     // Only allow "slack" integration so we can enforce what the user is expected to do even if we have multiple available integrations
-    allowed_integrations: ['slack'],
+    allowed_integrations: ['slack', 'google-drive'],
   });
 
   await reply.status(200).send({ connectSession: res.data.token });
