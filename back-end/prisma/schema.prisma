@@ -41,12 +41,11 @@ model Contacts {
 model Files {
   id String @id @db.VarChar(64)
 
-  name         String
+  title        String
   mimeType     String
-  webViewLink  String
+  url          String
   iconLink     String
   size         Int?
-  modifiedTime DateTime @db.Timestamp(3)
   createdTime  DateTime @db.Timestamp(3)
 
   integrationId String

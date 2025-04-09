@@ -5,8 +5,6 @@ import { IntegrationsGrid } from '../components/IntegrationGrid';
 import Spinner from '../components/Spinner';
 import { listConnections, listIntegrations } from '../api';
 import { ContactsTable } from '../components/ContactsTable';
-import { GoogleDrivePicker } from '../components/GoogleDrivePicker';
-import { GoogleDriveFiles } from '../components/GoogleDriveFiles';
 import type { Integration } from '../types';
 import { cn } from '../utils';
 
@@ -39,12 +37,6 @@ export default function IndexPage() {
   const connectedTo = useMemo(() => {
     return integrations?.find((value) => value.connected);
   }, [integrations]);
-
-  const googleDriveConnection = useMemo(() => {
-    return resConnections?.connections.find(
-      (connection) => connection.provider_config_key === 'google-drive'
-    );
-  }, [resConnections]);
 
   if (!integrations) {
     return (
@@ -94,25 +86,6 @@ export default function IndexPage() {
               )}
             </div>
             {connectedTo && <IntegrationsGrid integrations={[connectedTo]} />}
-
-            {/* Google Drive Section */}
-            {googleDriveConnection && (
-              <div className="w-[540px] rounded shadow-2xl px-16 py-10 pb-16 h-auto">
-                <h2 className="text-center text-2xl mb-10 font-semibold">
-                  Google Drive Files
-                </h2>
-                <div className="space-y-6">
-                  <GoogleDrivePicker
-                    connectionId={String(googleDriveConnection.id)}
-                    onFilesSelected={() => {
-                      // Refetch files after selection
-                      window.location.reload();
-                    }}
-                  />
-                  <GoogleDriveFiles connectionId={String(googleDriveConnection.id)} />
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </div>

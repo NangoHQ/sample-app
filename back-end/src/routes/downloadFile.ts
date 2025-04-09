@@ -31,7 +31,7 @@ export const downloadFile: RouteHandler = async (req, reply) => {
 
     // Set appropriate headers for file download
     reply.header('Content-Type', file.mimeType);
-    reply.header('Content-Disposition', `attachment; filename="${file.name}"`);
+    reply.header('Content-Disposition', `attachment; filename="${file.title}"`);
     
     await reply.send(response.data);
   } catch (error) {

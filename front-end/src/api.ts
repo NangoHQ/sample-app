@@ -5,6 +5,7 @@ import type {
   GetConnectionsSuccess,
 } from 'back-end';
 import { baseUrl } from './utils';
+import type { File } from './types';
 
 export async function postConnectSession(): Promise<PostConnectSessionSuccess> {
   const res = await fetch(`${baseUrl}/connect-session`, {
@@ -67,4 +68,13 @@ export async function setConnectionMetadata(integrationId: string, metadata: Rec
   if (res.status !== 200) {
     throw new Error('Failed to set connection metadata');
   }
+}
+
+export async function getFiles(connectionId: string): Promise<File[]> {
+  const res = await fetch(`${baseUrl}/api/google-drive/files/${connectionId}`);
+  if (res.status !== 200) {
+    throw new Error('Failed to get files');
+  }
+  const json: { files: File[] } = await res.json();
+  return json.files;
 }

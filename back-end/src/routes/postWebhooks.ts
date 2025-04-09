@@ -8,7 +8,8 @@ import type {
 } from '@nangohq/node';
 import { nango } from '../nango.js';
 import { db } from '../db.js';
-import type { SlackUser, GoogleDriveFile } from '../schema.js';
+import type { SlackUser } from '../schema.js';
+import type { Files } from '@prisma/client';
 
 /**
  * Receive webhooks from Nango every time a records has been added, updated or deleted
@@ -140,7 +141,7 @@ async function handleSyncWebhook(body: NangoSyncWebhookBody) {
  * Handle webhook when Google Drive sync has finished
  */
 async function handleGoogleDriveSync(body: NangoSyncWebhookBody) {
-  const records = await nango.listRecords<GoogleDriveFile>({
+  const records = await nango.listRecords<Files>({
     connectionId: body.connectionId,
     model: body.model,
     providerConfigKey: body.providerConfigKey,
@@ -166,24 +167,23 @@ async function handleGoogleDriveSync(body: NangoSyncWebhookBody) {
       where: { id: record.id },
       create: {
         id: record.id,
-        name: record.name,
+        title: record.title,
         mimeType: record.mimeType,
-        webViewLink: record.webViewLink,
+        url: record.url,
         iconLink: record.iconLink,
         size: record.size ?? null,
-        modifiedTime: new Date(record.modifiedTime),
         createdTime: new Date(record.createdTime),
         integrationId: body.providerConfigKey,
         connectionId: body.connectionId,
         createdAt: new Date(),
       },
       update: {
-        name: record.name,
+        title: record.title,
         mimeType: record.mimeType,
-        webViewLink: record.webViewLink,
+        url: record.url,
         iconLink: record.iconLink,
         size: record.size ?? null,
-        modifiedTime: new Date(record.modifiedTime),
+        createdTime: new Date(record.createdTime),
         updatedAt: new Date(),
       },
     });

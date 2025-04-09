@@ -11,7 +11,7 @@ export const getFiles: RouteHandler = async (req, reply) => {
         deletedAt: null,
       },
       orderBy: {
-        modifiedTime: 'desc',
+        updatedAt: 'desc',
       },
     });
 
