@@ -35,7 +35,7 @@ export default function IndexPage() {
   }, [resIntegrations, resConnections]);
 
   const connectedTo = useMemo(() => {
-    return integrations?.find((value) => value.connected);
+    return integrations?.find((value) => value.connected && value.unique_key === 'slack');
   }, [integrations]);
 
   const slackIntegration = useMemo(() => {
