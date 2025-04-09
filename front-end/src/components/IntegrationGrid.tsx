@@ -9,6 +9,7 @@ import InfoModal from './modals/Info';
 
 const apiURL = process.env.NEXT_PUBLIC_NANGO_HOST ?? 'https://api.nango.dev';
 const nango = new Nango({ host: apiURL, publicKey: 'empty' });
+const connectUIBaseUrl = process.env.NEXT_PUBLIC_NANGO_CONNECT_URL ?? 'https://api.nango.dev';
 
 export const IntegrationBloc: React.FC<{
   integration: Integration;
@@ -24,7 +25,7 @@ export const IntegrationBloc: React.FC<{
 
     connectUI.current = nango.openConnectUI({
       apiURL,
-      baseURL: 'http://localhost:3009',
+      baseURL: connectUIBaseUrl,
       onEvent: (event) => {
         if (event.type === 'close') {
           // we refresh on close so user can see the diff
