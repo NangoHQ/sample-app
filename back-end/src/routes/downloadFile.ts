@@ -1,16 +1,26 @@
 import type { RouteHandler } from 'fastify';
 import { nango } from '../nango.js';
-import { db } from '../db.js';
+import { db, getUserFromDatabase } from '../db.js';
 
 export const downloadFile: RouteHandler = async (req, reply) => {
-  const { connectionId, fileId } = req.params as { connectionId: string; fileId: string };
+  const { fileId } = req.params as { fileId: string };
 
   try {
+    const user = await getUserFromDatabase();
+    if (!user) {
+      await reply.status(400).send({ error: 'invalid_user' });
+      return;
+    }
+    if (!user.connectionId) {
+      await reply.status(400).send({ error: 'No connection found' });
+      return;
+    }
+
     // Get the file from our database
     const file = await db.files.findUnique({
       where: {
         id: fileId,
-        connectionId,
+        connectionId: user.connectionId,
       },
     });
 
@@ -21,7 +31,7 @@ export const downloadFile: RouteHandler = async (req, reply) => {
 
     // Use Nango proxy to download the file
     const response = await nango.proxy({
-      connectionId,
+      connectionId: user.connectionId,
       providerConfigKey: 'google-drive',
       endpoint: `/files/${fileId}`,
       params: {

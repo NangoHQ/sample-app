@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { listConnections, listIntegrations } from '../api';
 import { GoogleDrivePicker } from '../components/GoogleDrivePicker';
@@ -6,14 +6,14 @@ import { GoogleDriveFiles } from '../components/GoogleDriveFiles';
 import Spinner from '../components/Spinner';
 import type { Integration } from '../types';
 import { IntegrationsGrid } from '../components/IntegrationGrid';
-import Head from 'next/head';
+import Head from 'next/head';''
 
 export default function FilesPage() {
   const { data: resIntegrations } = useQuery({
     queryKey: ['integrations'],
     queryFn: listIntegrations,
   });
-  const { data: resConnections } = useQuery({
+  const { data: resConnections, error: connectionsError } = useQuery({
     queryKey: ['connections'],
     queryFn: listConnections,
   });
@@ -40,6 +40,24 @@ export default function FilesPage() {
     );
   }, [resConnections]);
 
+  console.log('Google Drive Connection:', googleDriveConnection);
+
+  const connectedTo = useMemo(() => {
+    return integrations?.find((value) => value.connected);
+  }, [integrations]);
+
+  useEffect(() => {
+    console.log('Integrations:', integrations);
+    console.log('Connections:', resConnections);
+    console.log('Connected Integration:', connectedTo);
+  }, [integrations, resConnections, connectedTo]);
+
+  useEffect(() => {
+    if (connectionsError) {
+      console.error('Error fetching connections:', connectionsError);
+    }
+  }, [connectionsError]);
+
   if (!integrations) {
     return (
       <main className="p-4 md:p-10 mx-auto max-w-7xl">
@@ -60,17 +78,17 @@ export default function FilesPage() {
         <div className="flex justify-center">
           <div className="flex flex-col gap-16 w-[540px]">
             {integrations && <IntegrationsGrid integrations={integrations} />}
-            {googleDriveConnection && (
+            {connectedTo && googleDriveConnection && (
               <div className="w-[540px] rounded shadow-2xl px-16 py-10 pb-16 h-auto">
                 <div className="space-y-6">
                   <GoogleDrivePicker
-                    connectionId={String(googleDriveConnection.id)}
+                    connectionId={String(googleDriveConnection.connection_id)}
                     onFilesSelected={() => {
                       // Refetch files after selection
                       window.location.reload();
                     }}
                   />
-                  <GoogleDriveFiles connectionId={String(googleDriveConnection.id)} />
+                  <GoogleDriveFiles connectionId={String(googleDriveConnection.connection_id)} />
                 </div>
               </div>
             )}

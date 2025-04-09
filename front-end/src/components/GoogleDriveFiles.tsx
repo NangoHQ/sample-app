@@ -1,9 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { apiUrl, baseUrl, queryClient } from '../utils';
+import { queryClient } from '../utils';
 import Spinner from './Spinner';
-import { getFiles } from '../api';
+import { getFiles, downloadFile } from '../api';
 import type { File } from '../types';
+import { Nango } from '@nangohq/node';
+import { ProxyConfiguration } from '@nangohq/node';
+import { baseUrl } from '../utils';
 
 interface Props {
   connectionId: string;
@@ -13,7 +16,7 @@ export function GoogleDriveFiles({ connectionId }: Props) {
   const { data: resFiles, isLoading } = useQuery({
     queryKey: ['google-drive-files', connectionId],
     queryFn: async () => {
-      return await getFiles(connectionId);
+      return await getFiles();
     },
   });
 
@@ -33,9 +36,16 @@ export function GoogleDriveFiles({ connectionId }: Props) {
   }, [resFiles, connectionId]);
 
   const handleDownload = async (fileId: string) => {
-    // 
     try {
-      window.location.href = `${apiUrl}/google-drive/files/${connectionId}/${fileId}/download`;
+      const blob = await downloadFile(fileId);
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileId;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
     } catch (err) {
       console.error('Error downloading file:', err);
     }

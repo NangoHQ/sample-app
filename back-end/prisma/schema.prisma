@@ -44,7 +44,6 @@ model Files {
   title        String
   mimeType     String
   url          String
-  iconLink     String
   size         Int?
   createdTime  DateTime @db.Timestamp(3)
 

@@ -48,8 +48,6 @@ export const postWebhooks: RouteHandler = async (req, reply) => {
   await reply.status(200).send({ ack: true });
 };
 
-// ------------------------
-
 /**
  * Handle webhook when a new connection is created
  */
@@ -86,22 +84,34 @@ async function handleSyncWebhook(body: NangoSyncWebhookBody) {
 
   console.log('Webhook: Sync results');
 
-  if (body.model === 'documents') {
-    await handleGoogleDriveSync(body);
-    return;
+  // Route to the appropriate sync handler based on the model
+  switch (body.model) {
+    case 'Document':
+      await handleGoogleDriveSync(body);
+      break;
+    case 'SlackUser':
+      await handleSlackSync(body);
+      break;
+    default:
+      console.warn('Unsupported sync model:', body.model);
   }
+}
 
-  // Now we need to fetch the actual records that were added/updated/deleted
-  // The payload does not contains the records but a cursor "modifiedAfter"
+/**
+ * Handle webhook when Slack sync has finished
+ */
+async function handleSlackSync(body: NangoSyncWebhookBody) {
+  // Fetch the actual records that were added/updated/deleted
   const records = await nango.listRecords<SlackUser>({
     connectionId: body.connectionId,
     model: body.model,
     providerConfigKey: body.providerConfigKey,
+    // @ts-expect-error: modifiedAfter exists at runtime but is not typed correctly
     modifiedAfter: body.modifiedAfter,
     limit: 1000,
   });
 
-  console.log('Records', records.records.length);
+  console.log('Slack Records:', records.records.length);
 
   // Save the updates in our backend
   for (const record of records.records) {
@@ -134,60 +144,73 @@ async function handleSyncWebhook(body: NangoSyncWebhookBody) {
     });
   }
 
-  console.log('Results processed');
+  console.log('Slack results processed');
 }
 
 /**
  * Handle webhook when Google Drive sync has finished
  */
 async function handleGoogleDriveSync(body: NangoSyncWebhookBody) {
-  const records = await nango.listRecords<Files>({
-    connectionId: body.connectionId,
-    model: body.model,
-    providerConfigKey: body.providerConfigKey,
-    // @ts-expect-error: modifiedAfter exists at runtime but is not typed correctly
-    modifiedAfter: body.modifiedAfter,
-    limit: 1000,
-  });
+  console.log('Google Drive Sync:', body);  
+  try {
+    const records = await nango.listRecords<Files>({
+      connectionId: body.connectionId,
+      model: body.model,
+      providerConfigKey: body.providerConfigKey,
+      // @ts-expect-error: modifiedAfter exists at runtime but is not typed correctly
+      modifiedAfter: body.modifiedAfter,
+      limit: 1000,
+    });
+    console.log('Google Drive Records:', records.records);
 
-  console.log('Google Drive Files:', records.records.length);
+    console.log('Google Drive Files:', records.records.length);
 
-  // Save the updates in our backend
-  for (const record of records.records) {
-    if (record._nango_metadata.deleted_at) {
-      await db.files.update({
-        where: { id: record.id },
-        data: { deletedAt: new Date() },
-      });
-      continue;
+    // Save the updates in our backend
+    for (const record of records.records) {
+      try {
+        if (record._nango_metadata.deleted_at) {
+          console.log('Google Drive File Deleted:', record.id);
+          await db.files.update({
+            where: { id: record.id },
+            data: { deletedAt: new Date() },
+          });
+          continue;
+        }
+
+        // Validate and parse createdTime
+        
+
+        // Create or Update the file records
+        console.log('Google Drive File Created:', record.id); 
+        await db.files.upsert({
+          where: { id: record.id },
+          create: {
+            id: record.id,
+            title: record.title,
+            mimeType: record.mimeType,
+            url: record.url,
+            size: record.size ?? null,
+            createdTime: new Date(record._nango_metadata.first_seen_at),
+            integrationId: body.providerConfigKey,
+            connectionId: body.connectionId,
+            createdAt: new Date(),
+          },
+          update: {
+            title: record.title,
+            mimeType: record.mimeType,
+            url: record.url,
+            size: record.size ?? null,
+            createdTime: new Date(record._nango_metadata.first_seen_at),
+            updatedAt: new Date(),
+          },
+        });
+      } catch (error) {
+        console.error('Error processing record:', record.id, error);
+      }
     }
 
-    // Create or Update the file records
-    await db.files.upsert({
-      where: { id: record.id },
-      create: {
-        id: record.id,
-        title: record.title,
-        mimeType: record.mimeType,
-        url: record.url,
-        iconLink: record.iconLink,
-        size: record.size ?? null,
-        createdTime: new Date(record.createdTime),
-        integrationId: body.providerConfigKey,
-        connectionId: body.connectionId,
-        createdAt: new Date(),
-      },
-      update: {
-        title: record.title,
-        mimeType: record.mimeType,
-        url: record.url,
-        iconLink: record.iconLink,
-        size: record.size ?? null,
-        createdTime: new Date(record.createdTime),
-        updatedAt: new Date(),
-      },
-    });
+    console.log('Google Drive files processed');
+  } catch (error) {
+    console.error('Failed to list records:', error);
   }
-
-  console.log('Google Drive files processed');
 }

@@ -70,11 +70,23 @@ export async function setConnectionMetadata(integrationId: string, metadata: Rec
   }
 }
 
-export async function getFiles(connectionId: string): Promise<File[]> {
-  const res = await fetch(`${baseUrl}/api/google-drive/files/${connectionId}`);
+export async function getFiles(): Promise<File[]> {
+  const res = await fetch(`${baseUrl}/get-files`);
   if (res.status !== 200) {
     throw new Error('Failed to get files');
   }
   const json: { files: File[] } = await res.json();
   return json.files;
+}
+
+export async function downloadFile(fileId: string): Promise<Blob> {
+  const res = await fetch(`${baseUrl}/download/${fileId}`, {
+    method: 'GET',
+  });
+
+  if (!res.ok) {
+    throw new Error('Failed to download file');
+  }
+
+  return res.blob();
 }

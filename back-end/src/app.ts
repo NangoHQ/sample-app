@@ -69,8 +69,8 @@ fastify.post('/send-slack-message', sendSlackMessage);
 
 // Google Drive routes
 fastify.post('/api/google-drive/metadata/:connectionId', setGoogleDriveMetadata);
-fastify.get('/api/google-drive/files/:connectionId', getFiles);
-fastify.get('/api/google-drive/files/:connectionId/:fileId/download', downloadFile);
+fastify.get('/get-files', getFiles);
+fastify.get('/download/:fileId', downloadFile);
 
 /**
  * Get Nango credentials for a specific integration
