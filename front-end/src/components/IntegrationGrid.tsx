@@ -23,7 +23,8 @@ export const IntegrationBloc: React.FC<{
     setLoading(true);
 
     connectUI.current = nango.openConnectUI({
-      apiURL: apiURL,
+      apiURL,
+      baseURL: 'http://localhost:3009',
       onEvent: (event) => {
         if (event.type === 'close') {
           // we refresh on close so user can see the diff
