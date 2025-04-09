@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { baseUrl } from '../utils';
+// import { baseUrl } from '../utils';
 import Spinner from './Spinner';
+import { apiUrl } from '../utils';
 
 declare global {
   interface Window {
@@ -27,7 +28,8 @@ export function GoogleDrivePicker({ connectionId, onFilesSelected }: Props) {
   const { data: resConnection } = useQuery({
     queryKey: ['connection', connectionId],
     queryFn: async () => {
-      const response = await fetch(`${baseUrl}/connections/${connectionId}`);
+      console.log("Running query")
+      const response = await fetch(`${apiUrl}/connection/${connectionId}`);
       if (!response.ok) {
         throw new Error('Failed to get connection');
       }
@@ -69,7 +71,7 @@ export function GoogleDrivePicker({ connectionId, onFilesSelected }: Props) {
 
             // Set the metadata for the connection
             const metadataResponse = await fetch(
-              `${baseUrl}/google-drive/metadata/${connectionId}`,
+              `${apiUrl}/google-drive/metadata/${connectionId}`,
               {
                 method: 'POST',
                 headers: {

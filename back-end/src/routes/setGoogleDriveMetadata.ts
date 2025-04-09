@@ -1,24 +1,15 @@
 import type { RouteHandler } from 'fastify';
 import { nango } from '../nango.js';
-import type { GoogleDriveMetadata } from '../schema.js';
+import type { Metadata } from '@nangohq/types';
+// import type { GoogleDriveMetadata } from '../schema.js';
 
 export const setGoogleDriveMetadata: RouteHandler = async (req, reply) => {
   const { connectionId } = req.params as { connectionId: string };
-  const metadata = req.body as GoogleDriveMetadata;
+  const metadata = req.body as Metadata;
 
   try {
-    await nango.setMetadata({
-      connectionId,
-      providerConfigKey: 'google-drive',
-      metadata,
-    });
-
-    // Trigger the documents sync
-    await nango.triggerSync({
-      connectionId,
-      providerConfigKey: 'google-drive',
-      syncName: 'documents',
-    });
+    await nango.setMetadata('google-drive', connectionId, metadata);
+    await nango.triggerSync('google-drive', ['documents'], connectionId);
 
     await reply.status(200).send({ success: true });
   } catch (error) {

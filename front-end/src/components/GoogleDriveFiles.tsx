@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { baseUrl, queryClient } from '../utils';
+import { apiUrl, baseUrl, queryClient } from '../utils';
 import Spinner from './Spinner';
 
 interface File {
@@ -21,7 +21,7 @@ export function GoogleDriveFiles({ connectionId }: Props) {
   const { data: resFiles, isLoading } = useQuery({
     queryKey: ['google-drive-files', connectionId],
     queryFn: async () => {
-      const response = await fetch(`${baseUrl}/google-drive/files/${connectionId}`);
+      const response = await fetch(`${apiUrl}/google-drive/files/${connectionId}`);
       if (!response.ok) {
         throw new Error('Failed to load files');
       }
@@ -45,8 +45,9 @@ export function GoogleDriveFiles({ connectionId }: Props) {
   }, [resFiles, connectionId]);
 
   const handleDownload = async (fileId: string) => {
+    // 
     try {
-      window.location.href = `${baseUrl}/google-drive/files/${connectionId}/${fileId}/download`;
+      window.location.href = `${apiUrl}/google-drive/files/${connectionId}/${fileId}/download`;
     } catch (err) {
       console.error('Error downloading file:', err);
     }

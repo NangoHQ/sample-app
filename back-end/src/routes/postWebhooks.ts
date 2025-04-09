@@ -144,6 +144,7 @@ async function handleGoogleDriveSync(body: NangoSyncWebhookBody) {
     connectionId: body.connectionId,
     model: body.model,
     providerConfigKey: body.providerConfigKey,
+    // @ts-expect-error: modifiedAfter exists at runtime but is not typed correctly
     modifiedAfter: body.modifiedAfter,
     limit: 1000,
   });
@@ -169,7 +170,7 @@ async function handleGoogleDriveSync(body: NangoSyncWebhookBody) {
         mimeType: record.mimeType,
         webViewLink: record.webViewLink,
         iconLink: record.iconLink,
-        size: record.size,
+        size: record.size ?? null,
         modifiedTime: new Date(record.modifiedTime),
         createdTime: new Date(record.createdTime),
         integrationId: body.providerConfigKey,
@@ -181,7 +182,7 @@ async function handleGoogleDriveSync(body: NangoSyncWebhookBody) {
         mimeType: record.mimeType,
         webViewLink: record.webViewLink,
         iconLink: record.iconLink,
-        size: record.size,
+        size: record.size ?? null,
         modifiedTime: new Date(record.modifiedTime),
         updatedAt: new Date(),
       },
