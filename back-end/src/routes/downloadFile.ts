@@ -2,7 +2,6 @@ import type { RouteHandler } from 'fastify';
 import { nango } from '../nango.js';
 import { getUserFromDatabase } from '../db.js';
 import { mimeTypeMapping } from '../utils.js';
-import type { GoogleDriveFile } from '../schema.js';
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
@@ -15,7 +14,7 @@ export const downloadFile: RouteHandler = async (req, reply) => {
       return reply.status(400).send({ error: 'invalid_user_or_connection' });
     }
 
-    const metadataRes = await nango.get<GoogleDriveFile>({
+    const metadataRes = await nango.get({
       providerConfigKey: 'google-drive',
       connectionId: user.connectionId,
       endpoint: `drive/v3/files/${fileId}`,

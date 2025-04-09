@@ -1,6 +1,6 @@
 interface MimeTypeMapping {
     mimeType: string;
-    responseType: 'text' | 'stream';
+    responseType: 'text' | 'stream' | 'arraybuffer';
 }
 
 export const mimeTypeMapping: Record<string, MimeTypeMapping> = {
