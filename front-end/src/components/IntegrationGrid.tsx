@@ -9,7 +9,7 @@ import InfoModal from './modals/Info';
 
 const apiURL = process.env.NEXT_PUBLIC_NANGO_HOST ?? 'https://api.nango.dev';
 const nango = new Nango({ host: apiURL, publicKey: 'empty' });
-const connectUIBaseUrl = process.env.NEXT_PUBLIC_NANGO_CONNECT_URL ?? 'https://api.nango.dev';
+const connectUIBaseUrl = process.env.NEXT_PUBLIC_NANGO_CONNECT_URL ?? 'https://connect.nango.dev';
 
 export const IntegrationBloc: React.FC<{
   integration: Integration;
