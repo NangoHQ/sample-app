@@ -5,6 +5,7 @@ import type {
   GetConnectionsSuccess,
 } from 'back-end';
 import { baseUrl } from './utils';
+import type { File } from './types';
 
 export async function postConnectSession(): Promise<PostConnectSessionSuccess> {
   const res = await fetch(`${baseUrl}/connect-session`, {
@@ -67,4 +68,25 @@ export async function setConnectionMetadata(integrationId: string, metadata: Rec
   if (res.status !== 200) {
     throw new Error('Failed to set connection metadata');
   }
+}
+
+export async function getFiles(): Promise<File[]> {
+  const res = await fetch(`${baseUrl}/get-files`);
+  if (res.status !== 200) {
+    throw new Error('Failed to get files');
+  }
+  const json: { files: File[] } = await res.json();
+  return json.files;
+}
+
+export async function downloadFile(fileId: string): Promise<Blob> {
+  const res = await fetch(`${baseUrl}/download/${fileId}`, {
+    method: 'GET',
+  });
+
+  if (!res.ok) {
+    throw new Error('Failed to download file');
+  }
+
+  return res.blob();
 }

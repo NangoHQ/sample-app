@@ -25,12 +25,10 @@ CREATE TABLE "Contacts" (
 -- CreateTable
 CREATE TABLE "Files" (
     "id" VARCHAR(64) NOT NULL,
-    "name" TEXT NOT NULL,
+    "title" TEXT NOT NULL,
     "mimeType" TEXT NOT NULL,
-    "webViewLink" TEXT NOT NULL,
-    "iconLink" TEXT NOT NULL,
+    "url" TEXT NOT NULL,
     "size" INTEGER,
-    "modifiedTime" TIMESTAMP(3) NOT NULL,
     "createdTime" TIMESTAMP(3) NOT NULL,
     "integrationId" TEXT NOT NULL,
     "connectionId" TEXT NOT NULL,
