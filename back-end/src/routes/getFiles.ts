@@ -16,18 +16,14 @@ export const getFiles: RouteHandler = async (_, reply) => {
     const files = await db.files.findMany({
       where: {
         connectionId: user.connectionId,
-        // deletedAt: null,
+        deletedAt: null,
       },
       orderBy: {
         updatedAt: 'desc',
       },
     });
-    console.log('Files:', files);
 
-    // filter out deleted files
-    const filteredFiles = files.filter(file => !file.deletedAt);
-
-    await reply.status(200).send({ files: filteredFiles });
+    await reply.status(200).send({ files });
   } catch (error) {
     console.error('Failed to get files:', error);
     await reply.status(500).send({ error: 'Failed to get files' });
