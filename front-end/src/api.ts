@@ -47,3 +47,24 @@ export async function listContacts(): Promise<GetContactsSuccess> {
   const json = (await res.json()) as GetContactsSuccess;
   return json;
 }
+
+export async function getNangoCredentials(integrationId: string): Promise<any> {
+  const res = await fetch(`${baseUrl}/nango-credentials?integrationId=${integrationId}`);
+  if (res.status !== 200) {
+    throw new Error('Failed to get Nango credentials');
+  }
+  return res.json();
+}
+
+export async function setConnectionMetadata(integrationId: string, metadata: Record<string, any>): Promise<void> {
+  const res = await fetch(`${baseUrl}/set-connection-metadata`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ integrationId, metadata }),
+  });
+  if (res.status !== 200) {
+    throw new Error('Failed to set connection metadata');
+  }
+}

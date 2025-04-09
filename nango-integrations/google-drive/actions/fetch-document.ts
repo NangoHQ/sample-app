@@ -1,6 +1,5 @@
 import type { NangoAction, ProxyConfiguration, IdEntity } from '../../models';
-import type { GoogleDriveFileResponse } from '../types.js';
-import { mimeTypeMapping } from '../types.js';
+import { type GoogleDriveFileResponse, mimeTypeMapping } from '../types';
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB in bytes
 

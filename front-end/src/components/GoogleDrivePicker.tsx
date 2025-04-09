@@ -3,6 +3,8 @@ import { useQuery } from '@tanstack/react-query';
 // import { baseUrl } from '../utils';
 import Spinner from './Spinner';
 import { apiUrl } from '../utils';
+import { getNangoCredentials, setConnectionMetadata } from '../api';
+import { useQueryClient } from '@tanstack/react-query';
 
 declare global {
   interface Window {
@@ -25,17 +27,41 @@ export function GoogleDrivePicker({ connectionId, onFilesSelected }: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const queryClient = useQueryClient();
+
   const { data: resConnection } = useQuery({
     queryKey: ['connection', connectionId],
     queryFn: async () => {
-      console.log("Running query")
-      const response = await fetch(`${apiUrl}/connection/${connectionId}`);
-      if (!response.ok) {
-        throw new Error('Failed to get connection');
-      }
-      return response.json();
+      console.log("Running query");
+      const credentials = await getNangoCredentials('google-drive');
+      return credentials.credentials;
     },
   });
+
+  const accessToken = resConnection?.credentials?.access_token;
+  const expiresAt = resConnection?.credentials?.expires_at;
+  console.log("Access token", accessToken);
+  console.log("Expires at", expiresAt);
+
+  useEffect(() => {
+    if (expiresAt) {
+      const expiryTime = new Date(expiresAt).getTime();
+      const currentTime = new Date().getTime();
+      const timeUntilExpiry = expiryTime - currentTime;
+
+      if (timeUntilExpiry <= 0) {
+        // Token has expired, refresh it
+        void queryClient.invalidateQueries({ queryKey: ['connection', connectionId] });
+      } else {
+        // Set a timeout to refresh the token before it expires
+        const timeoutId = setTimeout(() => {
+          void queryClient.invalidateQueries({ queryKey: ['connection', connectionId] });
+        }, timeUntilExpiry - 60000); // Refresh 1 minute before expiry
+
+        return () => clearTimeout(timeoutId);
+      }
+    }
+  }, [expiresAt, connectionId, queryClient]);
 
   useEffect(() => {
     // Load the Google Drive picker
@@ -50,7 +76,7 @@ export function GoogleDrivePicker({ connectionId, onFilesSelected }: Props) {
   }, []);
 
   const openPicker = async () => {
-    if (!resConnection?.access_token) {
+    if (!accessToken) {
       setError('No access token available');
       return;
     }
@@ -61,32 +87,18 @@ export function GoogleDrivePicker({ connectionId, onFilesSelected }: Props) {
     try {
       const picker = new window.google.picker.PickerBuilder()
         .addView(window.google.picker.ViewId.DOCS)
-        .setOAuthToken(resConnection.access_token)
+        .addView(window.google.picker.ViewId.FOLDERS)
+        .setOAuthToken(accessToken)
         .setCallback(async (data: any) => {
           if (data.action === window.google.picker.Action.PICKED) {
-            const files: PickerFile[] = data.docs.map((doc: any) => ({
-              id: doc.id,
-              name: doc.name,
-            }));
+            const files = data.docs.filter((doc: any) => doc.type !== 'folder').map((doc: any) => doc.id);
+            const folders = data.docs.filter((doc: any) => doc.type === 'folder').map((doc: any) => doc.id);
+
+            // Prepare metadata for the connection
+            const metadata = { files, folders };
 
             // Set the metadata for the connection
-            const metadataResponse = await fetch(
-              `${apiUrl}/google-drive/metadata/${connectionId}`,
-              {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                  integration: 'google-drive',
-                  selectedFiles: files,
-                }),
-              }
-            );
-
-            if (!metadataResponse.ok) {
-              throw new Error('Failed to set metadata');
-            }
+            await setConnectionMetadata('google-drive', metadata);
 
             // Notify parent component that files were selected
             if (onFilesSelected) {

@@ -7,6 +7,5 @@ export const apiUrl = process.env.NEXT_PUBLIC_NANGO_HOST ?? 'https://api.nango.d
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
-const nangoSecret = process.env.NANGO_SECRET;
 
 export const queryClient = new QueryClient();

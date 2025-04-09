@@ -98,6 +98,8 @@ models:
     warning?: string | undefined
     error?: string | undefined
     raw_json: string
+  IdEntity:
+    id: string
   DocumentMetadata:
     files: string[] | undefined
     folders: string[] | undefined
