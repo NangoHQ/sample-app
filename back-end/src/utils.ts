@@ -5,7 +5,7 @@ interface MimeTypeMapping {
 
 export const mimeTypeMapping: Record<string, MimeTypeMapping> = {
     // Documents
-    'application/vnd.google-apps.document': { mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', responseType: 'text' },
+    'application/vnd.google-apps.document': { mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', responseType: 'arraybuffer' },
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document': {
         mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
         responseType: 'stream'
@@ -14,7 +14,7 @@ export const mimeTypeMapping: Record<string, MimeTypeMapping> = {
     'application/rtf': { mimeType: 'application/rtf', responseType: 'stream' },
     'text/plain': { mimeType: 'text/plain', responseType: 'stream' },
     // Spreadsheets
-    'application/vnd.google-apps.spreadsheet': { mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', responseType: 'text' },
+    'application/vnd.google-apps.spreadsheet': { mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', responseType: 'arraybuffer' },
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': {
         mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         responseType: 'stream'
