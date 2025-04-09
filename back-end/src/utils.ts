@@ -26,14 +26,14 @@ export const mimeTypeMapping: Record<string, MimeTypeMapping> = {
     'text/csv': { mimeType: 'text/csv', responseType: 'text' },
     'text/tab-separated-values': { mimeType: 'text/tab-separated-values', responseType: 'text' },
     // Presentations
-    'application/vnd.google-apps.presentation': { mimeType: 'application/vnd.openxmlformats-officedocument.presentationml.presentation', responseType: 'text' },
+    'application/vnd.google-apps.presentation': { mimeType: 'application/vnd.openxmlformats-officedocument.presentationml.presentation', responseType: 'arraybuffer' },
     'application/vnd.openxmlformats-officedocument.presentationml.presentation': {
         mimeType: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
         responseType: 'stream'
     },
     'application/vnd.oasis.opendocument.presentation': { mimeType: 'application/vnd.oasis.opendocument.presentation', responseType: 'stream' },
     // Drawings and Images
-    'application/vnd.google-apps.drawing': { mimeType: 'image/jpeg', responseType: 'stream' },
+    'application/vnd.google-apps.drawing': { mimeType: 'image/jpeg', responseType: 'arraybuffer' },
     'image/jpeg': { mimeType: 'image/jpeg', responseType: 'stream' },
     'image/png': { mimeType: 'image/png', responseType: 'stream' },
     'image/svg+xml': { mimeType: 'image/svg+xml', responseType: 'stream' },

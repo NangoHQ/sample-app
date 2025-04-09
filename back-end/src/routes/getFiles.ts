@@ -24,7 +24,10 @@ export const getFiles: RouteHandler = async (_, reply) => {
     });
     console.log('Files:', files);
 
-    await reply.status(200).send({ files });
+    // filter out deleted files
+    const filteredFiles = files.filter(file => !file.deletedAt);
+
+    await reply.status(200).send({ files: filteredFiles });
   } catch (error) {
     console.error('Failed to get files:', error);
     await reply.status(500).send({ error: 'Failed to get files' });

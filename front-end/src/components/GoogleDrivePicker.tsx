@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-// import { baseUrl } from '../utils';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import Spinner from './Spinner';
-import { apiUrl } from '../utils';
 import { getNangoCredentials, setConnectionMetadata } from '../api';
-import { useQueryClient } from '@tanstack/react-query';
 
 declare global {
   interface Window {
@@ -32,7 +29,6 @@ export function GoogleDrivePicker({ connectionId, onFilesSelected }: Props) {
   const { data: resConnection } = useQuery({
     queryKey: ['connection', connectionId],
     queryFn: async () => {
-      console.log("Running query");
       const credentials = await getNangoCredentials('google-drive');
       return credentials.credentials;
     },
@@ -40,8 +36,6 @@ export function GoogleDrivePicker({ connectionId, onFilesSelected }: Props) {
 
   const accessToken = resConnection?.credentials?.access_token;
   const expiresAt = resConnection?.credentials?.expires_at;
-  console.log("Access token", accessToken);
-  console.log("Expires at", expiresAt);
 
   useEffect(() => {
     if (expiresAt) {
@@ -50,10 +44,8 @@ export function GoogleDrivePicker({ connectionId, onFilesSelected }: Props) {
       const timeUntilExpiry = expiryTime - currentTime;
 
       if (timeUntilExpiry <= 0) {
-        // Token has expired, refresh it
         void queryClient.invalidateQueries({ queryKey: ['connection', connectionId] });
       } else {
-        // Set a timeout to refresh the token before it expires
         const timeoutId = setTimeout(() => {
           void queryClient.invalidateQueries({ queryKey: ['connection', connectionId] });
         }, timeUntilExpiry - 60000); // Refresh 1 minute before expiry
@@ -64,7 +56,6 @@ export function GoogleDrivePicker({ connectionId, onFilesSelected }: Props) {
   }, [expiresAt, connectionId, queryClient]);
 
   useEffect(() => {
-    // Load the Google Drive picker
     const script = document.createElement('script');
     script.src = 'https://apis.google.com/js/api.js';
     script.onload = () => {
@@ -84,26 +75,37 @@ export function GoogleDrivePicker({ connectionId, onFilesSelected }: Props) {
     setLoading(true);
     setError(null);
 
+    const myDriveView = new window.google.picker.DocsView()
+      .setIncludeFolders(true)
+      .setSelectFolderEnabled(true)
+      .setOwnedByMe(true)
+      .setLabel('My Drive')
+      .setMode(window.google.picker.DocsViewMode.LIST);
+
+    const sharedWithMeView = new window.google.picker.DocsView()
+      .setIncludeFolders(true)
+      .setSelectFolderEnabled(true)
+      .setOwnedByMe(false)
+      .setLabel('Shared with Me')
+      .setMode(window.google.picker.DocsViewMode.LIST);
+
     try {
       const picker = new window.google.picker.PickerBuilder()
-        .addView(window.google.picker.ViewId.DOCS)
-        .addView(window.google.picker.ViewId.FOLDERS)
+        .addView(myDriveView)
+        .addView(sharedWithMeView)
+        .enableFeature(window.google.picker.Feature.SUPPORT_FOLDER_SELECT)
+        .enableFeature(window.google.picker.Feature.MULTISELECT_ENABLED)
+        .enableFeature(window.google.picker.Feature.SUPPORT_DRIVES)
         .setOAuthToken(accessToken)
         .setCallback(async (data: any) => {
           if (data.action === window.google.picker.Action.PICKED) {
             const files = data.docs.filter((doc: any) => doc.type !== 'folder').map((doc: any) => doc.id);
             const folders = data.docs.filter((doc: any) => doc.type === 'folder').map((doc: any) => doc.id);
 
-            // Prepare metadata for the connection
             const metadata = { files, folders };
-
-            // Set the metadata for the connection
             await setConnectionMetadata('google-drive', metadata);
 
-            // Notify parent component that files were selected
-            if (onFilesSelected) {
-              onFilesSelected();
-            }
+            onFilesSelected?.();
           }
         })
         .build();
@@ -130,4 +132,4 @@ export function GoogleDrivePicker({ connectionId, onFilesSelected }: Props) {
       {error && <div className="mt-2 text-sm text-red-500">{error}</div>}
     </div>
   );
-} 
+}

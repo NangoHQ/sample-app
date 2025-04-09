@@ -23,7 +23,7 @@ export const setConnectionMetadata: RouteHandler<{
 
     // also trigger the sync
     // fix this abstract it out
-    await nango.startSync(integrationId, ['documents'], connectionId);
+    await nango.triggerSync(integrationId, ['documents'], connectionId);
     await reply.status(200).send({ success: true });
   } catch (error) {
     console.error('Failed to set metadata:', error);
