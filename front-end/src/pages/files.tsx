@@ -77,7 +77,7 @@ export default function FilesPage() {
       <div className="flex-1 px-10 py-10 overflow-auto">
         <div className="flex justify-center">
           <div className="flex flex-col gap-16 w-[540px]">
-            {integrations && <IntegrationsGrid integrations={integrations} />}
+            {!connectedTo && integrations && <IntegrationsGrid integrations={integrations} />}
             {connectedTo && googleDriveConnection && (
               <div className="w-[540px] rounded shadow-2xl px-16 py-10 pb-16 h-auto">
                 <div className="space-y-6">

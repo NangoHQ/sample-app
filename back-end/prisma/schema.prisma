@@ -15,7 +15,6 @@ model Users {
   displayName String
 
   connectionId String?
-  googleDriveConnectionId String? // New field for Google Drive connection ID
 
   @@unique([email])
 }

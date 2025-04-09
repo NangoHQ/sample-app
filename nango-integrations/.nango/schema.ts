@@ -93,5 +93,4 @@ export interface GoogleDriveFile {
     iconLink: string;
     size: number | null;
     modifiedTime: string;
-    createdTime: string;
 }
