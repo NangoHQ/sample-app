@@ -1,14 +1,23 @@
 import { Button } from '@headlessui/react';
-
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 export const Menu: React.FC = () => {
+  const pathname = usePathname();
+
+  const getButtonClasses = (path: string) => {
+    const isActive = pathname === path || (path === '/team-settings' && pathname === '/settings');
+    return `py-1 px-2 w-full flex items-center gap-4 rounded-sm ${
+      isActive ? 'bg-[#eaeaea]' : 'hover:bg-[#eaeaea]'
+    }`;
+  };
+
   return (
     <div className="bg-neutral-50 h-full px-5 py-5 shadow-inner">
       <div className="text-xl font-bold pt-0.5">MySaaS.com</div>
       <ul className="mt-9 text-sm flex flex-col gap-2">
         <Link href="/">
-          <Button className="hover:bg-[#eaeaea] py-1 px-2 w-full flex items-center gap-4 rounded-sm">
+          <Button className={getButtonClasses('/')}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="16"
@@ -28,8 +37,8 @@ export const Menu: React.FC = () => {
             Home
           </Button>
         </Link>
-        <Link href="/">
-          <Button className="hover:bg-[#eaeaea] py-1 px-2 w-full flex items-center gap-4 rounded-sm">
+        <Link href="/products">
+          <Button className={getButtonClasses('/products')}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="14"
@@ -49,8 +58,8 @@ export const Menu: React.FC = () => {
             Products
           </Button>
         </Link>
-        <Link href="/">
-          <Button className="hover:bg-[#eaeaea] py-1 px-2 w-full flex items-center gap-4 rounded-sm">
+        <Link href="/reports">
+          <Button className={getButtonClasses('/reports')}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="16"
@@ -70,8 +79,8 @@ export const Menu: React.FC = () => {
             Reports
           </Button>
         </Link>
-        <Link href="/">
-          <Button className="hover:bg-[#eaeaea] py-1 px-2 w-full flex items-center gap-4 rounded-sm">
+        <Link href="/balances">
+          <Button className={getButtonClasses('/balances')}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="16"
@@ -91,8 +100,8 @@ export const Menu: React.FC = () => {
             Balances
           </Button>
         </Link>
-        <Link href="/">
-          <Button className="bg-[#eaeaea] py-1 px-2 w-full flex items-center gap-4 rounded-sm">
+        <Link href="/team-settings">
+          <Button className={getButtonClasses('/team-settings')}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="16"
@@ -111,7 +120,7 @@ export const Menu: React.FC = () => {
           </Button>
         </Link>
         <Link href="/files">
-          <Button className="hover:bg-[#eaeaea] py-1 px-2 w-full flex items-center gap-4 rounded-sm">
+          <Button className={getButtonClasses('/files')}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="16"

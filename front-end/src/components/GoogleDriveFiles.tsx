@@ -35,13 +35,13 @@ export function GoogleDriveFiles({ connectionId }: Props) {
     };
   }, [resFiles, connectionId]);
 
-  const handleDownload = async (fileId: string) => {
+  const handleDownload = async (file: File) => {
     try {
-      const blob = await downloadFile(fileId);
+      const blob = await downloadFile(file.id);
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = fileId;
+      a.download = file.title;
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -91,7 +91,7 @@ export function GoogleDriveFiles({ connectionId }: Props) {
                 View
               </a>
               <button
-                onClick={() => handleDownload(file.id)}
+                onClick={() => handleDownload(file)}
                 className="px-3 py-1 text-sm text-white bg-blue-600 rounded hover:bg-blue-700"
               >
                 Download
