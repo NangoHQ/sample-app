@@ -3,8 +3,6 @@ import { nango } from '../nango.js';
 import { getUserFromDatabase } from '../db.js';
 import { mimeTypeMapping } from '../utils.js';
 
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
-
 export const downloadFile: RouteHandler = async (req, reply) => {
   const { fileId } = req.params as { fileId: string };
 
@@ -34,10 +32,6 @@ export const downloadFile: RouteHandler = async (req, reply) => {
 
     if (!mimeDetails) {
       throw new Error(`Unsupported MIME type: ${file.mimeType}`);
-    }
-
-    if (file.size && file.size > MAX_FILE_SIZE) {
-      return reply.status(400).send({ error: 'File too large' });
     }
 
     const isGoogleNative = file.mimeType.startsWith('application/vnd.google-apps.');
