@@ -14,6 +14,7 @@ import { getFiles } from './routes/getFiles.js';
 import { downloadFile } from './routes/downloadFile.js';
 import { getNangoCredentials } from './routes/getNangoCredentials.js';
 import { setConnectionMetadata } from './routes/setConnectionMetadata.js';
+import { resetGoogleDriveState } from './routes/resetGoogleDriveState.js';
 
 const fastify = Fastify({ logger: false });
 fastify.addHook('onRequest', (req, _res, done) => {
@@ -71,6 +72,7 @@ fastify.post('/send-slack-message', sendSlackMessage);
 fastify.post('/api/google-drive/metadata/:connectionId', setGoogleDriveMetadata);
 fastify.get('/get-files', getFiles);
 fastify.get('/download/:fileId', downloadFile);
+fastify.post('/reset-google-drive-state', resetGoogleDriveState);
 
 /**
  * Get Nango credentials for a specific integration

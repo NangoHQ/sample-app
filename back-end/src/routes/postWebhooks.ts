@@ -68,6 +68,16 @@ async function handleNewConnectionWebhook(body: NangoAuthWebhookBody) {
         id: body.endUser!.endUserId,
       },
     });
+
+    // Trigger document sync for google-drive connections
+    if (body.providerConfigKey === 'google-drive') {
+      try {
+        await nango.startSync('google-drive', ['documents'], body.connectionId);
+        console.log('Triggered document sync for new Google Drive connection');
+      } catch (error) {
+        console.error('Failed to trigger document sync:', error);
+      }
+    }
   } else {
     console.log('Webhook: connection', body.operation);
   }

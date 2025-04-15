@@ -1,6 +1,6 @@
 import { useMemo, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { listConnections, listIntegrations } from '../api';
+import { listConnections, listIntegrations, resetGoogleDriveState } from '../api';
 import { GoogleDrivePicker } from '../components/GoogleDrivePicker';
 import { GoogleDriveFiles } from '../components/GoogleDriveFiles';
 import Spinner from '../components/Spinner';
@@ -58,6 +58,15 @@ export default function FilesPage() {
     }
   }, [connectionsError]);
 
+  const handleReset = async () => {
+    try {
+      await resetGoogleDriveState();
+      window.location.reload();
+    } catch (error) {
+      console.error('Failed to reset state:', error);
+    }
+  };
+
   if (!integrations) {
     return (
       <main className="p-4 md:p-10 mx-auto max-w-7xl">
@@ -67,12 +76,20 @@ export default function FilesPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col w-full">
       <Head>
         <title>Files - MySaaS.com</title>
       </Head>
-      <header className="px-10 py-5 border-b">
+      <header className="px-10 py-5 border-b flex justify-between items-center">
         <h1 className="text-2xl font-bold">Google Drive Files</h1>
+        {connectedTo && (
+          <button
+            onClick={handleReset}
+            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
+          >
+            Reset Connection
+          </button>
+        )}
       </header>
       <div className="flex-1 px-10 py-10 overflow-auto">
         <div className="flex justify-center">
@@ -83,7 +100,7 @@ export default function FilesPage() {
                 />
             )}
             {connectedTo && googleDriveConnection && (
-              <div className="w-[540px] rounded shadow-2xl px-16 py-10 pb-16 h-auto">
+              <div className="w-[540px] rounded shadow-2xl px-16 py-10 pb-16 h-auto flex justify-center">
                 <div className="space-y-6">
                   <GoogleDrivePicker
                     connectionId={String(googleDriveConnection.connection_id)}

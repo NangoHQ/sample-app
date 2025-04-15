@@ -120,11 +120,11 @@ export function GoogleDrivePicker({ connectionId, onFilesSelected }: Props) {
   };
 
   return (
-    <div>
+    <div className="flex justify-center items-center">
       <button
         onClick={openPicker}
         disabled={loading}
-        className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700 flex items-center space-x-2"
+        className="relative transition-colors inline-flex w-full items-center justify-center gap-x-3 py-3 text-sm font-semibold rounded-md bg-black text-white hover:bg-gray-900"
       >
         <span>Select Files from Google Drive</span>
         {loading && <Spinner size={1} className="text-white" />}

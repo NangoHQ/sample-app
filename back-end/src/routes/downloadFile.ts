@@ -33,7 +33,7 @@ export const downloadFile: RouteHandler = async (req, reply) => {
     if (!mimeDetails) {
       throw new Error(`Unsupported MIME type: ${file.mimeType}`);
     }
-
+    
     const isGoogleNative = file.mimeType.startsWith('application/vnd.google-apps.');
     const exportMimeType = mimeDetails.mimeType;
     const responseType = mimeDetails.responseType === 'text' ? 'text' : 'arraybuffer';

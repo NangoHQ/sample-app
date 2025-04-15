@@ -90,3 +90,12 @@ export async function downloadFile(fileId: string): Promise<Blob> {
 
   return res.blob();
 }
+
+export async function resetGoogleDriveState(): Promise<void> {
+  const res = await fetch(`${baseUrl}/reset-google-drive-state`, {
+    method: 'POST',
+  });
+  if (res.status !== 200) {
+    throw new Error('Failed to reset Google Drive state');
+  }
+}
