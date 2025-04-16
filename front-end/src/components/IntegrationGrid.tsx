@@ -3,7 +3,7 @@ import Nango from '@nangohq/frontend';
 import { useRef, useState } from 'react';
 import type { Integration } from '../types';
 import { baseUrl, cn, queryClient } from '../utils';
-import { postConnectSession } from '../api';
+import { postConnectSession, deleteConnection } from '../api';
 import Spinner from './Spinner';
 import InfoModal from './modals/Info';
 
@@ -50,10 +50,7 @@ export const IntegrationBloc: React.FC<{
   async function disconnect() {
     try {
       setLoading(true);
-      await fetch(
-        `${baseUrl}/connections?integration=${integration.unique_key}`,
-        { method: 'DELETE' }
-      );
+      await deleteConnection(integration.unique_key);
 
       // Reload the connections to update the state
       // Ideally you can setup a Websocket between your frontend and your backend to update everything in realtime
@@ -64,6 +61,8 @@ export const IntegrationBloc: React.FC<{
       }, 10);
     } catch (err) {
       console.error(err);
+      setError('Failed to disconnect');
+      setLoading(false);
     }
   }
 
@@ -79,7 +78,7 @@ export const IntegrationBloc: React.FC<{
             onClick={() => disconnect()}
             className={cn(
               'relative transition-colors inline-flex w-0 flex-1 items-center justify-center gap-x-3 py-3 text-sm font-semibold rounded-md text-white',
-              'bg-black hover:bg-gray-800'
+              'bg-red-900 hover:bg-red-800 opacity-80'
             )}
             disabled={loading}
           >

@@ -1,6 +1,6 @@
 import { useMemo, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { listConnections, listIntegrations, resetGoogleDriveState } from '../api';
+import { listConnections, listIntegrations, deleteConnection } from '../api';
 import { GoogleDrivePicker } from '../components/GoogleDrivePicker';
 import { GoogleDriveFiles } from '../components/GoogleDriveFiles';
 import Spinner from '../components/Spinner';
@@ -58,15 +58,6 @@ export default function FilesPage() {
     }
   }, [connectionsError]);
 
-  const handleReset = async () => {
-    try {
-      await resetGoogleDriveState();
-      window.location.reload();
-    } catch (error) {
-      console.error('Failed to reset state:', error);
-    }
-  };
-
   if (!integrations) {
     return (
       <main className="p-4 md:p-10 mx-auto max-w-7xl">
@@ -90,13 +81,8 @@ export default function FilesPage() {
               <h2 className="text-center text-2xl mb-10 font-semibold">
                 {!connectedTo ? 'Import Files' : 'Google Drive Files'}
               </h2>
-              {!connectedTo && integrations && (
-                <IntegrationsGrid
-                  integrations={integrations.filter(integration => integration.unique_key === 'google-drive')}
-                />
-              )}
               {connectedTo && googleDriveConnection && (
-                <div className="space-y-6">
+                <div className="mt-6 space-y-6">
                   <GoogleDrivePicker
                     connectionId={String(googleDriveConnection.connection_id)}
                     onFilesSelected={() => {
@@ -107,17 +93,11 @@ export default function FilesPage() {
                   <GoogleDriveFiles connectionId={String(googleDriveConnection.connection_id)} />
                 </div>
               )}
+              <IntegrationsGrid
+                integrations={integrations.filter(integration => integration.unique_key === 'google-drive')}
+              />
             </div>
-            {connectedTo && (
-              <div className="flex justify-center">
-                <button
-                  onClick={handleReset}
-                  className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
-                >
-                  Reset Connection
-                </button>
-              </div>
-            )}
+            
           </div>
         </div>
       </div>
