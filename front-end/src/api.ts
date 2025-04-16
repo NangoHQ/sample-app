@@ -7,9 +7,13 @@ import type {
 import { baseUrl } from './utils';
 import type { File } from './types';
 
-export async function postConnectSession(): Promise<PostConnectSessionSuccess> {
+export async function postConnectSession(integration: string): Promise<PostConnectSessionSuccess> {
   const res = await fetch(`${baseUrl}/connect-session`, {
     method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ integration })
   });
   if (res.status !== 200) {
     throw new Error();

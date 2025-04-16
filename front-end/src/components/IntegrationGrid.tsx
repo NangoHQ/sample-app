@@ -40,7 +40,7 @@ export const IntegrationBloc: React.FC<{
 
     // We defer the token creation so the iframe can open and display a loading screen
     setTimeout(async () => {
-      const res = await postConnectSession();
+      const res = await postConnectSession(integration.unique_key);
       connectUI.current!.setSessionToken(res.connectSession);
     }, 10);
 
@@ -88,7 +88,7 @@ export const IntegrationBloc: React.FC<{
             ) : (
               <img src={integration.logo} alt="" className="w-5" />
             )}
-            Disconnect from {integration.provider}
+            Disconnect from {integration.display_name}
           </button>
         ) : (
           <button
@@ -105,7 +105,7 @@ export const IntegrationBloc: React.FC<{
             ) : (
               <img src={integration.logo} alt="" className="w-5" />
             )}
-            Import from {integration.provider}
+            Import from {integration.display_name}
           </button>
         )}
       </div>

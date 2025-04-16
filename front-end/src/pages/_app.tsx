@@ -17,7 +17,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
       </Head>
       <QueryClientProvider client={queryClient}>
         <div className="flex h-screen w-screen">
-          <div className="w-[230px] h-full">
+          <div className="min-w-[230px] h-full">
             <Menu />
           </div>
           <Component {...pageProps} />

@@ -71,6 +71,12 @@ async function handleNewConnectionWebhook(body: NangoAuthWebhookBody) {
 
     // Trigger document sync for google-drive connections
     if (body.providerConfigKey === 'google-drive') {
+      // delete all files from the database
+      await db.files.deleteMany({
+        where: {
+          connectionId: body.connectionId,
+        },
+      });
       try {
         await nango.startSync('google-drive', ['documents'], body.connectionId);
         console.log('Triggered document sync for new Google Drive connection');
@@ -212,6 +218,9 @@ async function handleGoogleDriveSync(body: NangoSyncWebhookBody) {
             size: record.size ?? null,
             createdTime: new Date(record._nango_metadata.first_seen_at),
             updatedAt: new Date(),
+            integrationId: body.providerConfigKey,
+            connectionId: body.connectionId,
+            createdAt: new Date(),
           },
         });
       } catch (error) {

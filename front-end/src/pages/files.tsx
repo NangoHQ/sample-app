@@ -78,29 +78,24 @@ export default function FilesPage() {
   return (
     <div className="min-h-screen flex flex-col w-full">
       <Head>
-        <title>Files - MySaaS.com</title>
+        <title>Files</title>
       </Head>
-      <header className="px-10 py-5 border-b flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Google Drive Files</h1>
-        {connectedTo && (
-          <button
-            onClick={handleReset}
-            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
-          >
-            Reset Connection
-          </button>
-        )}
+      <header className="px-10 py-5 border-b">
+        <h1 className="text-2xl font-bold">Files Settings</h1>
       </header>
-      <div className="flex-1 px-10 py-10 overflow-auto">
+      <div className="flex-1 px-10 py-10 overflow-auto justify-center items-center flex flex-col">
         <div className="flex justify-center">
           <div className="flex flex-col gap-16 w-[540px]">
-            {!connectedTo && integrations && (
+            <div className="rounded shadow-2xl px-16 py-10 pb-16">
+              <h2 className="text-center text-2xl mb-10 font-semibold">
+                {!connectedTo ? 'Import Files' : 'Google Drive Files'}
+              </h2>
+              {!connectedTo && integrations && (
                 <IntegrationsGrid
-                    integrations={integrations.filter(integration => integration.unique_key === 'google-drive')}
+                  integrations={integrations.filter(integration => integration.unique_key === 'google-drive')}
                 />
-            )}
-            {connectedTo && googleDriveConnection && (
-              <div className="w-[540px] rounded shadow-2xl px-16 py-10 pb-16 h-auto flex justify-center">
+              )}
+              {connectedTo && googleDriveConnection && (
                 <div className="space-y-6">
                   <GoogleDrivePicker
                     connectionId={String(googleDriveConnection.connection_id)}
@@ -111,6 +106,16 @@ export default function FilesPage() {
                   />
                   <GoogleDriveFiles connectionId={String(googleDriveConnection.connection_id)} />
                 </div>
+              )}
+            </div>
+            {connectedTo && (
+              <div className="flex justify-center">
+                <button
+                  onClick={handleReset}
+                  className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
+                >
+                  Reset Connection
+                </button>
               </div>
             )}
           </div>

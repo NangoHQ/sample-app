@@ -13,8 +13,16 @@ export type PostConnectSession = PostConnectSessionSuccess | { error: string };
  * So you don't have to store credentials in your frontend ever
  */
 export const postConnectSession: RouteHandler<{
+  Body: { integration: string };
   Reply: PostConnectSession;
-}> = async (_, reply) => {
+}> = async (req, reply) => {
+  const { integration } = req.body;
+  
+  if (!integration) {
+    await reply.status(400).send({ error: 'integration_required' });
+    return;
+  }
+
   const user = await getUserFromDatabase();
   if (!user) {
     await reply.status(400).send({ error: 'invalid_user' });
@@ -29,8 +37,8 @@ export const postConnectSession: RouteHandler<{
       email: user.email,
       display_name: user.displayName,
     },
-    // Only allow "slack" integration so we can enforce what the user is expected to do even if we have multiple available integrations
-    allowed_integrations: ['slack', 'google-drive'],
+    // Only allow the specified integration
+    allowed_integrations: [integration],
   });
 
   await reply.status(200).send({ connectSession: res.data.token });

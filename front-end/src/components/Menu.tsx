@@ -7,13 +7,13 @@ export const Menu: React.FC = () => {
 
   const getButtonClasses = (path: string) => {
     const isActive = pathname === path || (path === '/team-settings' && pathname === '/settings');
-    return `py-1 px-2 w-full flex items-center gap-4 rounded-sm ${
+    return `py-1 px-2 w-full flex items-center gap-4 rounded-sm whitespace-nowrap ${
       isActive ? 'bg-[#eaeaea]' : 'hover:bg-[#eaeaea]'
     }`;
   };
 
   return (
-    <div className="bg-neutral-50 h-full px-5 py-5 shadow-inner">
+    <div className="bg-neutral-50 h-full px-5 py-5 shadow-inner w-full">
       <div className="text-xl font-bold pt-0.5">MySaaS.com</div>
       <ul className="mt-9 text-sm flex flex-col gap-2">
         <Link href="/">

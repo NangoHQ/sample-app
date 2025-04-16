@@ -53,11 +53,11 @@ export default function TeamSettingsPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col w-full">
       <header className="px-10 py-5 border-b">
         <h1 className="text-2xl font-bold">Team Settings</h1>
       </header>
-      <div className="flex-1 px-10 py-10 overflow-auto">
+      <div className="flex-1 px-10 py-10 overflow-auto justify-center items-center flex flex-col">
         <div className="flex justify-center">
           <div className="flex flex-col gap-16 w-[540px]">
             <div className="rounded shadow-2xl px-16 py-10 pb-16">

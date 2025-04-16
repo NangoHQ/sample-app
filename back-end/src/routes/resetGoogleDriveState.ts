@@ -4,19 +4,21 @@ import { nango } from '../nango.js';
 
 export const resetGoogleDriveState: RouteHandler = async (_, reply) => {
   try {
-    // Delete all files from the database
-    await db.files.deleteMany({
-      where: {
-        integrationId: 'google-drive'
-      }
-    });
-
+    
     // Get the user and their connection
     const user = await getUserFromDatabase();
     if (user?.connectionId) {
       // Delete the connection from Nango
       await nango.deleteConnection('google-drive', user.connectionId);
       
+      // Delete all files from the database
+      await db.files.deleteMany({
+        where: {
+          integrationId: 'google-drive',
+          connectionId: user.connectionId,
+        }
+      });
+
       // Remove the connection ID from the user
       await db.users.update({
         where: { id: user.id },
