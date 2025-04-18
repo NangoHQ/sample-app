@@ -17,7 +17,7 @@ fastify.addHook('onRequest', (req, _res, done) => {
 });
 
 await fastify.register(cors, {
-  origin: ['http://localhost:3011'],
+  origin: ['http://localhost:3011', 'https://app.nango.dev'],
   credentials: true,
 });
 

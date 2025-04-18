@@ -39,7 +39,7 @@ export async function listConnections(): Promise<GetConnectionsSuccess> {
 }
 
 export async function listContacts(): Promise<GetContactsSuccess> {
-  const res = await fetch('http://localhost:3010/contacts?integration=slack');
+  const res = await fetch(`${baseUrl}/contacts?integration=slack`);
   if (res.status !== 200) {
     throw new Error();
   }
