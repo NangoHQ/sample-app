@@ -8,9 +8,9 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@nangohq/frontend": "0.45.1",
     "@headlessui/react": "2.2.0",
     "@headlessui/tailwindcss": "0.2.1",
+    "@nangohq/frontend": "^0.58.4",
     "@tabler/icons-react": "3.21.0",
     "@tailwindcss/aspect-ratio": "0.4.2",
     "@tailwindcss/line-clamp": "0.4.4",

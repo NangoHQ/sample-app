@@ -3,12 +3,13 @@ import Nango from '@nangohq/frontend';
 import { useRef, useState } from 'react';
 import type { Integration } from '../types';
 import { baseUrl, cn, queryClient } from '../utils';
-import { postConnectSession } from '../api';
+import { postConnectSession, deleteConnection } from '../api';
 import Spinner from './Spinner';
 import InfoModal from './modals/Info';
 
 const apiURL = process.env.NEXT_PUBLIC_NANGO_HOST ?? 'https://api.nango.dev';
 const nango = new Nango({ host: apiURL, publicKey: 'empty' });
+const connectUIBaseUrl = process.env.NEXT_PUBLIC_NANGO_CONNECT_URL ?? 'https://connect.nango.dev';
 
 export const IntegrationBloc: React.FC<{
   integration: Integration;
@@ -23,6 +24,8 @@ export const IntegrationBloc: React.FC<{
     setLoading(true);
 
     connectUI.current = nango.openConnectUI({
+      apiURL,
+      baseURL: connectUIBaseUrl,
       onEvent: (event) => {
         if (event.type === 'close') {
           // we refresh on close so user can see the diff
@@ -37,7 +40,7 @@ export const IntegrationBloc: React.FC<{
 
     // We defer the token creation so the iframe can open and display a loading screen
     setTimeout(async () => {
-      const res = await postConnectSession();
+      const res = await postConnectSession(integration.unique_key);
       connectUI.current!.setSessionToken(res.connectSession);
     }, 10);
 
@@ -47,10 +50,7 @@ export const IntegrationBloc: React.FC<{
   async function disconnect() {
     try {
       setLoading(true);
-      await fetch(
-        `${baseUrl}/connections?integration=${integration.unique_key}`,
-        { method: 'DELETE' }
-      );
+      await deleteConnection(integration.unique_key);
 
       // Reload the connections to update the state
       // Ideally you can setup a Websocket between your frontend and your backend to update everything in realtime
@@ -61,6 +61,8 @@ export const IntegrationBloc: React.FC<{
       }, 10);
     } catch (err) {
       console.error(err);
+      setError('Failed to disconnect');
+      setLoading(false);
     }
   }
 
@@ -76,7 +78,7 @@ export const IntegrationBloc: React.FC<{
             onClick={() => disconnect()}
             className={cn(
               'relative transition-colors inline-flex w-0 flex-1 items-center justify-center gap-x-3 py-3 text-sm font-semibold rounded-md text-white',
-              'bg-black hover:bg-gray-800'
+              'bg-red-900 hover:bg-red-800 opacity-80'
             )}
             disabled={loading}
           >
@@ -85,7 +87,7 @@ export const IntegrationBloc: React.FC<{
             ) : (
               <img src={integration.logo} alt="" className="w-5" />
             )}
-            Disconnect from {integration.provider}
+            Disconnect from {integration.display_name}
           </button>
         ) : (
           <button
@@ -102,7 +104,7 @@ export const IntegrationBloc: React.FC<{
             ) : (
               <img src={integration.logo} alt="" className="w-5" />
             )}
-            Import from {integration.provider}
+            Import from {integration.display_name}
           </button>
         )}
       </div>

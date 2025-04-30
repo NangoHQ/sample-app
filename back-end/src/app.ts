@@ -9,6 +9,11 @@ import { deleteConnection } from './routes/deleteConnection.js';
 import { sendSlackMessage } from './routes/sendSlackMessage.js';
 import { postConnectSession } from './routes/postConnectSession.js';
 import { seedUser } from './db.js';
+import { setGoogleDriveMetadata } from './routes/setGoogleDriveMetadata.js';
+import { getFiles } from './routes/getFiles.js';
+import { downloadFile } from './routes/downloadFile.js';
+import { getNangoCredentials } from './routes/getNangoCredentials.js';
+import { setConnectionMetadata } from './routes/setConnectionMetadata.js';
 
 const fastify = Fastify({ logger: false });
 fastify.addHook('onRequest', (req, _res, done) => {
@@ -61,6 +66,21 @@ fastify.get('/contacts', getContacts);
  * Send a Slack message to a given Slack user.
  */
 fastify.post('/send-slack-message', sendSlackMessage);
+
+// Google Drive routes
+fastify.post('/api/google-drive/metadata/:connectionId', setGoogleDriveMetadata);
+fastify.get('/get-files', getFiles);
+fastify.get('/download/:fileId', downloadFile);
+
+/**
+ * Get Nango credentials for a specific integration
+ */
+fastify.get('/nango-credentials', getNangoCredentials);
+
+/**
+ * Set metadata for a connection given its integration ID
+ */
+fastify.post('/set-connection-metadata', setConnectionMetadata);
 
 try {
   await seedUser();

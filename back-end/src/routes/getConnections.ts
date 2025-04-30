@@ -16,6 +16,7 @@ export const getConnections: RouteHandler<{
   Reply: GetConnections;
 }> = async (_, reply) => {
   const user = await getUserFromDatabase();
+  console.log('User:', user);
   if (!user) {
     await reply.status(400).send({ error: 'invalid_user' });
     return;
