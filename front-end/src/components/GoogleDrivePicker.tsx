@@ -36,6 +36,7 @@ export function GoogleDrivePicker({ connectionId, onFilesSelected }: Props) {
 
   const accessToken = resConnection?.credentials?.access_token;
   const expiresAt = resConnection?.credentials?.expires_at;
+  const appId = process.env.NEXT_PUBLIC_GOOGLE_APP_ID;
 
   useEffect(() => {
     if (expiresAt) {
@@ -96,6 +97,8 @@ export function GoogleDrivePicker({ connectionId, onFilesSelected }: Props) {
         .enableFeature(window.google.picker.Feature.SUPPORT_FOLDER_SELECT)
         .enableFeature(window.google.picker.Feature.MULTISELECT_ENABLED)
         .enableFeature(window.google.picker.Feature.SUPPORT_DRIVES)
+        // this can be found by going to the google console > IAM > Settings > "Project Number"
+        .setAppId(appId)
         .setOAuthToken(accessToken)
         .setCallback(async (data: any) => {
           if (data.action === window.google.picker.Action.PICKED) {
