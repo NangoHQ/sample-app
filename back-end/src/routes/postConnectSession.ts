@@ -3,7 +3,7 @@ import { nango } from '../nango.js';
 import { getUserFromDatabase } from '../db.js';
 
 export type PostConnectSessionSuccess = {
-  connectSession: string;
+    connectSession: string;
 };
 export type PostConnectSession = PostConnectSessionSuccess | { error: string };
 
@@ -13,33 +13,33 @@ export type PostConnectSession = PostConnectSessionSuccess | { error: string };
  * So you don't have to store credentials in your frontend ever
  */
 export const postConnectSession: RouteHandler<{
-  Body: { integration: string };
-  Reply: PostConnectSession;
+    Body: { integration: string };
+    Reply: PostConnectSession;
 }> = async (req, reply) => {
-  const { integration } = req.body;
-  
-  if (!integration) {
-    await reply.status(400).send({ error: 'integration_required' });
-    return;
-  }
+    const { integration } = req.body;
 
-  const user = await getUserFromDatabase();
-  if (!user) {
-    await reply.status(400).send({ error: 'invalid_user' });
-    return;
-  }
+    if (!integration) {
+        await reply.status(400).send({ error: 'integration_required' });
+        return;
+    }
 
-  const res = await nango.createConnectSession({
-    end_user: {
-      // We set an end user so when we receive a webhook at connection creation we know how to link it
-      id: user.id,
-      // The other information are for display purposes
-      email: user.email,
-      display_name: user.displayName,
-    },
-    // Only allow the specified integration
-    allowed_integrations: [integration],
-  });
+    const user = await getUserFromDatabase();
+    if (!user) {
+        await reply.status(400).send({ error: 'invalid_user' });
+        return;
+    }
 
-  await reply.status(200).send({ connectSession: res.data.token });
+    const res = await nango.createConnectSession({
+        end_user: {
+            // We set an end user so when we receive a webhook at connection creation we know how to link it
+            id: user.id,
+            // The other information are for display purposes
+            email: user.email,
+            display_name: user.displayName
+        },
+        // Only allow the specified integration
+        allowed_integrations: [integration]
+    });
+
+    await reply.status(200).send({ connectSession: res.data.token });
 };

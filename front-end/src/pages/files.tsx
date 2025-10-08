@@ -1,106 +1,126 @@
-import { useMemo, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { listConnections, listIntegrations, deleteConnection } from '../api';
-import { GoogleDrivePicker } from '../components/GoogleDrivePicker';
-import { GoogleDriveFiles } from '../components/GoogleDriveFiles';
+import Head from 'next/head';
+import { listConnections } from '../api';
+import { GoogleDrivePicker } from '../components/pickers/GoogleDrivePicker';
+import { OneDrivePicker } from '../components/pickers/OneDrivePicker';
+import { UnifiedFileManager } from '../components/FileManager';
+import { ProviderCard } from '../components/ProviderCard';
+import { useProviderConnections } from '../hooks/useProviderConnections';
+import { useSupportedProviders } from '../hooks/useSupportedProviders';
 import Spinner from '../components/Spinner';
-import type { Integration } from '../types';
-import { IntegrationsGrid } from '../components/IntegrationGrid';
-import Head from 'next/head';''
 
 export default function FilesPage() {
-  const { data: resIntegrations } = useQuery({
-    queryKey: ['integrations'],
-    queryFn: listIntegrations,
-  });
-  const { data: resConnections, error: connectionsError } = useQuery({
-    queryKey: ['connections'],
-    queryFn: listConnections,
-  });
-
-  const integrations = useMemo<Integration[] | undefined>(() => {
-    if (!resIntegrations || !resConnections) {
-      return;
-    }
-
-    return resIntegrations.integrations.map((integration) => {
-      return {
-        ...integration,
-        connected:
-          resConnections.connections.find((connection) => {
-            return connection.provider_config_key === integration.unique_key;
-          }) !== undefined,
-      };
+    const { data: resConnections, error: connectionsError } = useQuery({
+        queryKey: ['connections'],
+        queryFn: listConnections
     });
-  }, [resIntegrations, resConnections]);
 
-  const googleDriveConnection = useMemo(() => {
-    return resConnections?.connections.find(
-      (connection) => connection.provider_config_key === 'google-drive'
-    );
-  }, [resConnections]);
+    const { supportedProviders, isLoading: providersLoading, error: providersError } = useSupportedProviders();
+    const { googleDriveConnection, connectGoogleDrive, disconnectGoogleDrive, oneDriveConnection, connectOneDrive, disconnectOneDrive } =
+        useProviderConnections(resConnections?.connections);
 
-  console.log('Google Drive Connection:', googleDriveConnection);
+    useEffect(() => {
+        if (connectionsError) {
+            console.error('Error fetching connections:', connectionsError);
+        }
+        if (providersError) {
+            console.error('Error fetching providers:', providersError);
+        }
+    }, [connectionsError, providersError]);
 
-  const connectedTo = useMemo(() => {
-    return integrations?.find((value) => value.connected);
-  }, [integrations]);
-
-  useEffect(() => {
-    console.log('Integrations:', integrations);
-    console.log('Connections:', resConnections);
-    console.log('Connected Integration:', connectedTo);
-  }, [integrations, resConnections, connectedTo]);
-
-  useEffect(() => {
-    if (connectionsError) {
-      console.error('Error fetching connections:', connectionsError);
-    }
-  }, [connectionsError]);
-
-  if (!integrations) {
-    return (
-      <main className="p-4 md:p-10 mx-auto max-w-7xl">
-        <Spinner size={2} />
-      </main>
-    );
-  }
-
-  return (
-    <div className="min-h-screen flex flex-col w-full">
-      <Head>
-        <title>Files</title>
-      </Head>
-      <header className="px-10 py-5 border-b">
-        <h1 className="text-2xl font-bold">Files Settings</h1>
-      </header>
-      <div className="flex-1 px-10 py-10 overflow-auto justify-center items-center flex flex-col">
-        <div className="flex justify-center">
-          <div className="flex flex-col gap-16 w-[540px]">
-            <div className="rounded shadow-2xl px-16 py-10 pb-16">
-              <h2 className="text-center text-2xl mb-10 font-semibold">
-                {!connectedTo ? 'Import Files' : 'Google Drive Files'}
-              </h2>
-              {connectedTo && googleDriveConnection && (
-                <div className="mt-6 space-y-6">
-                  <GoogleDrivePicker
-                    connectionId={String(googleDriveConnection.connection_id)}
-                    onFilesSelected={() => {
-                      // Refetch files after selection
-                      window.location.reload();
-                    }}
-                  />
-                  <GoogleDriveFiles connectionId={String(googleDriveConnection.connection_id)} />
+    if (providersLoading) {
+        return (
+            <main className="p-4 md:p-10 mx-auto max-w-7xl">
+                <div className="text-center">
+                    <Spinner size={2} />
+                    <p className="mt-4 text-gray-600">Loading providers...</p>
                 </div>
-              )}
-              <IntegrationsGrid
-                integrations={integrations.filter(integration => integration.unique_key === 'google-drive')}
-              />
+            </main>
+        );
+    }
+
+    if (providersError) {
+        return (
+            <main className="p-4 md:p-10 mx-auto max-w-7xl">
+                <div className="text-center">
+                    <p className="text-red-600">Failed to load providers. Please check your NANGO_SECRET_KEY configuration.</p>
+                </div>
+            </main>
+        );
+    }
+
+    return (
+        <div className="min-h-screen bg-gray-50 w-full">
+            <Head>
+                <title>File Storage Integrations</title>
+            </Head>
+
+            <header className="bg-white border-b border-gray-200 w-full">
+                <div className="w-full px-4 sm:px-6 lg:px-8">
+                    <div className="py-6">
+                        <h1 className="text-3xl font-bold text-gray-900">File Storage Integrations</h1>
+                        <p className="mt-2 text-gray-600">Connect and manage your cloud storage providers</p>
+                    </div>
+                </div>
+            </header>
+
+            <div className="w-full px-4 sm:px-6 lg:px-8 py-8">
+                <div className="mb-12">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {supportedProviders.map((provider) => {
+                            const isConnected =
+                                resConnections?.connections.some((connection) => connection.provider_config_key === provider.unique_key) || false;
+
+                            const isGoogleDrive = provider.unique_key === 'google-drive';
+                            const isOneDrive = provider.unique_key === 'one-drive';
+                            const isDropbox = provider.unique_key === 'dropbox';
+
+                            const getConnectHandler = () => {
+                                if (isGoogleDrive) return connectGoogleDrive;
+                                if (isOneDrive) return connectOneDrive;
+                                return undefined;
+                            };
+
+                            const getDisconnectHandler = () => {
+                                if (isGoogleDrive) return disconnectGoogleDrive;
+                                if (isOneDrive) return disconnectOneDrive;
+                                return undefined;
+                            };
+
+                            return (
+                                <ProviderCard
+                                    key={provider.unique_key}
+                                    provider={provider}
+                                    connected={isConnected}
+                                    comingSoon={isDropbox}
+                                    onConnect={getConnectHandler()}
+                                    onDisconnect={getDisconnectHandler()}
+                                >
+                                    {isGoogleDrive && isConnected && googleDriveConnection && (
+                                        <GoogleDrivePicker
+                                            connectionId={String(googleDriveConnection.connection_id)}
+                                            onFilesSelected={() => {
+                                                window.location.reload();
+                                            }}
+                                        />
+                                    )}
+                                    {isOneDrive && isConnected && oneDriveConnection && (
+                                        <OneDrivePicker
+                                            connectionId={String(oneDriveConnection.connection_id)}
+                                            onFilesSelected={() => {
+                                                window.location.reload();
+                                            }}
+                                        />
+                                    )}
+                                </ProviderCard>
+                            );
+                        })}
+                    </div>
+                </div>
+
+                {resConnections?.connections && resConnections.connections.length > 0 && <UnifiedFileManager connections={resConnections.connections} />}
             </div>
-            
-          </div>
         </div>
-      </div>
-    </div>
-  );
-} 
+    );
+}
