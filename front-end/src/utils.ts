@@ -12,4 +12,4 @@ export function cn(...inputs: ClassValue[]) {
 export const queryClient = new QueryClient();
 
 // Supported cloud storage providers configuration
-export const SUPPORTED_PROVIDERS = ['google-drive', 'one-drive', 'dropbox'];
+export const SUPPORTED_PROVIDERS = ['google-drive', 'one-drive', 'one-drive-personal'];

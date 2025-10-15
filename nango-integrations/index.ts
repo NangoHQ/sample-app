@@ -9,3 +9,6 @@ import './google-drive/actions/fetch-document.js';
 // -- Integration: one-drive
 import './one-drive/syncs/user-files-selection.js';
 import './one-drive/actions/fetch-file.js';
+
+// -- Integration: one-drive-personal
+import './one-drive-personal/syncs/user-files-selection.js';

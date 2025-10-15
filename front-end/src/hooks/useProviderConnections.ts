@@ -8,11 +8,12 @@ const nango = new Nango({
     publicKey: 'empty'
 });
 
-type ProviderType = 'google-drive' | 'one-drive';
+type ProviderType = 'google-drive' | 'one-drive' | 'one-drive-personal';
 
 export function useProviderConnections(connections?: any[]) {
     const googleDriveConnection = connections?.find((conn) => conn.provider_config_key === 'google-drive');
     const oneDriveConnection = connections?.find((conn) => conn.provider_config_key === 'one-drive');
+    const oneDrivePersonalConnection = connections?.find((conn) => conn.provider_config_key === 'one-drive-personal');
 
     const connectProvider = useCallback(async (provider: ProviderType) => {
         try {
@@ -74,6 +75,10 @@ export function useProviderConnections(connections?: any[]) {
         oneDriveConnection,
         isOneDriveConnected: !!oneDriveConnection,
         connectOneDrive: () => connectProvider('one-drive'),
-        disconnectOneDrive: () => disconnectProvider('one-drive')
+        disconnectOneDrive: () => disconnectProvider('one-drive'),
+        oneDrivePersonalConnection,
+        isOneDrivePersonalConnected: !!oneDrivePersonalConnection,
+        connectOneDrivePersonal: () => connectProvider('one-drive-personal'),
+        disconnectOneDrivePersonal: () => disconnectProvider('one-drive-personal')
     };
 }

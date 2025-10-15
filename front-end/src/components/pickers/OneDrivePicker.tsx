@@ -3,11 +3,11 @@ import { setConnectionMetadata, getNangoCredentials } from '../../api';
 import Spinner from '../Spinner';
 
 interface Props {
-    connectionId: string;
+    provider: 'one-drive' | 'one-drive-personal';
     onFilesSelected: (files: any[]) => void;
 }
 
-export function OneDrivePicker({ connectionId, onFilesSelected }: Props) {
+export function OneDrivePicker({ provider, onFilesSelected }: Props) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [authToken, setAuthToken] = useState<string | null>(null);
@@ -18,16 +18,22 @@ export function OneDrivePicker({ connectionId, onFilesSelected }: Props) {
     useEffect(() => {
         const fetchAuthToken = async () => {
             try {
-                const credentials = await getNangoCredentials('one-drive');
-                setAuthToken(credentials.connection_config.sharepointAccessToken.access_token);
-                setBaseUrl(credentials.sharepointBaseUrl);
+                const credentials = await getNangoCredentials(provider);
+                
+                if (provider === 'one-drive-personal') {
+                    setAuthToken(credentials.credentials.access_token);
+                    setBaseUrl('https://onedrive.live.com/picker');
+                } else {
+                    setAuthToken(credentials.connection_config.sharepointAccessToken.access_token);
+                    setBaseUrl(credentials.sharepointBaseUrl);
+                }
             } catch (error) {
                 console.error('Error fetching OneDrive credentials:', error);
                 setError('Failed to get access token');
             }
         };
         fetchAuthToken();
-    }, []);
+    }, [provider]);
 
     const combine = (...paths: string[]) =>
         paths
@@ -73,7 +79,9 @@ export function OneDrivePicker({ connectionId, onFilesSelected }: Props) {
                 filePicker: JSON.stringify(params)
             });
 
-            const url = combine(baseUrl, `_layouts/15/FilePicker.aspx?${queryString}`);
+            const url = provider === 'one-drive-personal'
+                ? combine(baseUrl, `?${queryString}`)
+                : combine(baseUrl, `_layouts/15/FilePicker.aspx?${queryString}`);
 
             const win = window.open('', 'OneDrivePicker', 'width=800,height=600');
             if (!win) {
@@ -128,24 +136,32 @@ export function OneDrivePicker({ connectionId, onFilesSelected }: Props) {
                                 const pickedItems = command.items || command.files || [];
 
                                 if (Array.isArray(pickedItems) && pickedItems.length > 0) {
-                                    const driveGroups: Record<string, string[]> = {};
+                                    let metadata;
 
-                                    pickedItems.forEach((item: any) => {
-                                        const driveId = item.parentReference?.driveId || item.driveId || 'default';
-                                        if (!driveGroups[driveId]) {
-                                            driveGroups[driveId] = [];
-                                        }
-                                        driveGroups[driveId].push(item.id);
-                                    });
+                                    if (provider === 'one-drive-personal') {
+                                        const fileIds = pickedItems.map((item: any) => item.id);
+                                        metadata = { fileIds };
+                                    } else {
+                                        const driveGroups: Record<string, string[]> = {};
 
-                                    const drives = Object.keys(driveGroups);
-                                    const pickedFiles = Object.entries(driveGroups).map(([driveId, fileIds]) => ({
-                                        driveId,
-                                        fileIds
-                                    }));
+                                        pickedItems.forEach((item: any) => {
+                                            const driveId = item.parentReference?.driveId || item.driveId || 'default';
+                                            if (!driveGroups[driveId]) {
+                                                driveGroups[driveId] = [];
+                                            }
+                                            driveGroups[driveId].push(item.id);
+                                        });
 
-                                    const metadata = { drives, pickedFiles };
-                                    await setConnectionMetadata('one-drive', metadata);
+                                        const drives = Object.keys(driveGroups);
+                                        const pickedFiles = Object.entries(driveGroups).map(([driveId, fileIds]) => ({
+                                            driveId,
+                                            fileIds
+                                        }));
+
+                                        metadata = { drives, pickedFiles };
+                                    }
+
+                                    await setConnectionMetadata(provider, metadata);
 
                                     const processedFiles = pickedItems.map((item: any) => ({
                                         id: item.id || item.name,

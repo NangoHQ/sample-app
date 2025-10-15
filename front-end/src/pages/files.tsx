@@ -17,8 +17,17 @@ export default function FilesPage() {
     });
 
     const { supportedProviders, isLoading: providersLoading, error: providersError } = useSupportedProviders();
-    const { googleDriveConnection, connectGoogleDrive, disconnectGoogleDrive, oneDriveConnection, connectOneDrive, disconnectOneDrive } =
-        useProviderConnections(resConnections?.connections);
+    const { 
+        googleDriveConnection, 
+        connectGoogleDrive, 
+        disconnectGoogleDrive, 
+        oneDriveConnection, 
+        connectOneDrive, 
+        disconnectOneDrive,
+        oneDrivePersonalConnection,
+        connectOneDrivePersonal,
+        disconnectOneDrivePersonal
+    } = useProviderConnections(resConnections?.connections);
 
     useEffect(() => {
         if (connectionsError) {
@@ -74,17 +83,19 @@ export default function FilesPage() {
 
                             const isGoogleDrive = provider.unique_key === 'google-drive';
                             const isOneDrive = provider.unique_key === 'one-drive';
-                            const isDropbox = provider.unique_key === 'dropbox';
+                            const isOneDrivePersonal = provider.unique_key === 'one-drive-personal';
 
                             const getConnectHandler = () => {
                                 if (isGoogleDrive) return connectGoogleDrive;
                                 if (isOneDrive) return connectOneDrive;
+                                if (isOneDrivePersonal) return connectOneDrivePersonal;
                                 return undefined;
                             };
 
                             const getDisconnectHandler = () => {
                                 if (isGoogleDrive) return disconnectGoogleDrive;
                                 if (isOneDrive) return disconnectOneDrive;
+                                if (isOneDrivePersonal) return disconnectOneDrivePersonal;
                                 return undefined;
                             };
 
@@ -93,7 +104,6 @@ export default function FilesPage() {
                                     key={provider.unique_key}
                                     provider={provider}
                                     connected={isConnected}
-                                    comingSoon={isDropbox}
                                     onConnect={getConnectHandler()}
                                     onDisconnect={getDisconnectHandler()}
                                 >
@@ -107,7 +117,15 @@ export default function FilesPage() {
                                     )}
                                     {isOneDrive && isConnected && oneDriveConnection && (
                                         <OneDrivePicker
-                                            connectionId={String(oneDriveConnection.connection_id)}
+                                            provider="one-drive"
+                                            onFilesSelected={() => {
+                                                window.location.reload();
+                                            }}
+                                        />
+                                    )}
+                                    {isOneDrivePersonal && isConnected && oneDrivePersonalConnection && (
+                                        <OneDrivePicker
+                                            provider="one-drive-personal"
                                             onFilesSelected={() => {
                                                 window.location.reload();
                                             }}

@@ -10,7 +10,7 @@ export const deleteConnection: RouteHandler<{
     Querystring: { integration?: string };
 }> = async (req, reply) => {
     const query = req.query;
-    if (!query.integration || !['slack', 'google-drive', 'one-drive'].includes(query.integration)) {
+    if (!query.integration || !['slack', 'google-drive', 'one-drive', 'one-drive-personal'].includes(query.integration)) {
         await reply.status(400).send({ error: 'invalid_integration' });
         return;
     }
@@ -33,28 +33,35 @@ export const deleteConnection: RouteHandler<{
         return;
     }
 
-    // We unlink a user from an integration
     await nango.deleteConnection(query.integration, userConnection.connectionId);
 
-    // Delete associated records based on integration type
-    if (query.integration === 'slack') {
-        await db.contacts.deleteMany({
+    const deleteOperations: Record<string, () => Promise<any>> = {
+        'slack': () => db.contacts.deleteMany({
             where: { connectionId: userConnection.connectionId }
-        });
-    } else if (query.integration === 'google-drive') {
-        await db.files.deleteMany({
+        }),
+        'google-drive': () => db.files.deleteMany({
             where: {
                 integrationId: 'google-drive',
                 connectionId: userConnection.connectionId
             }
-        });
-    } else if (query.integration === 'one-drive') {
-        await db.files.deleteMany({
+        }),
+        'one-drive': () => db.files.deleteMany({
             where: {
                 integrationId: 'one-drive',
                 connectionId: userConnection.connectionId
             }
-        });
+        }),
+        'one-drive-personal': () => db.files.deleteMany({
+            where: {
+                integrationId: 'one-drive-personal',
+                connectionId: userConnection.connectionId
+            }
+        })
+    };
+
+    const deleteOperation = deleteOperations[query.integration];
+    if (deleteOperation) {
+        await deleteOperation();
     }
 
     await db.userConnections.delete({
