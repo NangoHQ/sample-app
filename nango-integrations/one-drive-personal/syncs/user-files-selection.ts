@@ -37,7 +37,7 @@ const sync = createSync({
             return;
         }
 
-        const files = [];
+        const files: OneDriveFileSelection[] = [];
         const BATCH_SIZE = 100;
 
         for (const fileId of fileIds) {
@@ -68,6 +68,7 @@ const sync = createSync({
         if (files.length > 0) {
             await nango.batchSave(files, 'OneDriveFileSelection');
         }
+        await nango.deleteRecordsFromPreviousExecutions("OneDriveFileSelection");
     }
 });
 
