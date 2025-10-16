@@ -16,7 +16,26 @@ model Users {
 
   connectionId String?
 
+  connections UserConnections[]
+
   @@unique([email])
+}
+
+// multiple conections per user
+model UserConnections {
+  id String @id @default(uuid()) @db.Uuid
+  
+  userId String @db.Uuid
+  connectionId String
+  providerConfigKey String
+  
+  createdAt DateTime @default(now()) @db.Timestamp(3)
+  updatedAt DateTime @updatedAt
+  
+  user Users @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, providerConfigKey])
+  @@index([connectionId])
 }
 
 // This is the records that Nango is creating
@@ -44,6 +63,7 @@ model Files {
   mimeType     String
   url          String
   size         Int?
+  driveId      String? // for one-drive
   createdTime  DateTime @db.Timestamp(3)
 
   integrationId String

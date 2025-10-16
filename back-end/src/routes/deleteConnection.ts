@@ -7,44 +7,68 @@ import { db, getUserFromDatabase } from '../db.js';
  * It's useful when you delete a user from your backend or a user choose to disconnect.
  */
 export const deleteConnection: RouteHandler<{
-  Querystring: { integration?: string };
+    Querystring: { integration?: string };
 }> = async (req, reply) => {
-  const query = req.query;
-  if (!query.integration || !['slack', 'google-drive'].includes(query.integration)) {
-    await reply.status(400).send({ error: 'invalid_integration' });
-    return;
-  }
+    const query = req.query;
+    if (!query.integration || !['slack', 'google-drive', 'one-drive', 'one-drive-personal'].includes(query.integration)) {
+        await reply.status(400).send({ error: 'invalid_integration' });
+        return;
+    }
 
-  const user = await getUserFromDatabase();
-  if (!user || !user.connectionId) {
-    await reply.status(400).send({ error: 'invalid_user' });
-    return;
-  }
+    const user = await getUserFromDatabase();
+    if (!user) {
+        await reply.status(400).send({ error: 'invalid_user' });
+        return;
+    }
 
-  // We unlink a user from an integration
-  await nango.deleteConnection(query.integration, user.connectionId);
-
-  // Delete associated records based on integration type
-  if (query.integration === 'slack') {
-    await db.contacts.deleteMany({
-      where: { connectionId: user.connectionId },
+    const userConnection = await db.userConnections.findFirst({
+        where: {
+            userId: user.id,
+            providerConfigKey: query.integration
+        }
     });
-  } else if (query.integration === 'google-drive') {
-    await db.files.deleteMany({
-      where: {
-        integrationId: 'google-drive',
-        connectionId: user.connectionId,
-      }
+
+    if (!userConnection) {
+        await reply.status(400).send({ error: 'connection_not_found' });
+        return;
+    }
+
+    await nango.deleteConnection(query.integration, userConnection.connectionId);
+
+    const deleteOperations: Record<string, () => Promise<any>> = {
+        'slack': () => db.contacts.deleteMany({
+            where: { connectionId: userConnection.connectionId }
+        }),
+        'google-drive': () => db.files.deleteMany({
+            where: {
+                integrationId: 'google-drive',
+                connectionId: userConnection.connectionId
+            }
+        }),
+        'one-drive': () => db.files.deleteMany({
+            where: {
+                integrationId: 'one-drive',
+                connectionId: userConnection.connectionId
+            }
+        }),
+        'one-drive-personal': () => db.files.deleteMany({
+            where: {
+                integrationId: 'one-drive-personal',
+                connectionId: userConnection.connectionId
+            }
+        })
+    };
+
+    const deleteOperation = deleteOperations[query.integration];
+    if (deleteOperation) {
+        await deleteOperation();
+    }
+
+    await db.userConnections.delete({
+        where: {
+            id: userConnection.id
+        }
     });
-  }
 
-  // Remove the connection ID from the user
-  await db.users.update({
-    data: { connectionId: null },
-    where: {
-      id: user.id,
-    },
-  });
-
-  await reply.status(200).send({ success: true });
+    await reply.status(200).send({ success: true });
 };

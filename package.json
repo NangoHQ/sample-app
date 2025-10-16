@@ -17,7 +17,8 @@
     "start": "npm run start:docker && concurrently -n front,back \"npm run dev -w front-end\" \"npm run start -w back-end\"",
     "start:docker": "docker compose up -d",
     "start:backend": "npm run -w back-end start",
-    "webhooks-proxy": "lt --port 3010"
+    "webhooks-proxy": "lt --port 3010",
+    "prettier-format": "prettier --config .prettierrc \"./**/*.{ts,tsx}\" --write"
   },
   "devDependencies": {
     "@tsconfig/node18-strictest-esm": "1.0.1",

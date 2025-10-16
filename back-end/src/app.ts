@@ -9,7 +9,6 @@ import { deleteConnection } from './routes/deleteConnection.js';
 import { sendSlackMessage } from './routes/sendSlackMessage.js';
 import { postConnectSession } from './routes/postConnectSession.js';
 import { seedUser } from './db.js';
-import { setGoogleDriveMetadata } from './routes/setGoogleDriveMetadata.js';
 import { getFiles } from './routes/getFiles.js';
 import { downloadFile } from './routes/downloadFile.js';
 import { getNangoCredentials } from './routes/getNangoCredentials.js';
@@ -17,17 +16,17 @@ import { setConnectionMetadata } from './routes/setConnectionMetadata.js';
 
 const fastify = Fastify({ logger: false });
 fastify.addHook('onRequest', (req, _res, done) => {
-  console.log(`#${req.id} <- ${req.method} ${req.url}`);
-  done();
+    console.log(`#${req.id} <- ${req.method} ${req.url}`);
+    done();
 });
 
 await fastify.register(cors, {
-  origin: ['http://localhost:3011'],
-  credentials: true,
+    origin: ['http://localhost:3011'],
+    credentials: true
 });
 
 fastify.get('/', async function handler(_, reply) {
-  await reply.status(200).send({ root: true });
+    await reply.status(200).send({ root: true });
 });
 
 /**
@@ -68,7 +67,6 @@ fastify.get('/contacts', getContacts);
 fastify.post('/send-slack-message', sendSlackMessage);
 
 // Google Drive routes
-fastify.post('/api/google-drive/metadata/:connectionId', setGoogleDriveMetadata);
 fastify.get('/get-files', getFiles);
 fastify.get('/download/:fileId', downloadFile);
 
@@ -83,12 +81,12 @@ fastify.get('/nango-credentials', getNangoCredentials);
 fastify.post('/set-connection-metadata', setConnectionMetadata);
 
 try {
-  await seedUser();
+    await seedUser();
 
-  const port = process.env['PORT'] ? parseInt(process.env['PORT'], 10) : 3010;
-  await fastify.listen({ host: '0.0.0.0', port });
-  console.log(`Listening on http://0.0.0.0:${port}`);
+    const port = process.env['PORT'] ? parseInt(process.env['PORT'], 10) : 3010;
+    await fastify.listen({ host: '0.0.0.0', port });
+    console.log(`Listening on http://0.0.0.0:${port}`);
 } catch (err) {
-  console.error(err);
-  process.exit(1);
+    console.error(err);
+    process.exit(1);
 }
