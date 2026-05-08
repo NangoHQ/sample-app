@@ -1,0 +1,1280 @@
+[
+  {
+    "providerConfigKey": "slack",
+    "actions": [
+      {
+        "type": "action",
+        "description": "An action that sends a message to a slack channel.",
+        "endpoint": {
+          "method": "POST",
+          "path": "/send-message"
+        },
+        "input": "ActionInput_slack_sendmessage",
+        "name": "send-message",
+        "output": [
+          "ActionOutput_slack_sendmessage"
+        ],
+        "scopes": [
+          "chat:write"
+        ],
+        "usedModels": [
+          "ActionInput_slack_sendmessage",
+          "ActionOutput_slack_sendmessage"
+        ],
+        "version": "0.0.1",
+        "json_schema": {
+          "definitions": {
+            "ActionInput_slack_sendmessage": {
+              "type": "object",
+              "properties": {
+                "channel": {
+                  "type": "string"
+                },
+                "text": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "channel",
+                "text"
+              ],
+              "additionalProperties": false
+            },
+            "ActionOutput_slack_sendmessage": {
+              "type": "object",
+              "properties": {
+                "ok": {
+                  "type": "boolean"
+                },
+                "channel": {
+                  "type": "string"
+                },
+                "ts": {
+                  "type": "string"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "warning": {
+                  "type": "string"
+                },
+                "error": {
+                  "type": "string"
+                },
+                "raw_json": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "ok",
+                "raw_json"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "features": []
+      }
+    ],
+    "syncs": [
+      {
+        "type": "sync",
+        "description": "Syncs information about all Users on the Slack workspace",
+        "auto_start": true,
+        "endpoints": [
+          {
+            "method": "GET",
+            "path": "/users"
+          }
+        ],
+        "input": "SyncMetadata_slack_users",
+        "name": "users",
+        "output": [
+          "SlackUser"
+        ],
+        "runs": "every hour",
+        "scopes": [
+          "users:read",
+          "users:read.email"
+        ],
+        "sync_type": "full",
+        "track_deletes": false,
+        "usedModels": [
+          "SlackUser",
+          "SyncMetadata_slack_users"
+        ],
+        "version": "0.0.1",
+        "webhookSubscriptions": [],
+        "json_schema": {
+          "definitions": {
+            "SlackUser": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "team_id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "deleted": {
+                  "type": "boolean"
+                },
+                "tz": {
+                  "type": "string"
+                },
+                "tz_label": {
+                  "type": "string"
+                },
+                "tz_offset": {
+                  "type": "number"
+                },
+                "profile": {
+                  "type": "object",
+                  "properties": {
+                    "avatar_hash": {
+                      "type": "string"
+                    },
+                    "real_name": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "display_name": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "real_name_normalized": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "display_name_normalized": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "email": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "image_original": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "avatar_hash",
+                    "real_name",
+                    "display_name",
+                    "real_name_normalized",
+                    "display_name_normalized",
+                    "email",
+                    "image_original"
+                  ],
+                  "additionalProperties": false
+                },
+                "is_admin": {
+                  "type": "boolean"
+                },
+                "is_owner": {
+                  "type": "boolean"
+                },
+                "is_primary_owner": {
+                  "type": "boolean"
+                },
+                "is_restricted": {
+                  "type": "boolean"
+                },
+                "is_ultra_restricted": {
+                  "type": "boolean"
+                },
+                "is_bot": {
+                  "type": "boolean"
+                },
+                "updated": {
+                  "type": "number"
+                },
+                "is_app_user": {
+                  "type": "boolean"
+                },
+                "raw_json": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "team_id",
+                "name",
+                "deleted",
+                "tz",
+                "tz_label",
+                "tz_offset",
+                "profile",
+                "is_admin",
+                "is_owner",
+                "is_primary_owner",
+                "is_restricted",
+                "is_ultra_restricted",
+                "is_bot",
+                "updated",
+                "is_app_user",
+                "raw_json"
+              ],
+              "additionalProperties": false
+            },
+            "SyncMetadata_slack_users": {
+              "type": "object",
+              "properties": {},
+              "additionalProperties": false
+            }
+          }
+        },
+        "features": []
+      }
+    ],
+    "onEventScripts": {
+      "post-connection-creation": [],
+      "pre-connection-deletion": [],
+      "validate-connection": []
+    }
+  },
+  {
+    "providerConfigKey": "google-drive",
+    "actions": [
+      {
+        "type": "action",
+        "description": "Fetches the content of a file given its ID, processes the data using\na response stream, and encodes it into a base64 string. This base64-encoded\nstring can be used to recreate the file in its original format using an external tool.\nIf this is a native google file type then use the fetch-google-sheet or fetch-google-doc\nactions.",
+        "endpoint": {
+          "method": "GET",
+          "path": "/fetch-document",
+          "group": "Documents"
+        },
+        "input": "ActionInput_google_drive_fetchdocument",
+        "name": "fetch-document",
+        "output": [
+          "ActionOutput_google_drive_fetchdocument"
+        ],
+        "scopes": [
+          "https://www.googleapis.com/auth/drive.readonly"
+        ],
+        "usedModels": [
+          "ActionInput_google_drive_fetchdocument",
+          "ActionOutput_google_drive_fetchdocument"
+        ],
+        "version": "2.0.2",
+        "json_schema": {
+          "definitions": {
+            "ActionInput_google_drive_fetchdocument": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id"
+              ],
+              "additionalProperties": false
+            },
+            "ActionOutput_google_drive_fetchdocument": {
+              "type": "string"
+            }
+          }
+        },
+        "features": []
+      }
+    ],
+    "syncs": [
+      {
+        "type": "sync",
+        "description": "Sync the metadata of a specified file or folders from Google Drive,\nhandling both individual files and nested folders.\nMetadata required to filter on a particular folder, or file(s). Metadata\nfields should be `{\"files\": [\"<some-id>\"]}` OR\n`{\"folders\": [\"<some-id>\"]}`. The ID should be able to be provided\nby using the Google Picker API\n(https://developers.google.com/drive/picker/guides/overview)\nand using the ID field provided by the response\n(https://developers.google.com/drive/picker/reference/results)",
+        "auto_start": false,
+        "endpoints": [
+          {
+            "method": "GET",
+            "path": "/documents",
+            "group": "Documents"
+          }
+        ],
+        "input": "SyncMetadata_google_drive_documents",
+        "name": "documents",
+        "output": [
+          "Document"
+        ],
+        "runs": "every day",
+        "scopes": [
+          "https://www.googleapis.com/auth/drive.readonly"
+        ],
+        "sync_type": "full",
+        "track_deletes": true,
+        "usedModels": [
+          "Document",
+          "SyncMetadata_google_drive_documents"
+        ],
+        "version": "3.0.1",
+        "webhookSubscriptions": [],
+        "json_schema": {
+          "definitions": {
+            "Document": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "url": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "mimeType": {
+                  "type": "string"
+                },
+                "updatedAt": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "url",
+                "title",
+                "mimeType",
+                "updatedAt"
+              ],
+              "additionalProperties": false
+            },
+            "SyncMetadata_google_drive_documents": {
+              "type": "object",
+              "properties": {
+                "files": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "folders": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "files",
+                "folders"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "features": []
+      }
+    ],
+    "onEventScripts": {
+      "post-connection-creation": [],
+      "pre-connection-deletion": [],
+      "validate-connection": []
+    }
+  },
+  {
+    "providerConfigKey": "one-drive",
+    "actions": [
+      {
+        "type": "action",
+        "description": "This action will be used to fetch the latest file download_url which can be used to download the actual file.",
+        "endpoint": {
+          "method": "GET",
+          "path": "/fetch-file",
+          "group": "Files"
+        },
+        "input": "ActionInput_one_drive_fetchfile",
+        "name": "fetch-file",
+        "output": [
+          "ActionOutput_one_drive_fetchfile"
+        ],
+        "scopes": [
+          "Files.Read",
+          "offline_access"
+        ],
+        "usedModels": [
+          "ActionInput_one_drive_fetchfile",
+          "ActionOutput_one_drive_fetchfile"
+        ],
+        "version": "2.0.0",
+        "json_schema": {
+          "definitions": {
+            "ActionInput_one_drive_fetchfile": {
+              "type": "object",
+              "properties": {
+                "driveId": {
+                  "type": "string"
+                },
+                "itemId": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "driveId",
+                "itemId"
+              ],
+              "additionalProperties": false
+            },
+            "ActionOutput_one_drive_fetchfile": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "download_url": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "id",
+                "download_url"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "features": []
+      }
+    ],
+    "syncs": [
+      {
+        "type": "sync",
+        "description": "Fetch selected files from a user's OneDrive based on provided metadata.",
+        "auto_start": false,
+        "endpoints": [
+          {
+            "method": "GET",
+            "path": "/user-files/selected",
+            "group": "Files"
+          }
+        ],
+        "input": "SyncMetadata_one_drive_userfilesselection",
+        "name": "user-files-selection",
+        "output": [
+          "OneDriveFileSelection"
+        ],
+        "runs": "every hour",
+        "scopes": [
+          "Files.Read",
+          "Files.Read.All",
+          "offline_access"
+        ],
+        "sync_type": "full",
+        "track_deletes": false,
+        "usedModels": [
+          "OneDriveFileSelection",
+          "SyncMetadata_one_drive_userfilesselection"
+        ],
+        "version": "1.0.1",
+        "webhookSubscriptions": [],
+        "json_schema": {
+          "definitions": {
+            "OneDriveFileSelection": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "etag": {
+                  "type": "string"
+                },
+                "cTag": {
+                  "type": "string"
+                },
+                "is_folder": {
+                  "type": "boolean"
+                },
+                "mime_type": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "path": {
+                  "type": "string"
+                },
+                "raw_source": {
+                  "type": "object",
+                  "properties": {},
+                  "additionalProperties": false
+                },
+                "updated_at": {
+                  "type": "string"
+                },
+                "created_at": {
+                  "type": "string"
+                },
+                "blob_size": {
+                  "type": "number"
+                },
+                "drive_id": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "name",
+                "etag",
+                "cTag",
+                "is_folder",
+                "mime_type",
+                "path",
+                "raw_source",
+                "updated_at",
+                "created_at",
+                "blob_size",
+                "drive_id"
+              ],
+              "additionalProperties": false
+            },
+            "SyncMetadata_one_drive_userfilesselection": {
+              "type": "object",
+              "properties": {
+                "drives": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "pickedFiles": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "driveId": {
+                        "type": "string"
+                      },
+                      "fileIds": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "required": [
+                      "driveId",
+                      "fileIds"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": [
+                "drives",
+                "pickedFiles"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "features": []
+      }
+    ],
+    "onEventScripts": {
+      "post-connection-creation": [],
+      "pre-connection-deletion": [],
+      "validate-connection": []
+    }
+  },
+  {
+    "providerConfigKey": "one-drive-personal",
+    "actions": [],
+    "syncs": [
+      {
+        "type": "sync",
+        "description": "Fetch selected files and folders from a user's OneDrive personal account based on provided metadata.",
+        "auto_start": false,
+        "endpoints": [
+          {
+            "method": "GET",
+            "path": "/user-files/selected",
+            "group": "Files"
+          }
+        ],
+        "input": "SyncMetadata_one_drive_personal_userfilesselection",
+        "name": "user-files-selection",
+        "output": [
+          "OneDriveFileSelection"
+        ],
+        "runs": "every hour",
+        "scopes": [
+          "OneDrive.ReadWrite",
+          "offline_access"
+        ],
+        "sync_type": "full",
+        "track_deletes": false,
+        "usedModels": [
+          "OneDriveFileSelection",
+          "SyncMetadata_one_drive_personal_userfilesselection"
+        ],
+        "version": "1.0.0",
+        "webhookSubscriptions": [],
+        "json_schema": {
+          "definitions": {
+            "OneDriveFileSelection": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "etag": {
+                  "type": "string"
+                },
+                "cTag": {
+                  "type": "string"
+                },
+                "is_folder": {
+                  "type": "boolean"
+                },
+                "mime_type": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "path": {
+                  "type": "string"
+                },
+                "raw_source": {
+                  "type": "object",
+                  "properties": {},
+                  "additionalProperties": {}
+                },
+                "updated_at": {
+                  "type": "string"
+                },
+                "created_at": {
+                  "type": "string"
+                },
+                "blob_size": {
+                  "type": "number"
+                },
+                "drive_id": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "name",
+                "etag",
+                "cTag",
+                "is_folder",
+                "mime_type",
+                "path",
+                "raw_source",
+                "updated_at",
+                "created_at",
+                "blob_size",
+                "drive_id"
+              ],
+              "additionalProperties": false
+            },
+            "SyncMetadata_one_drive_personal_userfilesselection": {
+              "type": "object",
+              "properties": {
+                "fileIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "fileIds"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "features": []
+      }
+    ],
+    "onEventScripts": {
+      "post-connection-creation": [],
+      "pre-connection-deletion": [],
+      "validate-connection": []
+    }
+  },
+  {
+    "providerConfigKey": "google-calendar",
+    "actions": [
+      {
+        "type": "action",
+        "description": "Creates a new event on the user's primary Google Calendar",
+        "endpoint": {
+          "method": "POST",
+          "path": "/create-event"
+        },
+        "input": "ActionInput_google_calendar_createevent",
+        "name": "create-event",
+        "output": [
+          "ActionOutput_google_calendar_createevent"
+        ],
+        "scopes": [
+          "https://www.googleapis.com/auth/calendar.events"
+        ],
+        "usedModels": [
+          "ActionInput_google_calendar_createevent",
+          "ActionOutput_google_calendar_createevent"
+        ],
+        "version": "0.0.1",
+        "json_schema": {
+          "definitions": {
+            "ActionInput_google_calendar_createevent": {
+              "type": "object",
+              "properties": {
+                "summary": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "startDateTime": {
+                  "type": "string"
+                },
+                "endDateTime": {
+                  "type": "string"
+                },
+                "timeZone": {
+                  "type": "string"
+                },
+                "attendees": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "email": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "email"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": [
+                "summary",
+                "startDateTime",
+                "endDateTime"
+              ],
+              "additionalProperties": false
+            },
+            "ActionOutput_google_calendar_createevent": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "summary": {
+                  "type": "string"
+                },
+                "htmlLink": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "features": []
+      }
+    ],
+    "syncs": [
+      {
+        "type": "sync",
+        "description": "Syncs upcoming Google Calendar events from the primary calendar",
+        "auto_start": true,
+        "endpoints": [
+          {
+            "method": "GET",
+            "path": "/events"
+          }
+        ],
+        "input": "SyncMetadata_google_calendar_events",
+        "name": "events",
+        "output": [
+          "GoogleCalendarEvent"
+        ],
+        "runs": "every 15 minutes",
+        "scopes": [
+          "https://www.googleapis.com/auth/calendar.readonly"
+        ],
+        "sync_type": "full",
+        "track_deletes": true,
+        "usedModels": [
+          "GoogleCalendarEvent",
+          "SyncMetadata_google_calendar_events"
+        ],
+        "version": "0.0.1",
+        "webhookSubscriptions": [
+          "*"
+        ],
+        "json_schema": {
+          "definitions": {
+            "GoogleCalendarEvent": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "summary": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "htmlLink": {
+                  "type": "string"
+                },
+                "start": {
+                  "type": "object",
+                  "properties": {
+                    "dateTime": {
+                      "type": "string"
+                    },
+                    "date": {
+                      "type": "string"
+                    },
+                    "timeZone": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "end": {
+                  "type": "object",
+                  "properties": {
+                    "dateTime": {
+                      "type": "string"
+                    },
+                    "date": {
+                      "type": "string"
+                    },
+                    "timeZone": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "attendees": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "email": {
+                        "type": "string"
+                      },
+                      "displayName": {
+                        "type": "string"
+                      },
+                      "responseStatus": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "email"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "organizer": {
+                  "type": "object",
+                  "properties": {
+                    "email": {
+                      "type": "string"
+                    },
+                    "displayName": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "email"
+                  ],
+                  "additionalProperties": false
+                },
+                "location": {
+                  "type": "string"
+                },
+                "hangoutLink": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "start",
+                "end"
+              ],
+              "additionalProperties": false
+            },
+            "SyncMetadata_google_calendar_events": {
+              "type": "object",
+              "properties": {},
+              "additionalProperties": false
+            }
+          }
+        },
+        "features": []
+      },
+      {
+        "type": "sync",
+        "description": "Incrementally sync full Google Calendar event objects, defaulting to the primary calendar with an initial one-month lookback",
+        "auto_start": true,
+        "endpoints": [
+          {
+            "method": "POST",
+            "path": "/syncs/calendar-events"
+          }
+        ],
+        "input": "SyncMetadata_google_calendar_calendarevents",
+        "name": "calendar-events",
+        "output": [
+          "CalendarEvent"
+        ],
+        "runs": "every 5 minutes",
+        "scopes": [],
+        "sync_type": "full",
+        "track_deletes": false,
+        "usedModels": [
+          "CalendarEvent",
+          "SyncMetadata_google_calendar_calendarevents"
+        ],
+        "version": "1.0.0",
+        "webhookSubscriptions": [],
+        "json_schema": {
+          "definitions": {
+            "CalendarEvent": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "kind": {
+                  "type": "string"
+                },
+                "etag": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "htmlLink": {
+                  "type": "string"
+                },
+                "created": {
+                  "type": "string"
+                },
+                "updated": {
+                  "type": "string"
+                },
+                "summary": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "location": {
+                  "type": "string"
+                },
+                "creator": {
+                  "type": "object",
+                  "properties": {
+                    "email": {
+                      "type": "string"
+                    },
+                    "displayName": {
+                      "type": "string"
+                    },
+                    "self": {
+                      "type": "boolean"
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "organizer": {
+                  "type": "object",
+                  "properties": {
+                    "email": {
+                      "type": "string"
+                    },
+                    "displayName": {
+                      "type": "string"
+                    },
+                    "self": {
+                      "type": "boolean"
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "start": {
+                  "type": "object",
+                  "properties": {
+                    "date": {
+                      "type": "string"
+                    },
+                    "dateTime": {
+                      "type": "string"
+                    },
+                    "timeZone": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "end": {
+                  "type": "object",
+                  "properties": {
+                    "date": {
+                      "type": "string"
+                    },
+                    "dateTime": {
+                      "type": "string"
+                    },
+                    "timeZone": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "recurrence": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "recurringEventId": {
+                  "type": "string"
+                },
+                "originalStartTime": {
+                  "type": "object",
+                  "properties": {
+                    "date": {
+                      "type": "string"
+                    },
+                    "dateTime": {
+                      "type": "string"
+                    },
+                    "timeZone": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "transparency": {
+                  "type": "string"
+                },
+                "visibility": {
+                  "type": "string"
+                },
+                "iCalUID": {
+                  "type": "string"
+                },
+                "sequence": {
+                  "type": "number"
+                },
+                "attendees": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "email": {
+                        "type": "string"
+                      },
+                      "displayName": {
+                        "type": "string"
+                      },
+                      "responseStatus": {
+                        "type": "string"
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                },
+                "attendeesOmitted": {
+                  "type": "boolean"
+                },
+                "hangoutLink": {
+                  "type": "string"
+                },
+                "conferenceData": {},
+                "reminders": {},
+                "attachments": {},
+                "eventType": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "updated"
+              ],
+              "additionalProperties": false
+            },
+            "SyncMetadata_google_calendar_calendarevents": {
+              "type": "object",
+              "properties": {
+                "calendarsToSync": {
+                  "description": "Array of calendar IDs to sync. Defaults to [\"primary\"]",
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "timeMin": {
+                  "description": "RFC3339 timestamp for lower bound on event start time. Also used as initial sync point if no checkpoint exists.",
+                  "type": "string"
+                },
+                "timeMax": {
+                  "description": "RFC3339 timestamp for upper bound on event end time",
+                  "type": "string"
+                },
+                "singleEvents": {
+                  "description": "Whether to expand recurring events into single instances",
+                  "type": "boolean"
+                }
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "features": [
+          "checkpoints"
+        ]
+      },
+      {
+        "type": "sync",
+        "description": "Renew the Google Calendar events watch channel before it expires",
+        "auto_start": true,
+        "endpoints": [
+          {
+            "method": "GET",
+            "path": "/watch-renewal"
+          }
+        ],
+        "input": "SyncMetadata_google_calendar_watchrenewal",
+        "name": "watch-renewal",
+        "output": [
+          "WatchRenewal"
+        ],
+        "runs": "1d",
+        "scopes": [],
+        "sync_type": "full",
+        "track_deletes": false,
+        "usedModels": [
+          "WatchRenewal",
+          "SyncMetadata_google_calendar_watchrenewal"
+        ],
+        "version": "",
+        "webhookSubscriptions": [],
+        "json_schema": {
+          "definitions": {
+            "WatchRenewal": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id"
+              ],
+              "additionalProperties": false
+            },
+            "SyncMetadata_google_calendar_watchrenewal": {
+              "type": "object",
+              "properties": {
+                "googleCalendarChannelId": {
+                  "type": "string"
+                },
+                "googleCalendarResourceId": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "features": []
+      }
+    ],
+    "onEventScripts": {
+      "post-connection-creation": [
+        "post-connection-creation"
+      ],
+      "pre-connection-deletion": [
+        "pre-connection-deletion"
+      ],
+      "validate-connection": []
+    }
+  }
+]

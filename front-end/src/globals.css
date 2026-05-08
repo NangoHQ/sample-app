@@ -1,0 +1,94 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    html {
+        @apply bg-zinc-950 text-zinc-100;
+    }
+
+    * {
+        @apply border-zinc-800;
+    }
+
+    ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        @apply bg-zinc-700 rounded-full;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        @apply bg-zinc-600;
+    }
+}
+
+@layer utilities {
+    .glow-sm {
+        box-shadow: 0 0 12px -2px var(--glow-color, rgba(99, 102, 241, 0.4));
+    }
+
+    .glow-md {
+        box-shadow: 0 0 24px -4px var(--glow-color, rgba(99, 102, 241, 0.5));
+    }
+
+    .gradient-border {
+        position: relative;
+    }
+
+    .gradient-border::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        padding: 1px;
+        background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.02));
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        pointer-events: none;
+    }
+
+    /* Subtle animated dot pattern for hero sections */
+    .dot-pattern {
+        background-image: radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px);
+        background-size: 24px 24px;
+    }
+
+    /* Animated pulse ring for connected state */
+    @keyframes pulse-ring {
+        0% { transform: scale(1); opacity: 0.8; }
+        100% { transform: scale(1.6); opacity: 0; }
+    }
+
+    .pulse-ring::after {
+        content: '';
+        position: absolute;
+        inset: -3px;
+        border-radius: 50%;
+        border: 2px solid currentColor;
+        animation: pulse-ring 1.5s ease-out infinite;
+    }
+
+    /* Code block */
+    .code-block {
+        @apply bg-zinc-900 border border-zinc-800 rounded-lg p-4 font-mono text-xs text-zinc-300 overflow-x-auto;
+    }
+
+    /* SSE event item slide-in */
+    @keyframes slide-in-right {
+        from { transform: translateX(20px); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+
+    .event-appear {
+        animation: slide-in-right 0.25s ease-out;
+    }
+}

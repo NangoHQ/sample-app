@@ -1,0 +1,123 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Users {
+  id String @id @default(uuid()) @db.Uuid
+
+  email       String
+  displayName String
+  password    String?
+
+  connectionId String?
+
+  connections UserConnections[]
+
+  @@unique([email])
+}
+
+model UserConnections {
+  id String @id @default(uuid()) @db.Uuid
+
+  userId            String @db.Uuid
+  connectionId      String
+  providerConfigKey String
+
+  createdAt DateTime @default(now()) @db.Timestamp(3)
+  updatedAt DateTime @updatedAt
+
+  user Users @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, providerConfigKey])
+  @@index([connectionId])
+}
+
+model Contacts {
+  id String @id @db.VarChar(64)
+
+  integrationId String
+  connectionId  String
+  fullName      String
+  avatar        String
+
+  createdAt DateTime? @db.Timestamp(3)
+  updatedAt DateTime  @updatedAt
+
+  deletedAt DateTime? @db.Timestamp(3)
+
+  @@index([integrationId])
+}
+
+model Files {
+  id String @id @db.VarChar(64)
+
+  title        String
+  mimeType     String
+  url          String
+  size         Int?
+  driveId      String?
+  createdTime  DateTime @db.Timestamp(3)
+
+  integrationId String
+  connectionId  String
+
+  createdAt DateTime  @default(now()) @db.Timestamp(3)
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime? @db.Timestamp(3)
+
+  @@index([integrationId])
+  @@index([connectionId])
+}
+
+// Generic synced records table for projects, CRM, messaging data
+model Records {
+  id String @id @db.Text
+
+  integrationId String
+  connectionId  String
+  model         String   // e.g. "GithubIssue", "LinearIssue", "HubspotContact"
+  data          Json     // raw record from Nango
+
+  createdAt DateTime  @default(now()) @db.Timestamp(3)
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime? @db.Timestamp(3)
+
+  @@unique([integrationId, connectionId, model, id])
+  @@index([integrationId, model])
+  @@index([connectionId])
+}
+
+// Stores the modifiedAfter bookmark per (connectionId, model) so we only
+// fetch delta records since the last successful sync, and never miss a batch.
+model SyncBookmarks {
+  connectionId  String
+  model         String
+  modifiedAfter String   // ISO-8601 — the modifiedAfter value from the last processed webhook
+
+  updatedAt DateTime @updatedAt
+
+  @@id([connectionId, model])
+}
+
+// Stores all incoming webhook events for the live console page
+model WebhookEvents {
+  id String @id @default(uuid()) @db.Uuid
+
+  type          String   // auth | sync | forward
+  provider      String
+  connectionId  String?
+  operation     String?  // creation | override | refresh
+  model         String?  // for sync webhooks
+  payload       Json
+
+  receivedAt DateTime @default(now()) @db.Timestamp(3)
+
+  @@index([type])
+  @@index([provider])
+  @@index([receivedAt])
+}

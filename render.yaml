@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: sample-app-backend
+    plan: free
+    runtime: node
+    rootDir: back-end
+    buildCommand: npm install && npm run build
+    startCommand: npm run db:migrate:prod && npm run start:prod
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: NODE_VERSION
+        value: "20"
+      - key: NANGO_HOST
+        value: https://api.nango.dev
+      - key: OPENCODE_MODEL
+        value: kimi-k2.5
+      - key: NANGO_SECRET_KEY
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+      - key: OPENCODE_API_KEY
+        sync: false

@@ -1,0 +1,44 @@
+{
+  "name": "back-end",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "types": "./api-types.d.ts",
+  "scripts": {
+    "dev": "concurrently -n ts,api \"npm run dev:watch\" \"npm run dev:start\"",
+    "build": "tsc -b",
+    "dev:watch": "tsc -b -w --preserveWatchOutput",
+    "dev:start": "nodemon",
+    "start": "tsc -b && npm run local:start",
+    "start:prod": "node ./dist/app.js",
+    "local:start": "dotenv -e ../.env node ./dist/app.js",
+    "db:migrate": "dotenv -e ../.env node ./dist/migrate.js",
+    "db:migrate:prod": "node ./dist/migrate.js"
+  },
+  "type": "module",
+  "dependencies": {
+    "@fastify/cors": "11.2.0",
+    "@fastify/helmet": "^13.0.2",
+    "@fastify/rate-limit": "^10.3.0",
+    "@nangohq/node": "^0.58.4",
+    "@nangohq/types": "^0.58.4",
+    "bcryptjs": "^3.0.3",
+    "fastify": "5.8.4",
+    "jsonwebtoken": "^9.0.3",
+    "pg": "^8.20.0",
+    "zod": "3.22.4"
+  },
+  "nodemonConfig": {
+    "watch": [
+      "dist/"
+    ],
+    "delay": 500,
+    "exec": "dotenv -e ../.env node ./dist/app.js"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/pg": "^8.20.0",
+    "nodemon": "3.1.0"
+  }
+}

@@ -1,0 +1,1 @@
+ALTER TABLE "Files" ADD COLUMN "driveId" TEXT;
